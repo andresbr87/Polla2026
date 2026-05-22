@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polla Mundialista 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#c00000;--gold:#b8860b;--gl:#daa520;
+  --card:#ffffff;--border:#e5e7eb;--text:#111827;
+  --muted:#6b7280;--surface:#f9fafb;--surface2:#f3f4f6;
+  --info-bg:#eff6ff;--info-text:#1d4ed8;--info-border:#3b82f6;
+  --warn-bg:#fffbeb;--warn-text:#92400e;--warn-border:#f59e0b;
+  --success-bg:#f0fdf4;--success-text:#166534;
+  --radius:8px;--radius-sm:6px;--radius-lg:12px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--card:#1f2937;--border:#374151;--text:#f9fafb;--muted:#9ca3af;--surface:#111827;--surface2:#1f2937;
+    --info-bg:#1e3a5f;--info-text:#93c5fd;--info-border:#3b82f6;
+    --warn-bg:#3b2f00;--warn-text:#fcd34d;--warn-border:#f59e0b;}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:#f3f4f6;min-height:100vh}
+.app{max-width:1100px;margin:0 auto;background:var(--card);border-radius:var(--radius-lg);box-shadow:0 4px 24px rgba(0,0,0,.10);overflow:hidden;min-height:100vh}
+.topbar{background:#1a1a1a;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:16px;font-weight:600;color:#daa520;letter-spacing:.3px}
+.topbar-sub{font-size:12px;color:#888;margin-top:2px}
+.tabs{display:flex;border-bottom:1.5px solid var(--border);background:var(--surface);flex-wrap:wrap}
+.tab{padding:10px 16px;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:all .15s;white-space:nowrap}
+.tab.active{color:var(--red);border-bottom-color:var(--red);font-weight:500}
+.tab:hover:not(.active){color:var(--text)}
+.tab-panel{display:none;padding:16px}
+.tab-panel.active{display:block}
+.sub-tabs{display:flex;margin-bottom:14px;border:0.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;width:fit-content}
+.sub-tab{padding:8px 22px;font-size:13px;cursor:pointer;color:var(--muted);background:var(--surface);border-right:0.5px solid var(--border);transition:all .15s}
+.sub-tab:last-child{border-right:none}
+.sub-tab.active{background:var(--red);color:#fff;font-weight:500}
+.sub-tab:hover:not(.active){background:var(--card)}
+.sub-panel{display:none}
+.sub-panel.active{display:block}
+.auth-wrap{display:flex;align-items:center;justify-content:center;padding:40px 16px;min-height:60vh}
+.auth-box{width:100%;max-width:380px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.auth-box h2{font-size:18px;font-weight:600;margin-bottom:6px}
+.auth-box p{font-size:13px;color:var(--muted);margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500}
+.field input,.field select{width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;transition:border .15s}
+.field input:focus,.field select:focus{border-color:var(--red)}
+.btn{padding:9px 18px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:transparent;color:var(--text);transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--surface)}
+.btn.primary{background:var(--red);color:#fff;border-color:var(--red)}
+.btn.primary:hover{opacity:.88}
+.btn.sm{padding:5px 11px;font-size:12px}
+.btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.group-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.group-header{background:#1a1a1a;padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
+.group-label{font-size:13px;font-weight:600;color:#daa520}
+.pts-badge{font-size:10px;background:#b8860b22;color:#daa520;padding:2px 8px;border-radius:20px}
+.group-body{padding:10px 14px}
+.match-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--border)}
+.match-row:last-child{border-bottom:none}
+.team-name{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.team-name.left{text-align:right;padding-right:4px}
+.team-name.right{text-align:left;padding-left:4px}
+.score-inp{width:36px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
+.score-inp:focus{outline:none;border-color:var(--red)}
+.vs{font-size:10px;color:var(--muted);min-width:14px;text-align:center}
+.section-title{font-size:14px;font-weight:600;margin:16px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)}
+.save-bar{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:16px;z-index:10}
+.save-msg{font-size:12px;color:#16a34a;font-weight:500}
+.oct-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.oct-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px}
+.oct-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.oct-desc{font-size:10px;color:var(--gl);margin-bottom:8px}
+.oct-match{display:flex;align-items:center;gap:6px;padding:4px 0}
+.oct-team-label{flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oct-team-label.left{text-align:right}
+.oct-team-label.right{text-align:left}
+.oct-team-label.pending{color:var(--muted);font-style:italic}
+.advance-pick{width:100%;margin-top:7px;font-size:12px;padding:5px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
+.standings-table{width:100%;border-collapse:collapse;font-size:13px}
+.standings-table th{text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface)}
+.standings-table td{padding:9px 12px;border-bottom:.5px solid var(--border)}
+.standings-table tbody tr{cursor:pointer;transition:background .12s}
+.standings-table tbody tr:hover td{background:var(--surface)}
+.gold-rank{color:#ca8a04;font-weight:700}
+.silver-rank{color:#9ca3af;font-weight:700}
+.bronze-rank{color:#b45309;font-weight:700}
+.rank{color:var(--muted);font-weight:500}
+.pts-cell{font-weight:700;color:var(--red)}
+.participant-name{font-weight:600}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px}
+.result-header{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:.5px solid var(--border)}
+.result-match{display:flex;align-items:center;gap:5px;padding:4px 0}
+.result-team{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.result-score{width:32px;text-align:center;padding:3px;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
+.notice{padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
+.notice.info{background:var(--info-bg);color:var(--info-text);border-left:3px solid var(--info-border)}
+.notice.warn{background:var(--warn-bg);color:var(--warn-text);border-left:3px solid var(--warn-border)}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500}
+.chip.red{background:#fee2e2;color:#dc2626}
+.chip.gold{background:#fef3c7;color:#92400e}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-state i{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
+.detail-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.avatar{width:48px;height:48px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--red);font-size:18px}
+.pts-big{font-size:32px;font-weight:700;color:var(--red);line-height:1}
+.pts-label{font-size:12px;color:var(--muted);margin-top:3px}
+.tab-sub-btn{padding:6px 14px;font-size:12px;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:transparent;color:var(--muted);transition:all .15s;margin-right:6px;margin-bottom:6px}
+.tab-sub-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div>
+    <div class="topbar-title">🏆 Polla Mundialista 2026</div>
+    <div class="topbar-sub">FIFA World Cup · Canada · Mexico · USA · #WeAre26</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="user-badge" style="font-size:12px;color:#aaa"></span>
+    <button class="btn sm" id="logout-btn" style="display:none;color:#daa520;border-color:#b8860b66" onclick="logout()">Salir</button>
+  </div>
+</div>
+
+<div id="auth-screen">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <h2>Bienvenido</h2>
+      <p>Ingresa tu nombre para diligenciar tus pronósticos, o entra como administrador para gestionar la polla.</p>
+      <div class="field"><label>Nombre completo</label><input id="login-name" type="text" placeholder="Ej: Juan Pérez" autocomplete="off"></div>
+      <div class="field"><label>Rol</label>
+        <select id="login-role">
+          <option value="participant">Participante</option>
+          <option value="admin">Administrador</option>
+        </select>
+      </div>
+      <div id="admin-pass-field" class="field" style="display:none"><label>Contraseña admin</label><input id="admin-pass" type="password" placeholder="••••••"></div>
+      <div class="btn-row"><button class="btn primary" onclick="doLogin()"><i class="ti ti-arrow-right"></i> Entrar</button></div>
+      <div id="login-error" style="color:var(--red);font-size:12px;margin-top:10px;display:none"></div>
+    </div>
+  </div>
+</div>
+
+<div id="main-screen" style="display:none">
+  <div class="tabs">
+    <div class="tab active" data-tab="pronosticos" onclick="switchTab(this)">Mis pronósticos</div>
+    <div class="tab" data-tab="standings" onclick="switchTab(this)">Tabla de posiciones</div>
+    <div class="tab" data-tab="transparencia" onclick="switchTab(this)">Marcadores</div>
+    <div class="tab admin-only" data-tab="resultados" onclick="switchTab(this)" style="display:none">Resultados reales</div>
+    <div class="tab admin-only" data-tab="gestion" onclick="switchTab(this)" style="display:none">Gestión</div>
+  </div>
+
+  <div class="tab-panel active" id="tab-pronosticos">
+    <div class="sub-tabs">
+      <div class="sub-tab active" data-sub="grupos" onclick="switchSub(this)">Fase de grupos</div>
+      <div class="sub-tab" data-sub="octavos" onclick="switchSub(this)">Octavos de final</div>
+    </div>
+    <div class="sub-panel active" id="sub-grupos"><div id="grupos-content"></div></div>
+    <div class="sub-panel" id="sub-octavos"><div id="octavos-content"></div></div>
+    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()"><i class="ti ti-device-floppy"></i> Guardar pronósticos</button></div>
+  </div>
+  <div class="tab-panel" id="tab-standings"><div id="standings-content"></div></div>
+  <div class="tab-panel" id="tab-transparencia"><div id="transparencia-content"></div></div>
+  <div class="tab-panel" id="tab-resultados"><div id="resultados-content"></div></div>
+  <div class="tab-panel" id="tab-gestion"><div id="gestion-content"></div></div>
+</div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────
+const ADMIN_PASS = "polla2026";
+
+const GRP = {
+  A:["México","Sudáfrica","Corea del Sur","Chequia"],
+  B:["Canadá","Bosnia","Catar","Suiza"],
+  C:["Brasil","Marruecos","Haiti","Escocia"],
+  D:["USA","Paraguay","Australia","Turquía"],
+  E:["Alemania","Curazao","Costa de Marfil","Ecuador"],
+  F:["Países Bajos","Japón","Suecia","Túnez"],
+  G:["Bélgica","Egipto","Irán","Nueva Zelanda"],
+  H:["España","Cabo Verde","Arabia Saudita","Uruguay"],
+  I:["Francia","Senegal","Irak","Noruega"],
+  J:["Argentina","Argelia","Austria","Jordania"],
+  K:["Portugal","RD Congo","Uzbekistán","Colombia"],
+  L:["Inglaterra","Croacia","Ghana","Panamá"]
+};
+
+const MATCHES = {};
+Object.keys(GRP).forEach(g => {
+  const t = GRP[g];
+  MATCHES[g] = [
+    {id:`${g}1`,t1:t[0],t2:t[1]},{id:`${g}2`,t1:t[0],t2:t[2]},{id:`${g}3`,t1:t[0],t2:t[3]},
+    {id:`${g}4`,t1:t[1],t2:t[2]},{id:`${g}5`,t1:t[1],t2:t[3]},{id:`${g}6`,t1:t[2],t2:t[3]}
+  ];
+});
+
+const BRACKET = [
+  {id:"R01",lbl:"Llave 1", t1g:"E",t1pos:1,t2g:"ABCDF",t2pos:"3best"},
+  {id:"R02",lbl:"Llave 2", t1g:"I",t1pos:1,t2g:"CDFGH",t2pos:"3best"},
+  {id:"R03",lbl:"Llave 3", t1g:"A",t1pos:2,t2g:"B",    t2pos:2},
+  {id:"R04",lbl:"Llave 4", t1g:"F",t1pos:1,t2g:"C",    t2pos:2},
+  {id:"R05",lbl:"Llave 5", t1g:"K",t1pos:2,t2g:"L",    t2pos:2},
+  {id:"R06",lbl:"Llave 6", t1g:"H",t1pos:1,t2g:"J",    t2pos:2},
+  {id:"R07",lbl:"Llave 7", t1g:"D",t1pos:1,t2g:"BEFIJ",t2pos:"3best"},
+  {id:"R08",lbl:"Llave 8", t1g:"C",t1pos:1,t2g:"F",    t2pos:2},
+  {id:"R09",lbl:"Llave 9", t1g:"E",t1pos:2,t2g:"I",    t2pos:2},
+  {id:"R10",lbl:"Llave 10",t1g:"A",t1pos:1,t2g:"CEFHI",t2pos:"3best"},
+  {id:"R11",lbl:"Llave 11",t1g:"L",t1pos:1,t2g:"EHIJK",t2pos:"3best"},
+  {id:"R12",lbl:"Llave 12",t1g:"J",t1pos:1,t2g:"H",    t2pos:2},
+  {id:"R13",lbl:"Llave 13",t1g:"D",t1pos:2,t2g:"G",    t2pos:2},
+  {id:"R14",lbl:"Llave 14",t1g:"B",t1pos:1,t2g:"EFGIJ",t2pos:"3best"},
+  {id:"R15",lbl:"Llave 15",t1g:"K",t1pos:1,t2g:"ABCDF",t2pos:"3best"},
+  {id:"R16",lbl:"Llave 16",t1g:"G",t1pos:1,t2g:"L",    t2pos:2},
+];
+
+// ── STATE (localStorage para web offline; reemplazar con Firebase para multi-usuario) ──
+let currentUser = null, currentRole = null;
+let state = { participants:{}, realResults:{}, octResults:{} };
+
+function loadState() {
+  try { const s = localStorage.getItem("polla2026"); if(s) state = JSON.parse(s); } catch(e){}
+}
+function saveState() {
+  try { localStorage.setItem("polla2026", JSON.stringify(state)); } catch(e){}
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+document.getElementById("login-role").addEventListener("change", function(){
+  document.getElementById("admin-pass-field").style.display = this.value==="admin" ? "block":"none";
+});
+document.getElementById("login-name").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
+
+function showError(msg){ const el=document.getElementById("login-error"); el.textContent=msg; el.style.display="block"; }
+
+function doLogin(){
+  const name = document.getElementById("login-name").value.trim();
+  const role = document.getElementById("login-role").value;
+  if(!name){ showError("Ingresa tu nombre"); return; }
+  if(role==="admin" && document.getElementById("admin-pass").value !== ADMIN_PASS){ showError("Contraseña incorrecta"); return; }
+  loadState();
+  currentUser = name; currentRole = role;
+  if(role==="participant" && !state.participants[name]){
+    state.participants[name] = { forecasts:{}, octForecasts:{}, octAdvances:{} };
+    saveState();
+  }
+  document.getElementById("auth-screen").style.display = "none";
+  document.getElementById("main-screen").style.display = "block";
+  document.getElementById("user-badge").textContent = name + (role==="admin"?" (Admin)":"");
+  document.getElementById("logout-btn").style.display = "block";
+  if(role==="admin") document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
+  renderGrupos();
+  renderStandings();
+}
+
+function logout(){
+  currentUser=null; currentRole=null;
+  document.getElementById("auth-screen").style.display="block";
+  document.getElementById("main-screen").style.display="none";
+  document.getElementById("logout-btn").style.display="none";
+  document.getElementById("user-badge").textContent="";
+  document.getElementById("login-name").value="";
+  document.getElementById("admin-pass").value="";
+  document.getElementById("login-error").style.display="none";
+  document.querySelectorAll(".admin-only").forEach(el=>el.style.display="none");
+  switchTabById("pronosticos");
+  document.querySelector('.sub-tab[data-sub="grupos"]').click();
+}
+
+function switchTab(el){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+  el.classList.add("active");
+  const tab = el.dataset.tab;
+  document.getElementById("tab-"+tab).classList.add("active");
+  if(tab==="standings") renderStandings();
+  if(tab==="resultados") renderResultados();
+  if(tab==="gestion") renderGestion();
+  if(tab==="transparencia") renderTransparencia();
+}
+function switchTabById(id){ const el=document.querySelector(`.tab[data-tab="${id}"]`); if(el) switchTab(el); }
+
+function switchSub(el){
+  document.querySelectorAll(".sub-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".sub-panel").forEach(p=>p.classList.remove("active"));
+  el.classList.add("active");
+  const sub = el.dataset.sub;
+  document.getElementById("sub-"+sub).classList.add("active");
+  if(sub==="grupos") renderGrupos();
+  if(sub==="octavos") renderOctavos();
+}
+
+function getP(name){ name=name||currentUser; return state.participants[name]||{forecasts:{},octForecasts:{},octAdvances:{}}; }
+
+// ── MATH ──────────────────────────────────────────────────────
+function calcGroupTable(g, forecasts){
+  const teams = GRP[g];
+  const tbl = {};
+  teams.forEach(t=>{ tbl[t]={pts:0,gf:0,ga:0,gd:0}; });
+  MATCHES[g].forEach(m=>{
+    const f = forecasts[m.id]||{};
+    if(f.s1===undefined||f.s2===undefined) return;
+    const g1=parseInt(f.s1), g2=parseInt(f.s2);
+    tbl[m.t1].gf+=g1; tbl[m.t1].ga+=g2; tbl[m.t1].gd+=g1-g2;
+    tbl[m.t2].gf+=g2; tbl[m.t2].ga+=g1; tbl[m.t2].gd+=g2-g1;
+    if(g1>g2){ tbl[m.t1].pts+=3; } else if(g2>g1){ tbl[m.t2].pts+=3; } else { tbl[m.t1].pts+=1; tbl[m.t2].pts+=1; }
+  });
+  const sorted = teams.slice().sort((a,b)=>{
+    if(tbl[b].pts!==tbl[a].pts) return tbl[b].pts-tbl[a].pts;
+    if(tbl[b].gd!==tbl[a].gd) return tbl[b].gd-tbl[a].gd;
+    return tbl[b].gf-tbl[a].gf;
+  });
+  return {tbl, sorted};
+}
+
+function getBestThird(cgsStr, forecasts){
+  const thirds = [...cgsStr].map(g=>{
+    const {tbl,sorted} = calcGroupTable(g, forecasts);
+    const third = sorted[2]||GRP[g][2];
+    const s = tbl[third]||{pts:0,gd:0,gf:0};
+    return {team:third, pts:s.pts, gd:s.gd, gf:s.gf};
+  });
+  thirds.sort((a,b)=> b.pts!==a.pts ? b.pts-a.pts : b.gd!==a.gd ? b.gd-a.gd : b.gf-a.gf);
+  return thirds[0] ? thirds[0].team : "?";
+}
+
+function computeBracket(forecasts){
+  const bk = {};
+  BRACKET.forEach(lv=>{
+    const {sorted:s1} = calcGroupTable(lv.t1g, forecasts);
+    const t1 = s1[lv.t1pos-1]||"?";
+    let t2;
+    if(typeof lv.t2pos==="number"){
+      const {sorted:s2} = calcGroupTable(lv.t2g, forecasts);
+      t2 = s2[lv.t2pos-1]||"?";
+    } else {
+      t2 = getBestThird(lv.t2g, forecasts);
+    }
+    bk[lv.id] = {t1,t2};
+  });
+  return bk;
+}
+
+// ── RENDER GRUPOS ─────────────────────────────────────────────
+function renderGrupos(){
+  const el = document.getElementById("grupos-content"); if(!el) return;
+  const isAdmin = currentRole==="admin";
+  const p = isAdmin ? null : getP();
+  let html = "";
+  html += isAdmin
+    ? `<div class="notice warn"><i class="ti ti-shield"></i> Vista admin — solo lectura.</div>`
+    : `<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan automáticamente y arman las llaves de octavos.</div>`;
+  html += `<div class="groups-grid">`;
+  Object.keys(GRP).forEach(g=>{
+    html += `<div class="group-card"><div class="group-header"><span class="group-label">Grupo ${g}</span><span class="pts-badge">3 pts exacto · 1 pt ganador/empate</span></div><div class="group-body">`;
+    MATCHES[g].forEach(m=>{
+      const f = isAdmin ? {} : (p.forecasts[m.id]||{});
+      const dis = isAdmin ? "disabled" : "";
+      html += `<div class="match-row">
+        <span class="team-name left" title="${m.t1}">${m.t1}</span>
+        <input class="score-inp" type="number" min="0" max="20" value="${f.s1??""}" placeholder="-" onchange="saveScore('${m.id}','s1',this.value)" ${dis}>
+        <span class="vs">vs</span>
+        <input class="score-inp" type="number" min="0" max="20" value="${f.s2??""}" placeholder="-" onchange="saveScore('${m.id}','s2',this.value)" ${dis}>
+        <span class="team-name right" title="${m.t2}">${m.t2}</span>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+// ── RENDER OCTAVOS ────────────────────────────────────────────
+function renderOctavos(){
+  const el = document.getElementById("octavos-content"); if(!el) return;
+  const isAdmin = currentRole==="admin";
+  const p = isAdmin ? null : getP();
+  const bk = isAdmin ? {} : computeBracket(p.forecasts||{});
+  let html = "";
+  if(!isAdmin) html += `<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y quién avanza a cuartos.</div>`;
+  html += `<div class="oct-grid">`;
+  BRACKET.forEach(lv=>{
+    const comp = bk[lv.id]||{t1:"?",t2:"?"};
+    const t1=comp.t1, t2=comp.t2;
+    const of = isAdmin ? {} : (p.octForecasts[lv.id]||{});
+    const oa = isAdmin ? "" : (p.octAdvances[lv.id]||"");
+    const dis = isAdmin ? "disabled" : "";
+    const t2desc = typeof lv.t2pos==="number" ? `${lv.t2pos}° Grupo ${lv.t2g}` : `Mejor 3° grupos ${lv.t2g}`;
+    html += `<div class="oct-card">
+      <div class="oct-title">${lv.lbl}</div>
+      <div class="oct-desc">${lv.t1pos}° Grupo ${lv.t1g} vs ${t2desc}</div>
+      <div class="oct-match">
+        <span class="oct-team-label left ${t1==="?"?"pending":""}" title="${t1}">${t1}</span>
+        <input class="score-inp" type="number" min="0" max="20" value="${of.s1??""}" placeholder="-" onchange="saveOctScore('${lv.id}','s1',this.value)" ${dis}>
+        <span class="vs">vs</span>
+        <input class="score-inp" type="number" min="0" max="20" value="${of.s2??""}" placeholder="-" onchange="saveOctScore('${lv.id}','s2',this.value)" ${dis}>
+        <span class="oct-team-label right ${t2==="?"?"pending":""}" title="${t2}">${t2}</span>
+      </div>
+      <select class="advance-pick" onchange="saveOctAdvance('${lv.id}',this.value)" ${dis}>
+        <option value="">-- ¿Quién avanza a cuartos? --</option>
+        <option value="${t1}" ${oa===t1&&t1!=="?"?"selected":""}>${t1==="?"?"Pendiente":t1}</option>
+        <option value="${t2}" ${oa===t2&&t2!=="?"?"selected":""}>${t2==="?"?"Pendiente":t2}</option>
+      </select>
+    </div>`;
+  });
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+// ── SAVES ─────────────────────────────────────────────────────
+function saveScore(matchId,side,val){
+  if(currentRole==="admin") return;
+  const p=getP(); if(!p.forecasts[matchId]) p.forecasts[matchId]={};
+  p.forecasts[matchId][side] = val===""?undefined:parseInt(val);
+  state.participants[currentUser]=p;
+  if(document.getElementById("sub-octavos").classList.contains("active")) renderOctavos();
+}
+function saveOctScore(id,side,val){
+  if(currentRole==="admin") return;
+  const p=getP(); if(!p.octForecasts[id]) p.octForecasts[id]={};
+  p.octForecasts[id][side] = val===""?undefined:parseInt(val);
+  state.participants[currentUser]=p;
+}
+function saveOctAdvance(id,val){
+  if(currentRole==="admin") return;
+  const p=getP(); p.octAdvances[id]=val; state.participants[currentUser]=p;
+}
+async function saveAll(){
+  saveState();
+  const msg=document.getElementById("save-msg");
+  if(msg){ msg.textContent="Guardado correctamente ✓"; setTimeout(()=>{ msg.textContent=""; },3000); }
+}
+
+// ── PUNTOS ────────────────────────────────────────────────────
+function calcPoints(pData, realR, realOct){
+  let pts=0; const detail=[];
+  Object.keys(GRP).forEach(g=>{
+    MATCHES[g].forEach(m=>{
+      const fc=pData.forecasts[m.id]||{}, rc=realR[m.id]||{};
+      if(rc.s1===undefined||rc.s2===undefined||fc.s1===undefined||fc.s2===undefined) return;
+      const ps1=parseInt(fc.s1),ps2=parseInt(fc.s2),rs1=parseInt(rc.s1),rs2=parseInt(rc.s2);
+      if(ps1===rs1&&ps2===rs2){ pts+=3; detail.push({match:m.id,pts:3,reason:`Marcador exacto: ${m.t1} ${ps1}-${ps2} ${m.t2}`}); }
+      else {
+        const pw=ps1>ps2?m.t1:ps2>ps1?m.t2:"draw", rw=rs1>rs2?m.t1:rs2>rs1?m.t2:"draw";
+        if(pw===rw){ pts+=1; detail.push({match:m.id,pts:1,reason:`Ganador/empate acertado: ${m.id}`}); }
+      }
+    });
+    const realAdv=realOct[`adv_${g}`]||[];
+    const {sorted}=calcGroupTable(g,pData.forecasts||{});
+    [sorted[0],sorted[1]].forEach(t=>{
+      if(t&&t!=="?"&&realAdv.includes(t)){ pts+=4; detail.push({match:`adv_${g}`,pts:4,reason:`${t} avanza de Grupo ${g}`}); }
+    });
+  });
+  BRACKET.forEach(lv=>{
+    const of=pData.octForecasts[lv.id]||{}, rf=realOct[lv.id]||{};
+    if(!rf.t1||!rf.t2) return;
+    const bk=computeBracket(pData.forecasts||{});
+    const ct1=bk[lv.id]?.t1||"?", ct2=bk[lv.id]?.t2||"?";
+    const llaveOk=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
+    if(llaveOk){
+      pts+=4; detail.push({match:lv.id,pts:4,reason:`Llave exacta ${lv.lbl}`});
+      if(of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined&&parseInt(of.s1)===parseInt(rf.s1)&&parseInt(of.s2)===parseInt(rf.s2)){
+        pts+=3; detail.push({match:lv.id+"_sc",pts:3,reason:`Marcador exacto ${lv.lbl}`});
+      }
+    }
+    const radv=realOct[`adv_${lv.id}`], padv=pData.octAdvances[lv.id];
+    if(radv&&padv&&radv===padv){ pts+=4; detail.push({match:lv.id+"_adv",pts:4,reason:`${padv} avanza en ${lv.lbl}`}); }
+  });
+  return {pts,detail};
+}
+
+// ── STANDINGS ─────────────────────────────────────────────────
+function renderStandings(){
+  const el=document.getElementById("standings-content");
+  const names=Object.keys(state.participants);
+  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>Aún no hay participantes.</div>`; return; }
+  const rows=names.map(n=>{ const{pts,detail}=calcPoints(getP(n),state.realResults||{},state.octResults||{}); return{name:n,pts,detail}; }).sort((a,b)=>b.pts-a.pts);
+  const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
+  let html=`<div class="notice info"><i class="ti ti-trophy"></i> ${names.length} participantes · Haz clic en un nombre para ver el detalle de puntos.</div>`;
+  html+=`<table class="standings-table"><thead><tr><th>#</th><th>Participante</th><th>Puntos</th><th>Completado</th></tr></thead><tbody>`;
+  rows.forEach((r,i)=>{
+    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+    const rc=i===0?"gold-rank":i===1?"silver-rank":i===2?"bronze-rank":"rank";
+    const fc=Object.values(getP(r.name).forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
+    const pct=Math.round(fc/totalM*100);
+    html+=`<tr onclick="showDetail('${r.name}')"><td class="${rc}">${medal||i+1}</td><td class="participant-name">${r.name}</td><td class="pts-cell">${r.pts}</td><td><span class="chip ${pct>=80?"gold":"red"}">${pct}%</span></td></tr>`;
+  });
+  html+=`</tbody></table>`;
+  el.innerHTML=html;
+}
+
+function showDetail(name){
+  const{pts,detail}=calcPoints(getP(name),state.realResults||{},state.octResults||{});
+  const el=document.getElementById("standings-content");
+  let html=`<button class="btn" onclick="renderStandings()" style="margin-bottom:14px"><i class="ti ti-arrow-left"></i> Volver</button>`;
+  html+=`<div class="detail-header"><div class="avatar">${name.charAt(0).toUpperCase()}</div><div><div class="pts-big">${pts}</div><div class="pts-label">puntos totales · ${name}</div></div></div>`;
+  if(!detail.length){ html+=`<div class="notice warn">Sin puntos aún. El admin debe ingresar resultados reales.</div>`; }
+  else {
+    html+=`<table class="standings-table"><thead><tr><th>Evento</th><th>Detalle</th><th>Pts</th></tr></thead><tbody>`;
+    detail.forEach(d=>{ html+=`<tr><td style="font-size:11px;color:var(--muted)">${d.match}</td><td style="font-size:12px">${d.reason}</td><td class="pts-cell">${d.pts}</td></tr>`; });
+    html+=`</tbody></table>`;
+  }
+  el.innerHTML=html;
+}
+
+// ── TRANSPARENCIA ─────────────────────────────────────────────
+let tView={participant:null,section:"grupos"};
+function renderTransparencia(){
+  const el=document.getElementById("transparencia-content");
+  const names=Object.keys(state.participants);
+  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-eye"></i>No hay participantes aún.</div>`; return; }
+  if(!tView.participant||!state.participants[tView.participant]) tView.participant=names[0];
+  let html=`<div class="notice info"><i class="ti ti-eye"></i> Consulta los marcadores de cada participante para garantizar transparencia.</div>`;
+  html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>
+    <select style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)" onchange="tView.participant=this.value;renderTBody()">
+      ${names.map(n=>`<option value="${n}" ${n===tView.participant?"selected":""}>${n}</option>`).join("")}
+    </select>
+  </div>`;
+  html+=`<div style="margin-bottom:14px">
+    <button class="tab-sub-btn ${tView.section==="grupos"?"active":""}" onclick="tView.section='grupos';renderTBody()">Grupos</button>
+    <button class="tab-sub-btn ${tView.section==="octavos"?"active":""}" onclick="tView.section='octavos';renderTBody()">Octavos</button>
+    <button class="tab-sub-btn ${tView.section==="bracket"?"active":""}" onclick="tView.section='bracket';renderTBody()">Bracket</button>
+  </div>`;
+  html+=`<div id="t-body"></div>`;
+  el.innerHTML=html;
+  renderTBody();
+}
+
+function renderTBody(){
+  const el=document.getElementById("t-body"); if(!el) return;
+  const pData=getP(tView.participant);
+  let html="";
+  if(tView.section==="grupos"){
+    html+=`<div class="results-grid">`;
+    Object.keys(GRP).forEach(g=>{
+      html+=`<div class="result-card"><div class="result-header">Grupo ${g}</div>`;
+      MATCHES[g].forEach(m=>{
+        const f=pData.forecasts[m.id]||{};
+        html+=`<div class="result-match">
+          <span class="result-team" title="${m.t1}">${m.t1}</span>
+          <span style="font-size:12px;font-weight:600;padding:2px 6px;background:var(--surface);border-radius:4px;color:var(--red);min-width:24px;text-align:center">${f.s1??"-"}</span>
+          <span class="vs">-</span>
+          <span style="font-size:12px;font-weight:600;padding:2px 6px;background:var(--surface);border-radius:4px;color:var(--red);min-width:24px;text-align:center">${f.s2??"-"}</span>
+          <span class="result-team" style="text-align:right" title="${m.t2}">${m.t2}</span>
+        </div>`;
+      });
+      const{sorted}=calcGroupTable(g,pData.forecasts||{});
+      if(sorted[0]&&sorted[0]!=="?") html+=`<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">${sorted[0]}</span> · <span style="color:var(--gl);font-weight:500">${sorted[1]||"?"}</span></div>`;
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+  } else if(tView.section==="octavos"){
+    const bk=computeBracket(pData.forecasts||{});
+    html+=`<div class="oct-grid">`;
+    BRACKET.forEach(lv=>{
+      const of=pData.octForecasts[lv.id]||{}, oa=pData.octAdvances[lv.id]||"";
+      const{t1,t2}=bk[lv.id]||{t1:"?",t2:"?"};
+      html+=`<div class="oct-card">
+        <div class="oct-title">${lv.lbl}</div>
+        <div class="oct-match">
+          <span style="flex:1;font-size:11px;font-weight:500;text-align:right">${t1}</span>
+          <span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">${of.s1??"-"}</span>
+          <span class="vs">-</span>
+          <span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">${of.s2??"-"}</span>
+          <span style="flex:1;font-size:11px;font-weight:500">${t2}</span>
+        </div>
+        ${oa?`<div style="font-size:10px;color:var(--gl);text-align:center;margin-top:5px">Avanza: <strong>${oa}</strong></div>`:""}
+      </div>`;
+    });
+    html+=`</div>`;
+  } else {
+    const bk=computeBracket(pData.forecasts||{});
+    html+=`<div class="oct-grid">`;
+    BRACKET.forEach(lv=>{
+      const{t1,t2}=bk[lv.id]||{t1:"?",t2:"?"};
+      const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° (${lv.t2g})`;
+      html+=`<div class="oct-card">
+        <div class="oct-title">${lv.lbl}</div>
+        <div class="oct-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
+          <span style="flex:1;font-size:12px;font-weight:600;text-align:right;color:${t1==="?"?"var(--muted)":"var(--text)"}">${t1}</span>
+          <span class="vs" style="font-weight:600">vs</span>
+          <span style="flex:1;font-size:12px;font-weight:600;color:${t2==="?"?"var(--muted)":"var(--text)"}">${t2}</span>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  el.innerHTML=html;
+}
+
+// ── ADMIN RESULTADOS ──────────────────────────────────────────
+function renderResultados(){
+  const el=document.getElementById("resultados-content");
+  let html=`<div class="notice info"><i class="ti ti-shield"></i> Ingresa los resultados reales. Los puntos se recalculan al guardar.</div>`;
+  html+=`<div class="section-title">Grupos</div><div class="results-grid">`;
+  Object.keys(GRP).forEach(g=>{
+    html+=`<div class="result-card"><div class="result-header">Grupo ${g}</div>`;
+    MATCHES[g].forEach(m=>{
+      const rc=state.realResults[m.id]||{};
+      html+=`<div class="result-match">
+        <span class="result-team" title="${m.t1}">${m.t1}</span>
+        <input class="result-score" type="number" min="0" max="20" value="${rc.s1??""}" placeholder="-" onchange="setReal('${m.id}','s1',this.value)">
+        <span class="vs">-</span>
+        <input class="result-score" type="number" min="0" max="20" value="${rc.s2??""}" placeholder="-" onchange="setReal('${m.id}','s2',this.value)">
+        <span class="result-team" style="text-align:right" title="${m.t2}">${m.t2}</span>
+      </div>`;
+    });
+    const teams=GRP[g], adv=state.octResults[`adv_${g}`]||[];
+    [0,1].forEach(pos=>{
+      html+=`<div style="margin-top:${pos===0?8:4}px"><label style="font-size:10px;color:var(--muted);font-weight:500">${pos+1}° clasificado</label>
+        <select style="width:100%;font-size:12px;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="setRealAdv('${g}',${pos},this.value)">
+          <option value="">--</option>
+          ${teams.map(t=>`<option value="${t}" ${adv[pos]===t?"selected":""}>${t}</option>`).join("")}
+        </select></div>`;
+    });
+    html+=`</div>`;
+  });
+  html+=`</div>`;
+  html+=`<div class="section-title" style="margin-top:20px">Octavos de Final</div><div class="oct-grid">`;
+  BRACKET.forEach(lv=>{
+    const rf=state.octResults[lv.id]||{}, radv=state.octResults[`adv_${lv.id}`]||"";
+    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
+    html+=`<div class="oct-card">
+      <div class="oct-title">${lv.lbl}</div>
+      <div class="oct-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
+      <div class="oct-match">
+        <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo local" value="${rf.t1||""}" onchange="setRealOct('${lv.id}','t1',this.value)">
+        <input class="score-inp" type="number" min="0" max="20" value="${rf.s1??""}" placeholder="-" onchange="setRealOct('${lv.id}','s1',this.value)">
+        <span class="vs">-</span>
+        <input class="score-inp" type="number" min="0" max="20" value="${rf.s2??""}" placeholder="-" onchange="setRealOct('${lv.id}','s2',this.value)">
+        <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo visitante" value="${rf.t2||""}" onchange="setRealOct('${lv.id}','t2',this.value)">
+      </div>
+      <select class="advance-pick" onchange="setRealOct('${lv.id}','adv',this.value)">
+        <option value="">-- ¿Quién avanzó? --</option>
+        <option value="${rf.t1||''}" ${radv===(rf.t1||"")?"selected":""}>${rf.t1||"Equipo local"}</option>
+        <option value="${rf.t2||''}" ${radv===(rf.t2||"")?"selected":""}>${rf.t2||"Equipo visitante"}</option>
+      </select>
+    </div>`;
+  });
+  html+=`</div>`;
+  html+=`<div class="save-bar"><span></span><button class="btn primary" onclick="saveRealResults()"><i class="ti ti-device-floppy"></i> Guardar resultados reales</button></div>`;
+  el.innerHTML=html;
+}
+
+function setReal(id,side,val){ if(!state.realResults[id]) state.realResults[id]={}; state.realResults[id][side]=val===""?undefined:parseInt(val); }
+function setRealAdv(g,pos,team){ if(!state.octResults[`adv_${g}`]) state.octResults[`adv_${g}`]=[]; state.octResults[`adv_${g}`][pos]=team; }
+function setRealOct(id,key,val){
+  if(!state.octResults[id]) state.octResults[id]={};
+  if(key==="adv"){ state.octResults[`adv_${id}`]=val; return; }
+  state.octResults[id][key]=["s1","s2"].includes(key)?(val===""?undefined:parseInt(val)):val;
+}
+function saveRealResults(){ saveState(); alert("Resultados guardados correctamente."); }
+
+// ── GESTIÓN ───────────────────────────────────────────────────
+function renderGestion(){
+  const el=document.getElementById("gestion-content");
+  const names=Object.keys(state.participants);
+  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes.</div>`; return; }
+  const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
+  let html=`<div class="notice info"><i class="ti ti-eye"></i> Estado de todos los participantes.</div>`;
+  html+=`<table class="standings-table"><thead><tr><th>Participante</th><th>Grupos</th><th>Octavos</th><th>Puntos</th><th></th></tr></thead><tbody>`;
+  names.forEach(name=>{
+    const pData=getP(name);
+    const fc=Object.values(pData.forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
+    const oc=Object.values(pData.octForecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
+    const{pts}=calcPoints(pData,state.realResults||{},state.octResults||{});
+    html+=`<tr>
+      <td class="participant-name">${name}</td>
+      <td><span class="chip ${fc>=totalM*0.8?"gold":"red"}">${fc}/${totalM}</span></td>
+      <td><span class="chip ${oc>=12?"gold":"red"}">${oc}/16</span></td>
+      <td class="pts-cell">${pts}</td>
+      <td><button class="btn sm" onclick="deleteParticipant('${name}')" title="Eliminar"><i class="ti ti-trash"></i></button></td>
+    </tr>`;
+  });
+  html+=`</tbody></table>`;
+  el.innerHTML=html;
+}
+function deleteParticipant(name){
+  if(!confirm(`¿Eliminar a ${name} de la polla?`)) return;
+  delete state.participants[name];
+  saveState();
+  renderGestion();
+  renderStandings();
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+loadState();
+</script>
+</body>
+</html>
