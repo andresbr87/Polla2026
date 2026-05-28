@@ -117,8 +117,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 <div class="app">
 <div class="topbar">
   <div>
-    <div class="topbar-title">🏆 Polla Mundialista 2026</div>
-    <div class="topbar-sub">FIFA World Cup · Canada · Mexico · USA · #WeAre26</div>
+    <div class="topbar-title">馃弳 Polla Mundialista 2026</div>
+    <div class="topbar-sub">FIFA World Cup 路 Canada 路 Mexico 路 USA 路 #WeAre26</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <span id="sync-badge" class="sync-indicator sync-loading" style="display:none">Conectando...</span>
@@ -135,17 +135,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 <div id="auth-screen" style="display:none">
   <div class="auth-wrap">
     <div class="auth-box">
-      <h2>🏆 Polla Mundialista 2026</h2>
-      <p>Ingresa tu usuario y PIN para acceder a tus pronósticos. Si aún no tienes usuario, contacta al organizador.</p>
+      <h2>馃弳 Polla Mundialista 2026</h2>
+      <p>Ingresa tu usuario y PIN para acceder a tus pron贸sticos. Si a煤n no tienes usuario, contacta al organizador.</p>
       <div class="field"><label>Usuario</label><input id="login-user" type="text" placeholder="Ej: andres.perez" autocomplete="username" style="text-transform:lowercase"></div>
-      <div class="field"><label>PIN (4 dígitos)</label><input id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"></div>
+      <div class="field"><label>PIN (4 d铆gitos)</label><input id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="鈥⑩€⑩€⑩€?></div>
       <div class="btn-row"><button class="btn primary" onclick="doLogin()"><i class="ti ti-arrow-right"></i> Entrar</button></div>
       <div id="login-error" style="color:var(--red);font-size:12px;margin-top:10px;display:none"></div>
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center">
-        ¿Administrador? <span style="color:var(--red);cursor:pointer;font-weight:500" onclick="toggleAdminLogin()">Acceso admin</span>
+        驴Administrador? <span style="color:var(--red);cursor:pointer;font-weight:500" onclick="toggleAdminLogin()">Acceso admin</span>
       </div>
       <div id="admin-login-section" style="display:none;margin-top:12px">
-        <div class="field"><label>Contraseña admin</label><input id="admin-pass" type="password" placeholder="••••••"></div>
+        <div class="field"><label>Contrase帽a admin</label><input id="admin-pass" type="password" placeholder="鈥⑩€⑩€⑩€⑩€⑩€?></div>
         <div class="btn-row"><button class="btn primary" onclick="doAdminLogin()"><i class="ti ti-shield"></i> Entrar como admin</button></div>
       </div>
     </div>
@@ -154,11 +154,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 
 <div id="main-screen" style="display:none">
   <div class="tabs">
-    <div class="tab active" data-tab="pronosticos" onclick="switchTab(this)">Mis pronósticos</div>
+    <div class="tab active" data-tab="pronosticos" onclick="switchTab(this)">Mis pron贸sticos</div>
     <div class="tab" data-tab="standings" onclick="switchTab(this)">Tabla de posiciones</div>
     <div class="tab" data-tab="transparencia" onclick="switchTab(this)">Marcadores</div>
     <div class="tab admin-only" data-tab="resultados" onclick="switchTab(this)" style="display:none">Resultados reales</div>
-    <div class="tab admin-only" data-tab="gestion" onclick="switchTab(this)" style="display:none">Gestión</div>
+    <div class="tab admin-only" data-tab="gestion" onclick="switchTab(this)" style="display:none">Gesti贸n</div>
   </div>
   <div class="tab-panel active" id="tab-pronosticos">
     <div class="sub-tabs">
@@ -167,7 +167,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
     </div>
     <div class="sub-panel active" id="sub-grupos"><div id="grupos-content"></div></div>
     <div class="sub-panel" id="sub-dieciseisavos"><div id="dieciseisavos-content"></div></div>
-    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()" id="save-btn"><i class="ti ti-device-floppy"></i> Guardar pronósticos</button></div>
+    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()" id="save-btn"><i class="ti ti-device-floppy"></i> Guardar pron贸sticos</button></div>
   </div>
   <div class="tab-panel" id="tab-standings"><div id="standings-content"></div></div>
   <div class="tab-panel" id="tab-transparencia"><div id="transparencia-content"></div></div>
@@ -181,7 +181,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ── FIREBASE CONFIG ───────────────────────────────────────────
+// 鈹€鈹€ FIREBASE CONFIG 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 const firebaseConfig = {
   apiKey: "AIzaSyA5wUCZeuKkB0ugGtwqvA7I4Iq4Rgis2cE",
   authDomain: "polla2026-ab.firebaseapp.com",
@@ -194,22 +194,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// ── DATA ──────────────────────────────────────────────────────
+// 鈹€鈹€ DATA 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 const ADMIN_PASS = "polla2026";
 
 const GRP = {
-  A:["México","Sudáfrica","Corea del Sur","Chequia"],
-  B:["Canadá","Bosnia","Catar","Suiza"],
+  A:["M茅xico","Sud谩frica","Corea del Sur","Chequia"],
+  B:["Canad谩","Bosnia","Catar","Suiza"],
   C:["Brasil","Marruecos","Haiti","Escocia"],
-  D:["USA","Paraguay","Australia","Turquía"],
+  D:["USA","Paraguay","Australia","Turqu铆a"],
   E:["Alemania","Curazao","Costa de Marfil","Ecuador"],
-  F:["Países Bajos","Japón","Suecia","Túnez"],
-  G:["Bélgica","Egipto","Irán","Nueva Zelanda"],
-  H:["España","Cabo Verde","Arabia Saudita","Uruguay"],
+  F:["Pa铆ses Bajos","Jap贸n","Suecia","T煤nez"],
+  G:["B茅lgica","Egipto","Ir谩n","Nueva Zelanda"],
+  H:["Espa帽a","Cabo Verde","Arabia Saudita","Uruguay"],
   I:["Francia","Senegal","Irak","Noruega"],
   J:["Argentina","Argelia","Austria","Jordania"],
-  K:["Portugal","RD Congo","Uzbekistán","Colombia"],
-  L:["Inglaterra","Croacia","Ghana","Panamá"]
+  K:["Portugal","RD Congo","Uzbekist谩n","Colombia"],
+  L:["Inglaterra","Croacia","Ghana","Panam谩"]
 };
 
 const MATCHES = {};
@@ -240,12 +240,12 @@ const BRACKET = [
   {id:"R16",lbl:"Llave 16",t1g:"G",t1pos:1,t2g:"L",    t2pos:2},
 ];
 
-// ── STATE ─────────────────────────────────────────────────────
+// 鈹€鈹€ STATE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 let currentUser = null, currentRole = null;
 let state = { participants:{}, realResults:{}, dssResults:{} };
 let unsubscribe = null;
 
-// ── FIREBASE HELPERS ──────────────────────────────────────────
+// 鈹€鈹€ FIREBASE HELPERS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function setSyncBadge(status, msg){
   const el = document.getElementById("sync-badge");
   el.style.display = "inline-flex";
@@ -258,7 +258,7 @@ async function fbSave(){
   try {
     setSyncBadge("loading","Guardando...");
     await setDoc(doc(db,"polla2026","state"), state);
-    setSyncBadge("ok","Guardado ✓");
+    setSyncBadge("ok","Guardado 鉁?);
   } catch(e){
     setSyncBadge("err","Error al guardar");
     console.error(e);
@@ -282,10 +282,10 @@ function fbListen(){
       if(document.getElementById("tab-transparencia").classList.contains("active")) window.renderTransparencia?.();
       if(document.getElementById("tab-gestion").classList.contains("active")) window.renderGestion?.();
     }
-  }, err => { setSyncBadge("err","Sin conexión"); });
+  }, err => { setSyncBadge("err","Sin conexi贸n"); });
 }
 
-// ── INIT ──────────────────────────────────────────────────────
+// 鈹€鈹€ INIT 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 async function init(){
   try {
     const snap = await getDoc(doc(db,"polla2026","state"));
@@ -317,22 +317,22 @@ async function init(){
   } catch(e){
     document.getElementById("loading-screen").innerHTML =
       `<i class="ti ti-wifi-off" style="font-size:36px;color:var(--red)"></i>
-       <span style="color:var(--red);font-weight:500">Error de conexión con Firebase</span>
-       <span style="font-size:12px;color:var(--muted)">Revisa las reglas de Firestore o tu conexión</span>`;
+       <span style="color:var(--red);font-weight:500">Error de conexi贸n con Firebase</span>
+       <span style="font-size:12px;color:var(--muted)">Revisa las reglas de Firestore o tu conexi贸n</span>`;
     console.error(e);
   }
 }
 init();
 
-// ── DEADLINE ──────────────────────────────────────────────────
+// 鈹€鈹€ DEADLINE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 const DEADLINE = new Date("2025-06-11T13:00:00-05:00"); // 11 jun 1pm hora Colombia
 function isDeadlinePassed(){ return new Date() > DEADLINE; }
 function deadlineBanner(){
   if(!isDeadlinePassed()) return "";
-  return `<div class="notice warn" style="margin-bottom:14px"><i class="ti ti-lock"></i> El plazo para ingresar pronósticos venció el 11 de junio a la 1:00 pm. Solo puedes consultar.</div>`;
+  return `<div class="notice warn" style="margin-bottom:14px"><i class="ti ti-lock"></i> El plazo para ingresar pron贸sticos venci贸 el 11 de junio a la 1:00 pm. Solo puedes consultar.</div>`;
 }
 
-// ── AUTH ──────────────────────────────────────────────────────
+// 鈹€鈹€ AUTH 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function showError(msg){ const el=document.getElementById("login-error"); el.textContent=msg; el.style.display="block"; }
 window.toggleAdminLogin = function(){
   const s=document.getElementById("admin-login-section");
@@ -364,7 +364,7 @@ window.doLogin = async function(){
   const username = document.getElementById("login-user").value.trim().toLowerCase();
   const pin = document.getElementById("login-pin").value.trim();
   if(!username){ showError("Ingresa tu usuario"); return; }
-  if(pin.length !== 4 || isNaN(pin)){ showError("El PIN debe ser de 4 dígitos"); return; }
+  if(pin.length !== 4 || isNaN(pin)){ showError("El PIN debe ser de 4 d铆gitos"); return; }
   // Check user exists in state
   const userData = state.participants[username];
   if(!userData){ showError("Usuario no encontrado. Contacta al organizador."); return; }
@@ -374,7 +374,7 @@ window.doLogin = async function(){
 
 window.doAdminLogin = async function(){
   const pass = document.getElementById("admin-pass").value;
-  if(pass !== ADMIN_PASS){ showError("Contraseña incorrecta"); return; }
+  if(pass !== ADMIN_PASS){ showError("Contrase帽a incorrecta"); return; }
   enterApp("admin", "admin");
 };
 
@@ -394,7 +394,7 @@ window.logout = function(){
   document.querySelector('.sub-tab[data-sub="grupos"]').click();
 };
 
-// ── NAV ───────────────────────────────────────────────────────
+// 鈹€鈹€ NAV 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 window.switchTab = function(el){
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
@@ -418,7 +418,7 @@ window.switchSub = function(el){
   if(sub==="dieciseisavos") window.renderDieciseisavos?.();
 };
 
-// ── MATH ──────────────────────────────────────────────────────
+// 鈹€鈹€ MATH 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function calcGroupTable(g, forecasts){
   const tbl = {};
   GRP[g].forEach(t=>{ tbl[t]={pts:0,gf:0,ga:0,gd:0}; });
@@ -464,20 +464,20 @@ function computeBracket(forecasts){
 
 function getP(name){ name=name||currentUser; return state.participants[name]||{forecasts:{},dssForecasts:{},dssAdvances:{}}; }
 
-// ── RENDER GRUPOS ─────────────────────────────────────────────
+// 鈹€鈹€ RENDER GRUPOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderGrupos(){
   const el=document.getElementById("grupos-content"); if(!el) return;
   const isAdmin=currentRole==="admin";
   const locked=isDeadlinePassed()&&!isAdmin;
   const p=isAdmin?null:getP();
   let html=isAdmin
-    ?`<div class="notice warn"><i class="ti ti-shield"></i> Vista admin — solo lectura.</div>`
+    ?`<div class="notice warn"><i class="ti ti-shield"></i> Vista admin 鈥?solo lectura.</div>`
     :locked
       ?`${deadlineBanner()}`
-      :`<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan automáticamente.</div>`;
+      :`<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan autom谩ticamente.</div>`;
   html+=`<div class="groups-grid">`;
   Object.keys(GRP).forEach(g=>{
-    html+=`<div class="group-card"><div class="group-header"><span class="group-label">Grupo ${g}</span><span class="pts-badge">3 pts exacto · 1 pt ganador/empate</span></div><div class="group-body">`;
+    html+=`<div class="group-card"><div class="group-header"><span class="group-label">Grupo ${g}</span><span class="pts-badge">3 pts exacto 路 1 pt ganador/empate</span></div><div class="group-body">`;
     MATCHES[g].forEach(m=>{
       const f=isAdmin?{}:(p.forecasts[m.id]||{});
       const dis=(isAdmin||locked)?"disabled":"";
@@ -495,7 +495,7 @@ function renderGrupos(){
   el.innerHTML=html;
 }
 
-// ── RENDER OCTAVOS ────────────────────────────────────────────
+// 鈹€鈹€ RENDER OCTAVOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderDieciseisavos(){
   const el=document.getElementById("dieciseisavos-content"); if(!el) return;
   const isAdmin=currentRole==="admin";
@@ -503,7 +503,7 @@ function renderDieciseisavos(){
   const p=isAdmin?null:getP();
   const bk=isAdmin?{}:computeBracket(p.forecasts||{});
   let html=!isAdmin
-    ?(locked?deadlineBanner():`<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y quién avanza.</div>`)
+    ?(locked?deadlineBanner():`<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y qui茅n avanza.</div>`)
     :"";
   html+=`<div class="dss-grid">`;
   BRACKET.forEach(lv=>{
@@ -512,10 +512,10 @@ function renderDieciseisavos(){
     const of=isAdmin?{}:(p.dssForecasts[lv.id]||{});
     const oa=isAdmin?"":(p.dssAdvances[lv.id]||"");
     const dis=(isAdmin||locked)?"disabled":"";
-    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Grupo ${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
+    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}掳 Grupo ${lv.t2g}`:`Mejor 3掳 grupos ${lv.t2g}`;
     html+=`<div class="dss-card">
       <div class="dss-title">${lv.lbl}</div>
-      <div class="dss-desc">${lv.t1pos}° Grupo ${lv.t1g} vs ${t2desc}</div>
+      <div class="dss-desc">${lv.t1pos}掳 Grupo ${lv.t1g} vs ${t2desc}</div>
       <div class="dss-match">
         <span class="dss-team-label left ${t1==="?"?"pending":""}">${t1}</span>
         <input class="score-inp" type="number" min="0" max="20" value="${of.s1??""}" placeholder="-" onchange="saveDssScore('${lv.id}','s1',this.value)" ${dis}>
@@ -524,7 +524,7 @@ function renderDieciseisavos(){
         <span class="dss-team-label ${t2==="?"?"pending":""}">${t2}</span>
       </div>
       <select class="advance-pick" onchange="saveDssAdvance('${lv.id}',this.value)" ${dis}>
-        <option value="">-- ¿Quién avanza a la siguiente fase? --</option>
+        <option value="">-- 驴Qui茅n avanza a la siguiente fase? --</option>
         <option value="${t1}" ${oa===t1&&t1!=="?"?"selected":""}>${t1==="?"?"Pendiente":t1}</option>
         <option value="${t2}" ${oa===t2&&t2!=="?"?"selected":""}>${t2==="?"?"Pendiente":t2}</option>
       </select>
@@ -537,7 +537,7 @@ function renderDieciseisavos(){
 window.renderGrupos = renderGrupos;
 window.renderDieciseisavos = renderDieciseisavos;
 
-// ── SAVES ─────────────────────────────────────────────────────
+// 鈹€鈹€ SAVES 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 window.saveScore = function(matchId,side,val){
   if(currentRole==="admin") return;
   const p=getP(); if(!p.forecasts[matchId]) p.forecasts[matchId]={};
@@ -556,13 +556,13 @@ window.saveDssAdvance = function(id,val){
   const p=getP(); p.dssAdvances[id]=val; state.participants[currentUser]=p;
 };
 window.saveAll = async function(){
-  if(isDeadlinePassed()){ alert("El plazo para guardar pronósticos venció el 11 de junio a la 1:00 pm."); return; }
+  if(isDeadlinePassed()){ alert("El plazo para guardar pron贸sticos venci贸 el 11 de junio a la 1:00 pm."); return; }
   await fbSave();
   const msg=document.getElementById("save-msg");
-  if(msg){ msg.textContent="Guardado en Firebase ✓"; setTimeout(()=>{ msg.textContent=""; },3000); }
+  if(msg){ msg.textContent="Guardado en Firebase 鉁?; setTimeout(()=>{ msg.textContent=""; },3000); }
 };
 
-// ── PUNTOS ────────────────────────────────────────────────────
+// 鈹€鈹€ PUNTOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function calcPoints(pData,realR,realOct){
   let pts=0; const detail=[];
   Object.keys(GRP).forEach(g=>{
@@ -600,17 +600,17 @@ function calcPoints(pData,realR,realOct){
   return {pts,detail};
 }
 
-// ── STANDINGS ─────────────────────────────────────────────────
+// 鈹€鈹€ STANDINGS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderStandings(){
   const el=document.getElementById("standings-content");
   const names=Object.keys(state.participants);
-  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>Aún no hay participantes.</div>`; return; }
+  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>A煤n no hay participantes.</div>`; return; }
   const rows=names.map(n=>{ const{pts,detail}=calcPoints(getP(n),state.realResults||{},state.dssResults||{}); return{name:n,pts,detail}; }).sort((a,b)=>b.pts-a.pts);
   const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
-  let html=`<div class="notice info"><i class="ti ti-trophy"></i> ${names.length} participantes · Clic en un nombre para ver detalle.</div>`;
+  let html=`<div class="notice info"><i class="ti ti-trophy"></i> ${names.length} participantes 路 Clic en un nombre para ver detalle.</div>`;
   html+=`<table class="standings-table"><thead><tr><th>#</th><th>Participante</th><th>Puntos</th><th>Completado</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
-    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+    const medal=i===0?"馃":i===1?"馃":i===2?"馃":"";
     const rc=i===0?"gold-rank":i===1?"silver-rank":i===2?"bronze-rank":"rank";
     const fc=Object.values(getP(r.name).forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
     const pct=Math.round(fc/totalM*100);
@@ -624,8 +624,8 @@ window.showDetail = function(name){
   const{pts,detail}=calcPoints(getP(name),state.realResults||{},state.dssResults||{});
   const el=document.getElementById("standings-content");
   let html=`<button class="btn" onclick="window.renderStandings()" style="margin-bottom:14px"><i class="ti ti-arrow-left"></i> Volver</button>`;
-  html+=`<div class="detail-header"><div class="avatar">${name.charAt(0).toUpperCase()}</div><div><div class="pts-big">${pts}</div><div class="pts-label">puntos totales · ${name}</div></div></div>`;
-  if(!detail.length){ html+=`<div class="notice warn">Sin puntos aún. El admin debe ingresar resultados reales.</div>`; }
+  html+=`<div class="detail-header"><div class="avatar">${name.charAt(0).toUpperCase()}</div><div><div class="pts-big">${pts}</div><div class="pts-label">puntos totales 路 ${name}</div></div></div>`;
+  if(!detail.length){ html+=`<div class="notice warn">Sin puntos a煤n. El admin debe ingresar resultados reales.</div>`; }
   else {
     html+=`<table class="standings-table"><thead><tr><th>Evento</th><th>Detalle</th><th>Pts</th></tr></thead><tbody>`;
     detail.forEach(d=>{ html+=`<tr><td style="font-size:11px;color:var(--muted)">${d.match}</td><td style="font-size:12px">${d.reason}</td><td class="pts-cell">${d.pts}</td></tr>`; });
@@ -635,12 +635,12 @@ window.showDetail = function(name){
 };
 window.renderStandings = renderStandings;
 
-// ── TRANSPARENCIA ─────────────────────────────────────────────
+// 鈹€鈹€ TRANSPARENCIA 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 let tView={participant:null,section:"grupos"};
 function renderTransparencia(){
   const el=document.getElementById("transparencia-content");
   const names=Object.keys(state.participants);
-  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-eye"></i>No hay participantes aún.</div>`; return; }
+  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-eye"></i>No hay participantes a煤n.</div>`; return; }
   if(!tView.participant||!state.participants[tView.participant]) tView.participant=names[0];
   let html=`<div class="notice info"><i class="ti ti-eye"></i> Consulta los marcadores de cada participante.</div>`;
   html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
@@ -677,7 +677,7 @@ window.renderTBody = function(){
         </div>`;
       });
       const{sorted}=calcGroupTable(g,pData.forecasts||{});
-      if(sorted[0]&&sorted[0]!=="?") html+=`<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">${sorted[0]}</span> · <span style="color:var(--gl);font-weight:500">${sorted[1]||"?"}</span></div>`;
+      if(sorted[0]&&sorted[0]!=="?") html+=`<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">${sorted[0]}</span> 路 <span style="color:var(--gl);font-weight:500">${sorted[1]||"?"}</span></div>`;
       html+=`</div>`;
     });
     html+=`</div>`;
@@ -704,9 +704,9 @@ window.renderTBody = function(){
     html+=`<div class="dss-grid">`;
     BRACKET.forEach(lv=>{
       const{t1,t2}=bk[lv.id]||{t1:"?",t2:"?"};
-      const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° (${lv.t2g})`;
+      const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}掳 Gr.${lv.t2g}`:`Mejor 3掳 (${lv.t2g})`;
       html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
-        <div class="dss-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
+        <div class="dss-desc">${lv.t1pos}掳 Gr.${lv.t1g} vs ${t2desc}</div>
         <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
           <span style="flex:1;font-size:12px;font-weight:600;text-align:right;color:${t1==="?"?"var(--muted)":"var(--text)"}">${t1}</span>
           <span class="vs" style="font-weight:600">vs</span>
@@ -719,7 +719,7 @@ window.renderTBody = function(){
   el.innerHTML=html;
 };
 
-// ── ADMIN RESULTADOS ──────────────────────────────────────────
+// 鈹€鈹€ ADMIN RESULTADOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderResultados(){
   const el=document.getElementById("resultados-content");
   let html=`<div class="notice info"><i class="ti ti-shield"></i> Ingresa los resultados reales. Los puntos se recalculan al guardar.</div>`;
@@ -738,7 +738,7 @@ function renderResultados(){
     });
     const teams=GRP[g], adv=state.dssResults[`adv_${g}`]||[];
     [0,1].forEach(pos=>{
-      html+=`<div style="margin-top:${pos===0?8:4}px"><label style="font-size:10px;color:var(--muted);font-weight:500">${pos+1}° clasificado</label>
+      html+=`<div style="margin-top:${pos===0?8:4}px"><label style="font-size:10px;color:var(--muted);font-weight:500">${pos+1}掳 clasificado</label>
         <select style="width:100%;font-size:12px;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="setRealAdv('${g}',${pos},this.value)">
           <option value="">--</option>
           ${teams.map(t=>`<option value="${t}" ${adv[pos]===t?"selected":""}>${t}</option>`).join("")}
@@ -749,9 +749,9 @@ function renderResultados(){
   html+=`</div><div class="section-title" style="margin-top:20px">Dieciseisavos de Final</div><div class="dss-grid">`;
   BRACKET.forEach(lv=>{
     const rf=state.dssResults[lv.id]||{}, radv=state.dssResults[`adv_${lv.id}`]||"";
-    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
+    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}掳 Gr.${lv.t2g}`:`Mejor 3掳 grupos ${lv.t2g}`;
     html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
-      <div class="dss-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
+      <div class="dss-desc">${lv.t1pos}掳 Gr.${lv.t1g} vs ${t2desc}</div>
       <div class="dss-match">
         <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo local" value="${rf.t1||""}" onchange="setRealOct('${lv.id}','t1',this.value)">
         <input class="score-inp" type="number" min="0" max="20" value="${rf.s1??""}" placeholder="-" onchange="setRealOct('${lv.id}','s1',this.value)">
@@ -760,7 +760,7 @@ function renderResultados(){
         <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo visitante" value="${rf.t2||""}" onchange="setRealOct('${lv.id}','t2',this.value)">
       </div>
       <select class="advance-pick" onchange="setRealOct('${lv.id}','adv',this.value)">
-        <option value="">-- ¿Quién avanzó? --</option>
+        <option value="">-- 驴Qui茅n avanz贸? --</option>
         <option value="${rf.t1||''}" ${radv===(rf.t1||"")?"selected":""}>${rf.t1||"Equipo local"}</option>
         <option value="${rf.t2||''}" ${radv===(rf.t2||"")?"selected":""}>${rf.t2||"Equipo visitante"}</option>
       </select>
@@ -780,21 +780,21 @@ window.setRealOct = function(id,key,val){
 };
 window.saveRealResults = async function(){ await fbSave(); alert("Resultados guardados en Firebase."); };
 
-// ── GESTIÓN ───────────────────────────────────────────────────
+// 鈹€鈹€ GESTI脫N 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 function renderGestion(){
   const el=document.getElementById("gestion-content");
   const names=Object.keys(state.participants);
   const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
 
-  // ── Create user panel ──
+  // 鈹€鈹€ Create user panel 鈹€鈹€
   let html=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px">
     <div style="font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px"><i class="ti ti-user-plus" style="color:var(--red)"></i> Crear nuevo participante</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;flex-wrap:wrap">
       <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Nombre completo</label>
-        <input id="new-name" type="text" placeholder="Juan Pérez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
+        <input id="new-name" type="text" placeholder="Juan P茅rez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
       <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Usuario (sin espacios)</label>
         <input id="new-user" type="text" placeholder="juan.perez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);text-transform:lowercase"></div>
-      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">PIN (4 dígitos)</label>
+      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">PIN (4 d铆gitos)</label>
         <input id="new-pin" type="text" inputmode="numeric" maxlength="4" placeholder="1234" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
       <button class="btn primary" onclick="createUser()" style="white-space:nowrap"><i class="ti ti-plus"></i> Crear</button>
     </div>
@@ -802,7 +802,7 @@ function renderGestion(){
   </div>`;
 
   if(!names.length){
-    html+=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes aún. Crea el primero arriba.</div>`;
+    html+=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes a煤n. Crea el primero arriba.</div>`;
     el.innerHTML=html; return;
   }
 
@@ -816,7 +816,7 @@ function renderGestion(){
     html+=`<tr>
       <td class="participant-name">${pData.displayName||name}</td>
       <td style="font-size:12px;color:var(--muted)">${name}</td>
-      <td><span class="chip gold">${pData.pin||"—"}</span></td>
+      <td><span class="chip gold">${pData.pin||"鈥?}</span></td>
       <td><span class="chip ${fc>=totalM*0.8?"gold":"red"}">${fc}/${totalM}</span></td>
       <td><span class="chip ${oc>=12?"gold":"red"}">${oc}/16</span></td>
       <td class="pts-cell">${pts}</td>
@@ -834,7 +834,7 @@ window.createUser = async function(){
   const msgEl = document.getElementById("create-msg");
 
   if(!displayName||!username||!pin){ showCreateMsg("Completa todos los campos","error"); return; }
-  if(pin.length!==4||isNaN(pin)){ showCreateMsg("El PIN debe ser exactamente 4 dígitos","error"); return; }
+  if(pin.length!==4||isNaN(pin)){ showCreateMsg("El PIN debe ser exactamente 4 d铆gitos","error"); return; }
   if(state.participants[username]){ showCreateMsg(`El usuario "${username}" ya existe`,"error"); return; }
 
   state.participants[username] = { displayName, pin, forecasts:{}, dssForecasts:{}, dssAdvances:{} };
@@ -842,7 +842,7 @@ window.createUser = async function(){
   document.getElementById("new-name").value="";
   document.getElementById("new-user").value="";
   document.getElementById("new-pin").value="";
-  showCreateMsg(`✓ Usuario "${username}" creado. PIN: ${pin}`,"ok");
+  showCreateMsg(`鉁?Usuario "${username}" creado. PIN: ${pin}`,"ok");
   window.renderGestion?.();
 };
 
@@ -857,7 +857,7 @@ function showCreateMsg(msg, type){
 window.renderGestion = renderGestion;
 
 window.deleteParticipant = async function(name){
-  if(!confirm(`¿Eliminar a ${name}?`)) return;
+  if(!confirm(`驴Eliminar a ${name}?`)) return;
   delete state.participants[name];
   await fbSave();
   window.renderGestion?.(); window.renderStandings?.();
