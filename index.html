@@ -117,8 +117,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 <div class="app">
 <div class="topbar">
   <div>
-    <div class="topbar-title">馃弳 Polla Mundialista 2026</div>
-    <div class="topbar-sub">FIFA World Cup 路 Canada 路 Mexico 路 USA 路 #WeAre26</div>
+    <div class="topbar-title">🏆 Polla Mundialista 2026</div>
+    <div class="topbar-sub">FIFA World Cup · Canada · Mexico · USA · #WeAre26</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <span id="sync-badge" class="sync-indicator sync-loading" style="display:none">Conectando...</span>
@@ -135,17 +135,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 <div id="auth-screen" style="display:none">
   <div class="auth-wrap">
     <div class="auth-box">
-      <h2>馃弳 Polla Mundialista 2026</h2>
-      <p>Ingresa tu usuario y PIN para acceder a tus pron贸sticos. Si a煤n no tienes usuario, contacta al organizador.</p>
+      <h2>🏆 Polla Mundialista 2026</h2>
+      <p>Ingresa tu usuario y PIN para acceder a tus pronósticos. Si aún no tienes usuario, contacta al organizador.</p>
       <div class="field"><label>Usuario</label><input id="login-user" type="text" placeholder="Ej: andres.perez" autocomplete="username" style="text-transform:lowercase"></div>
-      <div class="field"><label>PIN (4 d铆gitos)</label><input id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="鈥⑩€⑩€⑩€?></div>
+      <div class="field"><label>PIN (4 dígitos)</label><input id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"></div>
       <div class="btn-row"><button class="btn primary" onclick="doLogin()"><i class="ti ti-arrow-right"></i> Entrar</button></div>
       <div id="login-error" style="color:var(--red);font-size:12px;margin-top:10px;display:none"></div>
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center">
-        驴Administrador? <span style="color:var(--red);cursor:pointer;font-weight:500" onclick="toggleAdminLogin()">Acceso admin</span>
+        ¿Administrador? <span style="color:var(--red);cursor:pointer;font-weight:500" onclick="toggleAdminLogin()">Acceso admin</span>
       </div>
       <div id="admin-login-section" style="display:none;margin-top:12px">
-        <div class="field"><label>Contrase帽a admin</label><input id="admin-pass" type="password" placeholder="鈥⑩€⑩€⑩€⑩€⑩€?></div>
+        <div class="field"><label>Contraseña admin</label><input id="admin-pass" type="password" placeholder="••••••"></div>
         <div class="btn-row"><button class="btn primary" onclick="doAdminLogin()"><i class="ti ti-shield"></i> Entrar como admin</button></div>
       </div>
     </div>
@@ -154,11 +154,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 
 <div id="main-screen" style="display:none">
   <div class="tabs">
-    <div class="tab active" data-tab="pronosticos" onclick="switchTab(this)">Mis pron贸sticos</div>
+    <div class="tab active" data-tab="pronosticos" onclick="switchTab(this)">Mis pronósticos</div>
     <div class="tab" data-tab="standings" onclick="switchTab(this)">Tabla de posiciones</div>
     <div class="tab" data-tab="transparencia" onclick="switchTab(this)">Marcadores</div>
     <div class="tab admin-only" data-tab="resultados" onclick="switchTab(this)" style="display:none">Resultados reales</div>
-    <div class="tab admin-only" data-tab="gestion" onclick="switchTab(this)" style="display:none">Gesti贸n</div>
+    <div class="tab admin-only" data-tab="gestion" onclick="switchTab(this)" style="display:none">Gestión</div>
   </div>
   <div class="tab-panel active" id="tab-pronosticos">
     <div class="sub-tabs">
@@ -167,7 +167,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
     </div>
     <div class="sub-panel active" id="sub-grupos"><div id="grupos-content"></div></div>
     <div class="sub-panel" id="sub-dieciseisavos"><div id="dieciseisavos-content"></div></div>
-    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()" id="save-btn"><i class="ti ti-device-floppy"></i> Guardar pron贸sticos</button></div>
+    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()" id="save-btn"><i class="ti ti-device-floppy"></i> Guardar pronósticos</button></div>
   </div>
   <div class="tab-panel" id="tab-standings"><div id="standings-content"></div></div>
   <div class="tab-panel" id="tab-transparencia"><div id="transparencia-content"></div></div>
@@ -177,11 +177,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 </div>
 
 <!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// 鈹€鈹€ FIREBASE CONFIG 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+<!-- Firebase Compat (no module needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// ── FIREBASE CONFIG ───────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyA5wUCZeuKkB0ugGtwqvA7I4Iq4Rgis2cE",
   authDomain: "polla2026-ab.firebaseapp.com",
@@ -190,26 +190,31 @@ const firebaseConfig = {
   messagingSenderId: "127070151549",
   appId: "1:127070151549:web:5f987c3c6117e8e4ef2214"
 };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-// 鈹€鈹€ DATA 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── CONFIG ────────────────────────────────────────────────────
 const ADMIN_PASS = "polla2026";
+const DEADLINE = new Date("2025-06-11T13:00:00-05:00");
+function isDeadlinePassed(){ return new Date() > DEADLINE; }
+function deadlineBanner(){
+  if(!isDeadlinePassed()) return "";
+  return `<div class="notice warn"><i class="ti ti-lock"></i> El plazo venció el 11 de junio a la 1:00 pm. Solo puedes consultar.</div>`;
+}
 
 const GRP = {
-  A:["M茅xico","Sud谩frica","Corea del Sur","Chequia"],
-  B:["Canad谩","Bosnia","Catar","Suiza"],
+  A:["México","Sudáfrica","Corea del Sur","Chequia"],
+  B:["Canadá","Bosnia","Catar","Suiza"],
   C:["Brasil","Marruecos","Haiti","Escocia"],
-  D:["USA","Paraguay","Australia","Turqu铆a"],
+  D:["USA","Paraguay","Australia","Turquía"],
   E:["Alemania","Curazao","Costa de Marfil","Ecuador"],
-  F:["Pa铆ses Bajos","Jap贸n","Suecia","T煤nez"],
-  G:["B茅lgica","Egipto","Ir谩n","Nueva Zelanda"],
-  H:["Espa帽a","Cabo Verde","Arabia Saudita","Uruguay"],
+  F:["Países Bajos","Japón","Suecia","Túnez"],
+  G:["Bélgica","Egipto","Irán","Nueva Zelanda"],
+  H:["España","Cabo Verde","Arabia Saudita","Uruguay"],
   I:["Francia","Senegal","Irak","Noruega"],
   J:["Argentina","Argelia","Austria","Jordania"],
-  K:["Portugal","RD Congo","Uzbekist谩n","Colombia"],
-  L:["Inglaterra","Croacia","Ghana","Panam谩"]
+  K:["Portugal","RD Congo","Uzbekistán","Colombia"],
+  L:["Inglaterra","Croacia","Ghana","Panamá"]
 };
 
 const MATCHES = {};
@@ -240,12 +245,12 @@ const BRACKET = [
   {id:"R16",lbl:"Llave 16",t1g:"G",t1pos:1,t2g:"L",    t2pos:2},
 ];
 
-// 鈹€鈹€ STATE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── STATE ─────────────────────────────────────────────────────
 let currentUser = null, currentRole = null;
-let state = { participants:{}, realResults:{}, dssResults:{} };
-let unsubscribe = null;
+let state = { participants:{}, realResults:{}, octResults:{} };
+let unsubscribeDB = null;
 
-// 鈹€鈹€ FIREBASE HELPERS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── FIREBASE ──────────────────────────────────────────────────
 function setSyncBadge(status, msg){
   const el = document.getElementById("sync-badge");
   el.style.display = "inline-flex";
@@ -257,56 +262,48 @@ function setSyncBadge(status, msg){
 async function fbSave(){
   try {
     setSyncBadge("loading","Guardando...");
-    await setDoc(doc(db,"polla2026","state"), state);
-    setSyncBadge("ok","Guardado 鉁?);
-  } catch(e){
-    setSyncBadge("err","Error al guardar");
-    console.error(e);
-  }
+    await db.collection("polla2026").doc("state").set(state);
+    setSyncBadge("ok","Guardado ✓");
+  } catch(e){ setSyncBadge("err","Error al guardar"); console.error(e); }
 }
 
 function fbListen(){
-  if(unsubscribe) unsubscribe();
-  unsubscribe = onSnapshot(doc(db,"polla2026","state"), snap => {
-    if(snap.exists()){
+  if(unsubscribeDB) unsubscribeDB();
+  unsubscribeDB = db.collection("polla2026").doc("state").onSnapshot(snap => {
+    if(snap.exists){
       const remote = snap.data();
-      // Merge: keep local participant data, update standings and realResults
       state.realResults = remote.realResults || {};
-      state.dssResults  = remote.dssResults  || {};
-      // Merge participants without overwriting current user's unsaved data
+      state.octResults  = remote.octResults  || {};
       Object.keys(remote.participants||{}).forEach(name => {
         if(name !== currentUser) state.participants[name] = remote.participants[name];
       });
-      // Re-render standings if visible
-      if(document.getElementById("tab-standings").classList.contains("active")) window.renderStandings?.();
-      if(document.getElementById("tab-transparencia").classList.contains("active")) window.renderTransparencia?.();
-      if(document.getElementById("tab-gestion").classList.contains("active")) window.renderGestion?.();
+      if(document.getElementById("tab-standings").classList.contains("active")) renderStandings();
+      if(document.getElementById("tab-transparencia").classList.contains("active")) renderTransparencia();
+      if(document.getElementById("tab-gestion").classList.contains("active")) renderGestion();
     }
-  }, err => { setSyncBadge("err","Sin conexi贸n"); });
+  }, err => { setSyncBadge("err","Sin conexión"); });
 }
 
-// 鈹€鈹€ INIT 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
 async function init(){
   try {
-    const snap = await getDoc(doc(db,"polla2026","state"));
-    if(snap.exists()) state = snap.data();
+    const snap = await db.collection("polla2026").doc("state").get();
+    if(snap.exists) state = snap.data();
     document.getElementById("loading-screen").style.display = "none";
-    // Try to restore session
     const session = loadSession();
     if(session){
       if(session.role==="admin"){
         currentUser=session.user; currentRole="admin";
         document.getElementById("main-screen").style.display="block";
-        document.getElementById("user-badge").textContent=session.user+" (Admin)";
+        document.getElementById("user-badge").textContent="admin (Admin)";
         document.getElementById("logout-btn").style.display="block";
         document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
-        fbListen(); window.renderGrupos?.(); window.renderStandings?.();
-      } else if(state.participants[session.user]){
+        fbListen(); renderGrupos(); renderStandings();
+      } else if(state.participants && state.participants[session.user]){
         currentUser=session.user; currentRole="participant";
         document.getElementById("main-screen").style.display="block";
         document.getElementById("user-badge").textContent=state.participants[session.user].displayName||session.user;
         document.getElementById("logout-btn").style.display="block";
-        fbListen(); window.renderGrupos?.(); window.renderStandings?.();
+        fbListen(); renderGrupos(); renderStandings();
       } else {
         clearSession();
         document.getElementById("auth-screen").style.display="block";
@@ -315,73 +312,59 @@ async function init(){
       document.getElementById("auth-screen").style.display="block";
     }
   } catch(e){
-    document.getElementById("loading-screen").innerHTML =
+    document.getElementById("loading-screen").innerHTML=
       `<i class="ti ti-wifi-off" style="font-size:36px;color:var(--red)"></i>
-       <span style="color:var(--red);font-weight:500">Error de conexi贸n con Firebase</span>
-       <span style="font-size:12px;color:var(--muted)">Revisa las reglas de Firestore o tu conexi贸n</span>`;
+       <span style="color:var(--red);font-weight:500">Error de conexión con Firebase</span>
+       <span style="font-size:12px;color:var(--muted)">${e.message}</span>`;
     console.error(e);
   }
 }
-init();
 
-// 鈹€鈹€ DEADLINE 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
-const DEADLINE = new Date("2025-06-11T13:00:00-05:00"); // 11 jun 1pm hora Colombia
-function isDeadlinePassed(){ return new Date() > DEADLINE; }
-function deadlineBanner(){
-  if(!isDeadlinePassed()) return "";
-  return `<div class="notice warn" style="margin-bottom:14px"><i class="ti ti-lock"></i> El plazo para ingresar pron贸sticos venci贸 el 11 de junio a la 1:00 pm. Solo puedes consultar.</div>`;
-}
-
-// 鈹€鈹€ AUTH 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
-function showError(msg){ const el=document.getElementById("login-error"); el.textContent=msg; el.style.display="block"; }
-window.toggleAdminLogin = function(){
-  const s=document.getElementById("admin-login-section");
-  s.style.display = s.style.display==="none"?"block":"none";
-};
-
-// Persist session in localStorage
-function saveSession(user, role){
-  localStorage.setItem("polla2026_session", JSON.stringify({user, role}));
-}
+// ── SESSION ───────────────────────────────────────────────────
+function saveSession(user,role){ localStorage.setItem("polla2026_session",JSON.stringify({user,role})); }
 function clearSession(){ localStorage.removeItem("polla2026_session"); }
 function loadSession(){ try{ return JSON.parse(localStorage.getItem("polla2026_session")); }catch(e){return null;} }
 
-function enterApp(name, role){
-  currentUser = name; currentRole = role;
-  saveSession(name, role);
-  document.getElementById("auth-screen").style.display = "none";
-  document.getElementById("main-screen").style.display = "block";
-  const dn = role==="admin"?"admin":(state.participants[name]?.displayName||name);
-  document.getElementById("user-badge").textContent = dn + (role==="admin"?" (Admin)":"");
-  document.getElementById("logout-btn").style.display = "block";
-  if(role==="admin") document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
-  fbListen();
-  window.renderGrupos?.();
-  window.renderStandings?.();
+// ── AUTH ──────────────────────────────────────────────────────
+function showError(msg){ const el=document.getElementById("login-error"); el.textContent=msg; el.style.display="block"; }
+
+function toggleAdminLogin(){
+  const s=document.getElementById("admin-login-section");
+  s.style.display = s.style.display==="none"?"block":"none";
 }
 
-window.doLogin = async function(){
+function enterApp(name, role){
+  currentUser=name; currentRole=role;
+  saveSession(name,role);
+  document.getElementById("auth-screen").style.display="none";
+  document.getElementById("main-screen").style.display="block";
+  const dn = role==="admin"?"admin":(state.participants[name]?.displayName||name);
+  document.getElementById("user-badge").textContent = dn+(role==="admin"?" (Admin)":"");
+  document.getElementById("logout-btn").style.display="block";
+  if(role==="admin") document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
+  fbListen(); renderGrupos(); renderStandings();
+}
+
+function doLogin(){
   const username = document.getElementById("login-user").value.trim().toLowerCase();
   const pin = document.getElementById("login-pin").value.trim();
   if(!username){ showError("Ingresa tu usuario"); return; }
-  if(pin.length !== 4 || isNaN(pin)){ showError("El PIN debe ser de 4 d铆gitos"); return; }
-  // Check user exists in state
+  if(pin.length!==4||isNaN(pin)){ showError("El PIN debe ser de 4 dígitos"); return; }
   const userData = state.participants[username];
   if(!userData){ showError("Usuario no encontrado. Contacta al organizador."); return; }
   if(userData.pin !== pin){ showError("PIN incorrecto"); return; }
-  enterApp(username, "participant");
-};
+  enterApp(username,"participant");
+}
 
-window.doAdminLogin = async function(){
+function doAdminLogin(){
   const pass = document.getElementById("admin-pass").value;
-  if(pass !== ADMIN_PASS){ showError("Contrase帽a incorrecta"); return; }
-  enterApp("admin", "admin");
-};
+  if(pass !== ADMIN_PASS){ showError("Contraseña incorrecta"); return; }
+  enterApp("admin","admin");
+}
 
-window.logout = function(){
-  if(unsubscribe){ unsubscribe(); unsubscribe=null; }
-  currentUser=null; currentRole=null;
-  clearSession();
+function logout(){
+  if(unsubscribeDB){ unsubscribeDB(); unsubscribeDB=null; }
+  currentUser=null; currentRole=null; clearSession();
   document.getElementById("auth-screen").style.display="block";
   document.getElementById("main-screen").style.display="none";
   document.getElementById("logout-btn").style.display="none";
@@ -392,58 +375,58 @@ window.logout = function(){
   document.querySelectorAll(".admin-only").forEach(el=>el.style.display="none");
   switchTabById("pronosticos");
   document.querySelector('.sub-tab[data-sub="grupos"]').click();
-};
+}
 
-// 鈹€鈹€ NAV 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
-window.switchTab = function(el){
+// ── NAV ───────────────────────────────────────────────────────
+function switchTab(el){
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
   el.classList.add("active");
-  const tab = el.dataset.tab;
+  const tab=el.dataset.tab;
   document.getElementById("tab-"+tab).classList.add("active");
-  if(tab==="standings")     window.renderStandings?.();
-  if(tab==="resultados")    window.renderResultados?.();
-  if(tab==="gestion")       window.renderGestion?.();
-  if(tab==="transparencia") window.renderTransparencia?.();
-};
+  if(tab==="standings")     renderStandings();
+  if(tab==="resultados")    renderResultados();
+  if(tab==="gestion")       renderGestion();
+  if(tab==="transparencia") renderTransparencia();
+}
 function switchTabById(id){ const el=document.querySelector(`.tab[data-tab="${id}"]`); if(el) switchTab(el); }
 
-window.switchSub = function(el){
+function switchSub(el){
   document.querySelectorAll(".sub-tab").forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(".sub-panel").forEach(p=>p.classList.remove("active"));
   el.classList.add("active");
-  const sub = el.dataset.sub;
+  const sub=el.dataset.sub;
   document.getElementById("sub-"+sub).classList.add("active");
-  if(sub==="grupos")        window.renderGrupos?.();
-  if(sub==="dieciseisavos") window.renderDieciseisavos?.();
-};
+  if(sub==="grupos")        renderGrupos();
+  if(sub==="dieciseisavos") renderDieciseisavos();
+}
 
-// 鈹€鈹€ MATH 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── MATH ──────────────────────────────────────────────────────
 function calcGroupTable(g, forecasts){
-  const tbl = {};
+  const tbl={};
   GRP[g].forEach(t=>{ tbl[t]={pts:0,gf:0,ga:0,gd:0}; });
   MATCHES[g].forEach(m=>{
     const f=forecasts[m.id]||{};
     if(f.s1===undefined||f.s2===undefined) return;
-    const g1=parseInt(f.s1), g2=parseInt(f.s2);
+    const g1=parseInt(f.s1),g2=parseInt(f.s2);
     tbl[m.t1].gf+=g1; tbl[m.t1].ga+=g2; tbl[m.t1].gd+=g1-g2;
     tbl[m.t2].gf+=g2; tbl[m.t2].ga+=g1; tbl[m.t2].gd+=g2-g1;
     if(g1>g2){ tbl[m.t1].pts+=3; } else if(g2>g1){ tbl[m.t2].pts+=3; } else { tbl[m.t1].pts+=1; tbl[m.t2].pts+=1; }
   });
-  const sorted = GRP[g].slice().sort((a,b)=>{
+  const sorted=GRP[g].slice().sort((a,b)=>{
     if(tbl[b].pts!==tbl[a].pts) return tbl[b].pts-tbl[a].pts;
     if(tbl[b].gd!==tbl[a].gd) return tbl[b].gd-tbl[a].gd;
     return tbl[b].gf-tbl[a].gf;
   });
-  return {tbl, sorted};
+  return {tbl,sorted};
 }
 
-function getBestThird(cgsStr, forecasts){
-  const thirds = [...cgsStr].map(g=>{
-    const {tbl,sorted}=calcGroupTable(g,forecasts);
+function getBestThird(cgsStr,forecasts){
+  const thirds=[...cgsStr].map(g=>{
+    const{tbl,sorted}=calcGroupTable(g,forecasts);
     const third=sorted[2]||GRP[g][2];
     const s=tbl[third]||{pts:0,gd:0,gf:0};
-    return {team:third,pts:s.pts,gd:s.gd,gf:s.gf};
+    return{team:third,pts:s.pts,gd:s.gd,gf:s.gf};
   });
   thirds.sort((a,b)=>b.pts!==a.pts?b.pts-a.pts:b.gd!==a.gd?b.gd-a.gd:b.gf-a.gf);
   return thirds[0]?thirds[0].team:"?";
@@ -452,11 +435,11 @@ function getBestThird(cgsStr, forecasts){
 function computeBracket(forecasts){
   const bk={};
   BRACKET.forEach(lv=>{
-    const {sorted:s1}=calcGroupTable(lv.t1g,forecasts);
+    const{sorted:s1}=calcGroupTable(lv.t1g,forecasts);
     const t1=s1[lv.t1pos-1]||"?";
     let t2;
-    if(typeof lv.t2pos==="number"){ const {sorted:s2}=calcGroupTable(lv.t2g,forecasts); t2=s2[lv.t2pos-1]||"?"; }
-    else { t2=getBestThird(lv.t2g,forecasts); }
+    if(typeof lv.t2pos==="number"){ const{sorted:s2}=calcGroupTable(lv.t2g,forecasts); t2=s2[lv.t2pos-1]||"?"; }
+    else{ t2=getBestThird(lv.t2g,forecasts); }
     bk[lv.id]={t1,t2};
   });
   return bk;
@@ -464,20 +447,19 @@ function computeBracket(forecasts){
 
 function getP(name){ name=name||currentUser; return state.participants[name]||{forecasts:{},dssForecasts:{},dssAdvances:{}}; }
 
-// 鈹€鈹€ RENDER GRUPOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── RENDER GRUPOS ─────────────────────────────────────────────
 function renderGrupos(){
   const el=document.getElementById("grupos-content"); if(!el) return;
   const isAdmin=currentRole==="admin";
   const locked=isDeadlinePassed()&&!isAdmin;
   const p=isAdmin?null:getP();
   let html=isAdmin
-    ?`<div class="notice warn"><i class="ti ti-shield"></i> Vista admin 鈥?solo lectura.</div>`
-    :locked
-      ?`${deadlineBanner()}`
-      :`<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan autom谩ticamente.</div>`;
+    ?`<div class="notice warn"><i class="ti ti-shield"></i> Vista admin — solo lectura.</div>`
+    :locked?deadlineBanner()
+    :`<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan automáticamente.</div>`;
   html+=`<div class="groups-grid">`;
   Object.keys(GRP).forEach(g=>{
-    html+=`<div class="group-card"><div class="group-header"><span class="group-label">Grupo ${g}</span><span class="pts-badge">3 pts exacto 路 1 pt ganador/empate</span></div><div class="group-body">`;
+    html+=`<div class="group-card"><div class="group-header"><span class="group-label">Grupo ${g}</span><span class="pts-badge">3 pts exacto · 1 pt ganador/empate</span></div><div class="group-body">`;
     MATCHES[g].forEach(m=>{
       const f=isAdmin?{}:(p.forecasts[m.id]||{});
       const dis=(isAdmin||locked)?"disabled":"";
@@ -495,27 +477,25 @@ function renderGrupos(){
   el.innerHTML=html;
 }
 
-// 鈹€鈹€ RENDER OCTAVOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── RENDER DIECISEISAVOS ──────────────────────────────────────
 function renderDieciseisavos(){
   const el=document.getElementById("dieciseisavos-content"); if(!el) return;
   const isAdmin=currentRole==="admin";
   const locked=isDeadlinePassed()&&!isAdmin;
   const p=isAdmin?null:getP();
   const bk=isAdmin?{}:computeBracket(p.forecasts||{});
-  let html=!isAdmin
-    ?(locked?deadlineBanner():`<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y qui茅n avanza.</div>`)
-    :"";
+  let html=!isAdmin?(locked?deadlineBanner():`<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y quién avanza.</div>`):"";
   html+=`<div class="dss-grid">`;
   BRACKET.forEach(lv=>{
     const comp=bk[lv.id]||{t1:"?",t2:"?"};
-    const t1=comp.t1, t2=comp.t2;
+    const t1=comp.t1,t2=comp.t2;
     const of=isAdmin?{}:(p.dssForecasts[lv.id]||{});
     const oa=isAdmin?"":(p.dssAdvances[lv.id]||"");
     const dis=(isAdmin||locked)?"disabled":"";
-    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}掳 Grupo ${lv.t2g}`:`Mejor 3掳 grupos ${lv.t2g}`;
+    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Grupo ${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
     html+=`<div class="dss-card">
       <div class="dss-title">${lv.lbl}</div>
-      <div class="dss-desc">${lv.t1pos}掳 Grupo ${lv.t1g} vs ${t2desc}</div>
+      <div class="dss-desc">${lv.t1pos}° Grupo ${lv.t1g} vs ${t2desc}</div>
       <div class="dss-match">
         <span class="dss-team-label left ${t1==="?"?"pending":""}">${t1}</span>
         <input class="score-inp" type="number" min="0" max="20" value="${of.s1??""}" placeholder="-" onchange="saveDssScore('${lv.id}','s1',this.value)" ${dis}>
@@ -524,7 +504,7 @@ function renderDieciseisavos(){
         <span class="dss-team-label ${t2==="?"?"pending":""}">${t2}</span>
       </div>
       <select class="advance-pick" onchange="saveDssAdvance('${lv.id}',this.value)" ${dis}>
-        <option value="">-- 驴Qui茅n avanza a la siguiente fase? --</option>
+        <option value="">-- ¿Quién avanza a la siguiente fase? --</option>
         <option value="${t1}" ${oa===t1&&t1!=="?"?"selected":""}>${t1==="?"?"Pendiente":t1}</option>
         <option value="${t2}" ${oa===t2&&t2!=="?"?"selected":""}>${t2==="?"?"Pendiente":t2}</option>
       </select>
@@ -534,59 +514,56 @@ function renderDieciseisavos(){
   el.innerHTML=html;
 }
 
-window.renderGrupos = renderGrupos;
-window.renderDieciseisavos = renderDieciseisavos;
-
-// 鈹€鈹€ SAVES 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
-window.saveScore = function(matchId,side,val){
-  if(currentRole==="admin") return;
+// ── SAVES ─────────────────────────────────────────────────────
+function saveScore(matchId,side,val){
+  if(currentRole==="admin"||isDeadlinePassed()) return;
   const p=getP(); if(!p.forecasts[matchId]) p.forecasts[matchId]={};
   p.forecasts[matchId][side]=val===""?undefined:parseInt(val);
   state.participants[currentUser]=p;
-  if(document.getElementById("sub-dieciseisavos").classList.contains("active")) window.renderDieciseisavos?.();
-};
-window.saveDssScore = function(id,side,val){
-  if(currentRole==="admin") return;
+  if(document.getElementById("sub-dieciseisavos").classList.contains("active")) renderDieciseisavos();
+}
+function saveDssScore(id,side,val){
+  if(currentRole==="admin"||isDeadlinePassed()) return;
   const p=getP(); if(!p.dssForecasts[id]) p.dssForecasts[id]={};
   p.dssForecasts[id][side]=val===""?undefined:parseInt(val);
   state.participants[currentUser]=p;
-};
-window.saveDssAdvance = function(id,val){
-  if(currentRole==="admin") return;
+}
+function saveDssAdvance(id,val){
+  if(currentRole==="admin"||isDeadlinePassed()) return;
   const p=getP(); p.dssAdvances[id]=val; state.participants[currentUser]=p;
-};
-window.saveAll = async function(){
-  if(isDeadlinePassed()){ alert("El plazo para guardar pron贸sticos venci贸 el 11 de junio a la 1:00 pm."); return; }
+}
+async function saveAll(){
+  if(isDeadlinePassed()){ alert("El plazo para guardar pronósticos venció el 11 de junio a la 1:00 pm."); return; }
   await fbSave();
   const msg=document.getElementById("save-msg");
-  if(msg){ msg.textContent="Guardado en Firebase 鉁?; setTimeout(()=>{ msg.textContent=""; },3000); }
-};
+  if(msg){ msg.textContent="Guardado en Firebase ✓"; setTimeout(()=>{ msg.textContent=""; },3000); }
+}
 
-// 鈹€鈹€ PUNTOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── PUNTOS ────────────────────────────────────────────────────
 function calcPoints(pData,realR,realOct){
   let pts=0; const detail=[];
   Object.keys(GRP).forEach(g=>{
     MATCHES[g].forEach(m=>{
-      const fc=pData.forecasts[m.id]||{}, rc=realR[m.id]||{};
+      const fc=pData.forecasts[m.id]||{},rc=realR[m.id]||{};
       if(rc.s1===undefined||rc.s2===undefined||fc.s1===undefined||fc.s2===undefined) return;
       const ps1=parseInt(fc.s1),ps2=parseInt(fc.s2),rs1=parseInt(rc.s1),rs2=parseInt(rc.s2);
       if(ps1===rs1&&ps2===rs2){ pts+=3; detail.push({match:m.id,pts:3,reason:`Marcador exacto: ${m.t1} ${ps1}-${ps2} ${m.t2}`}); }
-      else {
-        const pw=ps1>ps2?m.t1:ps2>ps1?m.t2:"draw", rw=rs1>rs2?m.t1:rs2>rs1?m.t2:"draw";
+      else{
+        const pw=ps1>ps2?m.t1:ps2>ps1?m.t2:"draw",rw=rs1>rs2?m.t1:rs2>rs1?m.t2:"draw";
         if(pw===rw){ pts+=1; detail.push({match:m.id,pts:1,reason:`Ganador/empate: ${m.id}`}); }
       }
     });
-    const realAdv=realOct[`adv_${g}`]||[];
-    const {sorted}=calcGroupTable(g,pData.forecasts||{});
+    const realAdv=(realOct[`adv_${g}`])||[];
+    const{sorted}=calcGroupTable(g,pData.forecasts||{});
     [sorted[0],sorted[1]].forEach(t=>{
       if(t&&t!=="?"&&realAdv.includes(t)){ pts+=4; detail.push({match:`adv_${g}`,pts:4,reason:`${t} avanza de Grupo ${g}`}); }
     });
   });
   BRACKET.forEach(lv=>{
-    const of=pData.dssForecasts[lv.id]||{}, rf=realOct[lv.id]||{};
+    const of=pData.dssForecasts[lv.id]||{},rf=realOct[lv.id]||{};
     if(!rf.t1||!rf.t2) return;
     const bk=computeBracket(pData.forecasts||{});
-    const ct1=bk[lv.id]?.t1||"?", ct2=bk[lv.id]?.t2||"?";
+    const ct1=bk[lv.id]?.t1||"?",ct2=bk[lv.id]?.t2||"?";
     const llaveOk=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
     if(llaveOk){
       pts+=4; detail.push({match:lv.id,pts:4,reason:`Llave exacta ${lv.lbl}`});
@@ -594,59 +571,59 @@ function calcPoints(pData,realR,realOct){
         pts+=3; detail.push({match:lv.id+"_sc",pts:3,reason:`Marcador exacto ${lv.lbl}`});
       }
     }
-    const radv=realOct[`adv_${lv.id}`], padv=pData.dssAdvances[lv.id];
+    const radv=realOct[`adv_${lv.id}`],padv=pData.dssAdvances[lv.id];
     if(radv&&padv&&radv===padv){ pts+=4; detail.push({match:lv.id+"_adv",pts:4,reason:`${padv} avanza en ${lv.lbl}`}); }
   });
-  return {pts,detail};
+  return{pts,detail};
 }
 
-// 鈹€鈹€ STANDINGS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── STANDINGS ─────────────────────────────────────────────────
 function renderStandings(){
   const el=document.getElementById("standings-content");
   const names=Object.keys(state.participants);
-  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>A煤n no hay participantes.</div>`; return; }
-  const rows=names.map(n=>{ const{pts,detail}=calcPoints(getP(n),state.realResults||{},state.dssResults||{}); return{name:n,pts,detail}; }).sort((a,b)=>b.pts-a.pts);
+  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>Aún no hay participantes.</div>`; return; }
+  const rows=names.map(n=>{ const{pts}=calcPoints(getP(n),state.realResults||{},state.octResults||{}); return{name:n,pts}; }).sort((a,b)=>b.pts-a.pts);
   const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
-  let html=`<div class="notice info"><i class="ti ti-trophy"></i> ${names.length} participantes 路 Clic en un nombre para ver detalle.</div>`;
+  let html=`<div class="notice info"><i class="ti ti-trophy"></i> ${names.length} participantes · Clic en un nombre para ver detalle.</div>`;
   html+=`<table class="standings-table"><thead><tr><th>#</th><th>Participante</th><th>Puntos</th><th>Completado</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
-    const medal=i===0?"馃":i===1?"馃":i===2?"馃":"";
+    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
     const rc=i===0?"gold-rank":i===1?"silver-rank":i===2?"bronze-rank":"rank";
     const fc=Object.values(getP(r.name).forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
     const pct=Math.round(fc/totalM*100);
-    html+=`<tr onclick="showDetail('${r.name}')"><td class="${rc}">${medal||i+1}</td><td class="participant-name">${r.name}</td><td class="pts-cell">${r.pts}</td><td><span class="chip ${pct>=80?"gold":"red"}">${pct}%</span></td></tr>`;
+    html+=`<tr onclick="showDetail('${r.name}')"><td class="${rc}">${medal||i+1}</td><td class="participant-name">${state.participants[r.name]?.displayName||r.name}</td><td class="pts-cell">${r.pts}</td><td><span class="chip ${pct>=80?"gold":"red"}">${pct}%</span></td></tr>`;
   });
   html+=`</tbody></table>`;
   el.innerHTML=html;
 }
 
-window.showDetail = function(name){
-  const{pts,detail}=calcPoints(getP(name),state.realResults||{},state.dssResults||{});
+function showDetail(name){
+  const{pts,detail}=calcPoints(getP(name),state.realResults||{},state.octResults||{});
   const el=document.getElementById("standings-content");
-  let html=`<button class="btn" onclick="window.renderStandings()" style="margin-bottom:14px"><i class="ti ti-arrow-left"></i> Volver</button>`;
-  html+=`<div class="detail-header"><div class="avatar">${name.charAt(0).toUpperCase()}</div><div><div class="pts-big">${pts}</div><div class="pts-label">puntos totales 路 ${name}</div></div></div>`;
-  if(!detail.length){ html+=`<div class="notice warn">Sin puntos a煤n. El admin debe ingresar resultados reales.</div>`; }
-  else {
+  const dn=state.participants[name]?.displayName||name;
+  let html=`<button class="btn" onclick="renderStandings()" style="margin-bottom:14px"><i class="ti ti-arrow-left"></i> Volver</button>`;
+  html+=`<div class="detail-header"><div class="avatar">${dn.charAt(0).toUpperCase()}</div><div><div class="pts-big">${pts}</div><div class="pts-label">puntos totales · ${dn}</div></div></div>`;
+  if(!detail.length){ html+=`<div class="notice warn">Sin puntos aún. El admin debe ingresar resultados reales.</div>`; }
+  else{
     html+=`<table class="standings-table"><thead><tr><th>Evento</th><th>Detalle</th><th>Pts</th></tr></thead><tbody>`;
     detail.forEach(d=>{ html+=`<tr><td style="font-size:11px;color:var(--muted)">${d.match}</td><td style="font-size:12px">${d.reason}</td><td class="pts-cell">${d.pts}</td></tr>`; });
     html+=`</tbody></table>`;
   }
   el.innerHTML=html;
-};
-window.renderStandings = renderStandings;
+}
 
-// 鈹€鈹€ TRANSPARENCIA 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── TRANSPARENCIA ─────────────────────────────────────────────
 let tView={participant:null,section:"grupos"};
 function renderTransparencia(){
   const el=document.getElementById("transparencia-content");
   const names=Object.keys(state.participants);
-  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-eye"></i>No hay participantes a煤n.</div>`; return; }
+  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-eye"></i>No hay participantes aún.</div>`; return; }
   if(!tView.participant||!state.participants[tView.participant]) tView.participant=names[0];
   let html=`<div class="notice info"><i class="ti ti-eye"></i> Consulta los marcadores de cada participante.</div>`;
   html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
     <label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>
     <select style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)" onchange="tView.participant=this.value;renderTBody()">
-      ${names.map(n=>`<option value="${n}" ${n===tView.participant?"selected":""}>${n}</option>`).join("")}
+      ${names.map(n=>`<option value="${n}" ${n===tView.participant?"selected":""}>${state.participants[n]?.displayName||n}</option>`).join("")}
     </select></div>`;
   html+=`<div style="margin-bottom:14px">
     <button class="tab-sub-btn ${tView.section==="grupos"?"active":""}" onclick="tView.section='grupos';renderTBody()">Grupos</button>
@@ -656,9 +633,8 @@ function renderTransparencia(){
   el.innerHTML=html;
   renderTBody();
 }
-window.renderTransparencia = renderTransparencia;
 
-window.renderTBody = function(){
+function renderTBody(){
   const el=document.getElementById("t-body"); if(!el) return;
   const pData=getP(tView.participant);
   let html="";
@@ -677,7 +653,7 @@ window.renderTBody = function(){
         </div>`;
       });
       const{sorted}=calcGroupTable(g,pData.forecasts||{});
-      if(sorted[0]&&sorted[0]!=="?") html+=`<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">${sorted[0]}</span> 路 <span style="color:var(--gl);font-weight:500">${sorted[1]||"?"}</span></div>`;
+      if(sorted[0]&&sorted[0]!=="?") html+=`<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">${sorted[0]}</span> · <span style="color:var(--gl);font-weight:500">${sorted[1]||"?"}</span></div>`;
       html+=`</div>`;
     });
     html+=`</div>`;
@@ -685,7 +661,7 @@ window.renderTBody = function(){
     const bk=computeBracket(pData.forecasts||{});
     html+=`<div class="dss-grid">`;
     BRACKET.forEach(lv=>{
-      const of=pData.dssForecasts[lv.id]||{}, oa=pData.dssAdvances[lv.id]||"";
+      const of=pData.dssForecasts[lv.id]||{},oa=pData.dssAdvances[lv.id]||"";
       const{t1,t2}=bk[lv.id]||{t1:"?",t2:"?"};
       html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
         <div class="dss-match">
@@ -704,9 +680,9 @@ window.renderTBody = function(){
     html+=`<div class="dss-grid">`;
     BRACKET.forEach(lv=>{
       const{t1,t2}=bk[lv.id]||{t1:"?",t2:"?"};
-      const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}掳 Gr.${lv.t2g}`:`Mejor 3掳 (${lv.t2g})`;
+      const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° (${lv.t2g})`;
       html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
-        <div class="dss-desc">${lv.t1pos}掳 Gr.${lv.t1g} vs ${t2desc}</div>
+        <div class="dss-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
         <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
           <span style="flex:1;font-size:12px;font-weight:600;text-align:right;color:${t1==="?"?"var(--muted)":"var(--text)"}">${t1}</span>
           <span class="vs" style="font-weight:600">vs</span>
@@ -717,9 +693,9 @@ window.renderTBody = function(){
     html+=`</div>`;
   }
   el.innerHTML=html;
-};
+}
 
-// 鈹€鈹€ ADMIN RESULTADOS 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── ADMIN RESULTADOS ──────────────────────────────────────────
 function renderResultados(){
   const el=document.getElementById("resultados-content");
   let html=`<div class="notice info"><i class="ti ti-shield"></i> Ingresa los resultados reales. Los puntos se recalculan al guardar.</div>`;
@@ -736,9 +712,9 @@ function renderResultados(){
         <span class="result-team" style="text-align:right">${m.t2}</span>
       </div>`;
     });
-    const teams=GRP[g], adv=state.dssResults[`adv_${g}`]||[];
+    const teams=GRP[g],adv=(state.octResults[`adv_${g}`])||[];
     [0,1].forEach(pos=>{
-      html+=`<div style="margin-top:${pos===0?8:4}px"><label style="font-size:10px;color:var(--muted);font-weight:500">${pos+1}掳 clasificado</label>
+      html+=`<div style="margin-top:${pos===0?8:4}px"><label style="font-size:10px;color:var(--muted);font-weight:500">${pos+1}° clasificado</label>
         <select style="width:100%;font-size:12px;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="setRealAdv('${g}',${pos},this.value)">
           <option value="">--</option>
           ${teams.map(t=>`<option value="${t}" ${adv[pos]===t?"selected":""}>${t}</option>`).join("")}
@@ -748,10 +724,10 @@ function renderResultados(){
   });
   html+=`</div><div class="section-title" style="margin-top:20px">Dieciseisavos de Final</div><div class="dss-grid">`;
   BRACKET.forEach(lv=>{
-    const rf=state.dssResults[lv.id]||{}, radv=state.dssResults[`adv_${lv.id}`]||"";
-    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}掳 Gr.${lv.t2g}`:`Mejor 3掳 grupos ${lv.t2g}`;
+    const rf=state.octResults[lv.id]||{},radv=state.octResults[`adv_${lv.id}`]||"";
+    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
     html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
-      <div class="dss-desc">${lv.t1pos}掳 Gr.${lv.t1g} vs ${t2desc}</div>
+      <div class="dss-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
       <div class="dss-match">
         <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo local" value="${rf.t1||""}" onchange="setRealOct('${lv.id}','t1',this.value)">
         <input class="score-inp" type="number" min="0" max="20" value="${rf.s1??""}" placeholder="-" onchange="setRealOct('${lv.id}','s1',this.value)">
@@ -760,7 +736,7 @@ function renderResultados(){
         <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo visitante" value="${rf.t2||""}" onchange="setRealOct('${lv.id}','t2',this.value)">
       </div>
       <select class="advance-pick" onchange="setRealOct('${lv.id}','adv',this.value)">
-        <option value="">-- 驴Qui茅n avanz贸? --</option>
+        <option value="">-- ¿Quién avanzó? --</option>
         <option value="${rf.t1||''}" ${radv===(rf.t1||"")?"selected":""}>${rf.t1||"Equipo local"}</option>
         <option value="${rf.t2||''}" ${radv===(rf.t2||"")?"selected":""}>${rf.t2||"Equipo visitante"}</option>
       </select>
@@ -769,54 +745,49 @@ function renderResultados(){
   html+=`</div><div class="save-bar"><span></span><button class="btn primary" onclick="saveRealResults()"><i class="ti ti-device-floppy"></i> Guardar resultados reales</button></div>`;
   el.innerHTML=html;
 }
-window.renderResultados = renderResultados;
 
-window.setReal = function(id,side,val){ if(!state.realResults[id]) state.realResults[id]={}; state.realResults[id][side]=val===""?undefined:parseInt(val); };
-window.setRealAdv = function(g,pos,team){ if(!state.dssResults[`adv_${g}`]) state.dssResults[`adv_${g}`]=[]; state.dssResults[`adv_${g}`][pos]=team; };
-window.setRealOct = function(id,key,val){
-  if(!state.dssResults[id]) state.dssResults[id]={};
-  if(key==="adv"){ state.dssResults[`adv_${id}`]=val; return; }
-  state.dssResults[id][key]=["s1","s2"].includes(key)?(val===""?undefined:parseInt(val)):val;
-};
-window.saveRealResults = async function(){ await fbSave(); alert("Resultados guardados en Firebase."); };
+function setReal(id,side,val){ if(!state.realResults[id]) state.realResults[id]={}; state.realResults[id][side]=val===""?undefined:parseInt(val); }
+function setRealAdv(g,pos,team){ if(!state.octResults[`adv_${g}`]) state.octResults[`adv_${g}`]=[]; state.octResults[`adv_${g}`][pos]=team; }
+function setRealOct(id,key,val){
+  if(!state.octResults[id]) state.octResults[id]={};
+  if(key==="adv"){ state.octResults[`adv_${id}`]=val; return; }
+  state.octResults[id][key]=["s1","s2"].includes(key)?(val===""?undefined:parseInt(val)):val;
+}
+async function saveRealResults(){ await fbSave(); alert("Resultados guardados en Firebase."); }
 
-// 鈹€鈹€ GESTI脫N 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€
+// ── GESTIÓN ───────────────────────────────────────────────────
 function renderGestion(){
   const el=document.getElementById("gestion-content");
   const names=Object.keys(state.participants);
   const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
-
-  // 鈹€鈹€ Create user panel 鈹€鈹€
   let html=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px">
     <div style="font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px"><i class="ti ti-user-plus" style="color:var(--red)"></i> Crear nuevo participante</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;flex-wrap:wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end">
       <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Nombre completo</label>
-        <input id="new-name" type="text" placeholder="Juan P茅rez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
+        <input id="new-name" type="text" placeholder="Juan Pérez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
       <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Usuario (sin espacios)</label>
-        <input id="new-user" type="text" placeholder="juan.perez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);text-transform:lowercase"></div>
-      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">PIN (4 d铆gitos)</label>
+        <input id="new-user" type="text" placeholder="juan.perez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
+      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">PIN (4 dígitos)</label>
         <input id="new-pin" type="text" inputmode="numeric" maxlength="4" placeholder="1234" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
-      <button class="btn primary" onclick="createUser()" style="white-space:nowrap"><i class="ti ti-plus"></i> Crear</button>
+      <button class="btn primary" onclick="createUser()"><i class="ti ti-plus"></i> Crear</button>
     </div>
     <div id="create-msg" style="font-size:12px;margin-top:8px;display:none"></div>
   </div>`;
-
   if(!names.length){
-    html+=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes a煤n. Crea el primero arriba.</div>`;
+    html+=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes aún. Crea el primero arriba.</div>`;
     el.innerHTML=html; return;
   }
-
-  html+=`<div class="notice info"><i class="ti ti-eye"></i> ${names.length} participantes registrados. Estado en tiempo real.</div>`;
+  html+=`<div class="notice info"><i class="ti ti-eye"></i> ${names.length} participantes registrados.</div>`;
   html+=`<table class="standings-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>PIN</th><th>Grupos</th><th>DSS</th><th>Pts</th><th></th></tr></thead><tbody>`;
   names.forEach(name=>{
     const pData=getP(name);
     const fc=Object.values(pData.forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
     const oc=Object.values(pData.dssForecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
-    const{pts}=calcPoints(pData,state.realResults||{},state.dssResults||{});
+    const{pts}=calcPoints(pData,state.realResults||{},state.octResults||{});
     html+=`<tr>
       <td class="participant-name">${pData.displayName||name}</td>
       <td style="font-size:12px;color:var(--muted)">${name}</td>
-      <td><span class="chip gold">${pData.pin||"鈥?}</span></td>
+      <td><span class="chip gold">${pData.pin||"—"}</span></td>
       <td><span class="chip ${fc>=totalM*0.8?"gold":"red"}">${fc}/${totalM}</span></td>
       <td><span class="chip ${oc>=12?"gold":"red"}">${oc}/16</span></td>
       <td class="pts-cell">${pts}</td>
@@ -827,26 +798,24 @@ function renderGestion(){
   el.innerHTML=html;
 }
 
-window.createUser = async function(){
-  const displayName = document.getElementById("new-name").value.trim();
-  const username = document.getElementById("new-user").value.trim().toLowerCase().replace(/\s+/g,"");
-  const pin = document.getElementById("new-pin").value.trim();
-  const msgEl = document.getElementById("create-msg");
-
+function createUser(){
+  const displayName=document.getElementById("new-name").value.trim();
+  const username=document.getElementById("new-user").value.trim().toLowerCase().replace(/\s/g,"");
+  const pin=document.getElementById("new-pin").value.trim();
   if(!displayName||!username||!pin){ showCreateMsg("Completa todos los campos","error"); return; }
-  if(pin.length!==4||isNaN(pin)){ showCreateMsg("El PIN debe ser exactamente 4 d铆gitos","error"); return; }
+  if(pin.length!==4||isNaN(pin)){ showCreateMsg("El PIN debe ser exactamente 4 dígitos","error"); return; }
   if(state.participants[username]){ showCreateMsg(`El usuario "${username}" ya existe`,"error"); return; }
+  state.participants[username]={displayName,pin,forecasts:{},dssForecasts:{},dssAdvances:{}};
+  fbSave().then(()=>{
+    document.getElementById("new-name").value="";
+    document.getElementById("new-user").value="";
+    document.getElementById("new-pin").value="";
+    showCreateMsg(`✓ Usuario "${username}" creado · PIN: ${pin}`,"ok");
+    renderGestion();
+  });
+}
 
-  state.participants[username] = { displayName, pin, forecasts:{}, dssForecasts:{}, dssAdvances:{} };
-  await fbSave();
-  document.getElementById("new-name").value="";
-  document.getElementById("new-user").value="";
-  document.getElementById("new-pin").value="";
-  showCreateMsg(`鉁?Usuario "${username}" creado. PIN: ${pin}`,"ok");
-  window.renderGestion?.();
-};
-
-function showCreateMsg(msg, type){
+function showCreateMsg(msg,type){
   const el=document.getElementById("create-msg");
   if(!el) return;
   el.textContent=msg;
@@ -854,15 +823,15 @@ function showCreateMsg(msg, type){
   el.style.display="block";
   setTimeout(()=>{ el.style.display="none"; },4000);
 }
-window.renderGestion = renderGestion;
 
-window.deleteParticipant = async function(name){
-  if(!confirm(`驴Eliminar a ${name}?`)) return;
+function deleteParticipant(name){
+  if(!confirm(`¿Eliminar a ${name}?`)) return;
   delete state.participants[name];
-  await fbSave();
-  window.renderGestion?.(); window.renderStandings?.();
-};
+  fbSave().then(()=>{ renderGestion(); renderStandings(); });
+}
 
+// ── START ─────────────────────────────────────────────────────
+init();
 </script>
 </body>
 </html>
