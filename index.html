@@ -135,18 +135,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
 <div id="auth-screen" style="display:none">
   <div class="auth-wrap">
     <div class="auth-box">
-      <h2>Bienvenido</h2>
-      <p>Ingresa tu nombre para diligenciar tus pronósticos, o entra como administrador para gestionar la polla.</p>
-      <div class="field"><label>Nombre completo</label><input id="login-name" type="text" placeholder="Ej: Juan Pérez" autocomplete="off"></div>
-      <div class="field"><label>Rol</label>
-        <select id="login-role">
-          <option value="participant">Participante</option>
-          <option value="admin">Administrador</option>
-        </select>
-      </div>
-      <div id="admin-pass-field" class="field" style="display:none"><label>Contraseña admin</label><input id="admin-pass" type="password" placeholder="••••••"></div>
+      <h2>🏆 Polla Mundialista 2026</h2>
+      <p>Ingresa tu usuario y PIN para acceder a tus pronósticos. Si aún no tienes usuario, contacta al organizador.</p>
+      <div class="field"><label>Usuario</label><input id="login-user" type="text" placeholder="Ej: andres.perez" autocomplete="username" style="text-transform:lowercase"></div>
+      <div class="field"><label>PIN (4 dígitos)</label><input id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"></div>
       <div class="btn-row"><button class="btn primary" onclick="doLogin()"><i class="ti ti-arrow-right"></i> Entrar</button></div>
       <div id="login-error" style="color:var(--red);font-size:12px;margin-top:10px;display:none"></div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center">
+        ¿Administrador? <span style="color:var(--red);cursor:pointer;font-weight:500" onclick="toggleAdminLogin()">Acceso admin</span>
+      </div>
+      <div id="admin-login-section" style="display:none;margin-top:12px">
+        <div class="field"><label>Contraseña admin</label><input id="admin-pass" type="password" placeholder="••••••"></div>
+        <div class="btn-row"><button class="btn primary" onclick="doAdminLogin()"><i class="ti ti-shield"></i> Entrar como admin</button></div>
+      </div>
     </div>
   </div>
 </div>
@@ -166,7 +167,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
     </div>
     <div class="sub-panel active" id="sub-grupos"><div id="grupos-content"></div></div>
     <div class="sub-panel" id="sub-dieciseisavos"><div id="dieciseisavos-content"></div></div>
-    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()"><i class="ti ti-device-floppy"></i> Guardar pronósticos</button></div>
+    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()" id="save-btn"><i class="ti ti-device-floppy"></i> Guardar pronósticos</button></div>
   </div>
   <div class="tab-panel" id="tab-standings"><div id="standings-content"></div></div>
   <div class="tab-panel" id="tab-transparencia"><div id="transparencia-content"></div></div>
@@ -277,9 +278,9 @@ function fbListen(){
         if(name !== currentUser) state.participants[name] = remote.participants[name];
       });
       // Re-render standings if visible
-      if(document.getElementById("tab-standings").classList.contains("active")) renderStandings();
-      if(document.getElementById("tab-transparencia").classList.contains("active")) renderTransparencia();
-      if(document.getElementById("tab-gestion").classList.contains("active")) renderGestion();
+      if(document.getElementById("tab-standings").classList.contains("active")) window.renderStandings?.();
+      if(document.getElementById("tab-transparencia").classList.contains("active")) window.renderTransparencia?.();
+      if(document.getElementById("tab-gestion").classList.contains("active")) window.renderGestion?.();
     }
   }, err => { setSyncBadge("err","Sin conexión"); });
 }
@@ -290,7 +291,29 @@ async function init(){
     const snap = await getDoc(doc(db,"polla2026","state"));
     if(snap.exists()) state = snap.data();
     document.getElementById("loading-screen").style.display = "none";
-    document.getElementById("auth-screen").style.display = "block";
+    // Try to restore session
+    const session = loadSession();
+    if(session){
+      if(session.role==="admin"){
+        currentUser=session.user; currentRole="admin";
+        document.getElementById("main-screen").style.display="block";
+        document.getElementById("user-badge").textContent=session.user+" (Admin)";
+        document.getElementById("logout-btn").style.display="block";
+        document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
+        fbListen(); window.renderGrupos?.(); window.renderStandings?.();
+      } else if(state.participants[session.user]){
+        currentUser=session.user; currentRole="participant";
+        document.getElementById("main-screen").style.display="block";
+        document.getElementById("user-badge").textContent=state.participants[session.user].displayName||session.user;
+        document.getElementById("logout-btn").style.display="block";
+        fbListen(); window.renderGrupos?.(); window.renderStandings?.();
+      } else {
+        clearSession();
+        document.getElementById("auth-screen").style.display="block";
+      }
+    } else {
+      document.getElementById("auth-screen").style.display="block";
+    }
   } catch(e){
     document.getElementById("loading-screen").innerHTML =
       `<i class="ti ti-wifi-off" style="font-size:36px;color:var(--red)"></i>
@@ -301,43 +324,70 @@ async function init(){
 }
 init();
 
+// ── DEADLINE ──────────────────────────────────────────────────
+const DEADLINE = new Date("2025-06-11T13:00:00-05:00"); // 11 jun 1pm hora Colombia
+function isDeadlinePassed(){ return new Date() > DEADLINE; }
+function deadlineBanner(){
+  if(!isDeadlinePassed()) return "";
+  return `<div class="notice warn" style="margin-bottom:14px"><i class="ti ti-lock"></i> El plazo para ingresar pronósticos venció el 11 de junio a la 1:00 pm. Solo puedes consultar.</div>`;
+}
+
 // ── AUTH ──────────────────────────────────────────────────────
-document.getElementById("login-role").addEventListener("change", function(){
-  document.getElementById("admin-pass-field").style.display = this.value==="admin"?"block":"none";
-});
-document.getElementById("login-name").addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
-
 function showError(msg){ const el=document.getElementById("login-error"); el.textContent=msg; el.style.display="block"; }
+window.toggleAdminLogin = function(){
+  const s=document.getElementById("admin-login-section");
+  s.style.display = s.style.display==="none"?"block":"none";
+};
 
-window.doLogin = async function(){
-  const name = document.getElementById("login-name").value.trim();
-  const role = document.getElementById("login-role").value;
-  if(!name){ showError("Ingresa tu nombre"); return; }
-  if(role==="admin" && document.getElementById("admin-pass").value !== ADMIN_PASS){ showError("Contraseña incorrecta"); return; }
+// Persist session in localStorage
+function saveSession(user, role){
+  localStorage.setItem("polla2026_session", JSON.stringify({user, role}));
+}
+function clearSession(){ localStorage.removeItem("polla2026_session"); }
+function loadSession(){ try{ return JSON.parse(localStorage.getItem("polla2026_session")); }catch(e){return null;} }
+
+function enterApp(name, role){
   currentUser = name; currentRole = role;
-  if(role==="participant" && !state.participants[name]){
-    state.participants[name] = { forecasts:{}, dssForecasts:{}, dssAdvances:{} };
-    await fbSave();
-  }
+  saveSession(name, role);
   document.getElementById("auth-screen").style.display = "none";
   document.getElementById("main-screen").style.display = "block";
-  document.getElementById("user-badge").textContent = name + (role==="admin"?" (Admin)":"");
+  const dn = role==="admin"?"admin":(state.participants[name]?.displayName||name);
+  document.getElementById("user-badge").textContent = dn + (role==="admin"?" (Admin)":"");
   document.getElementById("logout-btn").style.display = "block";
   if(role==="admin") document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
   fbListen();
-  renderGrupos();
-  renderStandings();
+  window.renderGrupos?.();
+  window.renderStandings?.();
+}
+
+window.doLogin = async function(){
+  const username = document.getElementById("login-user").value.trim().toLowerCase();
+  const pin = document.getElementById("login-pin").value.trim();
+  if(!username){ showError("Ingresa tu usuario"); return; }
+  if(pin.length !== 4 || isNaN(pin)){ showError("El PIN debe ser de 4 dígitos"); return; }
+  // Check user exists in state
+  const userData = state.participants[username];
+  if(!userData){ showError("Usuario no encontrado. Contacta al organizador."); return; }
+  if(userData.pin !== pin){ showError("PIN incorrecto"); return; }
+  enterApp(username, "participant");
+};
+
+window.doAdminLogin = async function(){
+  const pass = document.getElementById("admin-pass").value;
+  if(pass !== ADMIN_PASS){ showError("Contraseña incorrecta"); return; }
+  enterApp("admin", "admin");
 };
 
 window.logout = function(){
   if(unsubscribe){ unsubscribe(); unsubscribe=null; }
   currentUser=null; currentRole=null;
+  clearSession();
   document.getElementById("auth-screen").style.display="block";
   document.getElementById("main-screen").style.display="none";
   document.getElementById("logout-btn").style.display="none";
   document.getElementById("user-badge").textContent="";
-  document.getElementById("login-name").value="";
-  document.getElementById("admin-pass").value="";
+  document.getElementById("login-user").value="";
+  document.getElementById("login-pin").value="";
   document.getElementById("login-error").style.display="none";
   document.querySelectorAll(".admin-only").forEach(el=>el.style.display="none");
   switchTabById("pronosticos");
@@ -351,10 +401,10 @@ window.switchTab = function(el){
   el.classList.add("active");
   const tab = el.dataset.tab;
   document.getElementById("tab-"+tab).classList.add("active");
-  if(tab==="standings") renderStandings();
-  if(tab==="resultados") renderResultados();
-  if(tab==="gestion") renderGestion();
-  if(tab==="transparencia") renderTransparencia();
+  if(tab==="standings")     window.renderStandings?.();
+  if(tab==="resultados")    window.renderResultados?.();
+  if(tab==="gestion")       window.renderGestion?.();
+  if(tab==="transparencia") window.renderTransparencia?.();
 };
 function switchTabById(id){ const el=document.querySelector(`.tab[data-tab="${id}"]`); if(el) switchTab(el); }
 
@@ -364,8 +414,8 @@ window.switchSub = function(el){
   el.classList.add("active");
   const sub = el.dataset.sub;
   document.getElementById("sub-"+sub).classList.add("active");
-  if(sub==="grupos") renderGrupos();
-  if(sub==="dieciseisavos") renderDieciseisavos();
+  if(sub==="grupos")        window.renderGrupos?.();
+  if(sub==="dieciseisavos") window.renderDieciseisavos?.();
 };
 
 // ── MATH ──────────────────────────────────────────────────────
@@ -418,16 +468,19 @@ function getP(name){ name=name||currentUser; return state.participants[name]||{f
 function renderGrupos(){
   const el=document.getElementById("grupos-content"); if(!el) return;
   const isAdmin=currentRole==="admin";
+  const locked=isDeadlinePassed()&&!isAdmin;
   const p=isAdmin?null:getP();
   let html=isAdmin
     ?`<div class="notice warn"><i class="ti ti-shield"></i> Vista admin — solo lectura.</div>`
-    :`<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan automáticamente.</div>`;
+    :locked
+      ?`${deadlineBanner()}`
+      :`<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan automáticamente.</div>`;
   html+=`<div class="groups-grid">`;
   Object.keys(GRP).forEach(g=>{
     html+=`<div class="group-card"><div class="group-header"><span class="group-label">Grupo ${g}</span><span class="pts-badge">3 pts exacto · 1 pt ganador/empate</span></div><div class="group-body">`;
     MATCHES[g].forEach(m=>{
       const f=isAdmin?{}:(p.forecasts[m.id]||{});
-      const dis=isAdmin?"disabled":"";
+      const dis=(isAdmin||locked)?"disabled":"";
       html+=`<div class="match-row">
         <span class="team-name left" title="${m.t1}">${m.t1}</span>
         <input class="score-inp" type="number" min="0" max="20" value="${f.s1??""}" placeholder="-" onchange="saveScore('${m.id}','s1',this.value)" ${dis}>
@@ -446,16 +499,19 @@ function renderGrupos(){
 function renderDieciseisavos(){
   const el=document.getElementById("dieciseisavos-content"); if(!el) return;
   const isAdmin=currentRole==="admin";
+  const locked=isDeadlinePassed()&&!isAdmin;
   const p=isAdmin?null:getP();
   const bk=isAdmin?{}:computeBracket(p.forecasts||{});
-  let html=!isAdmin?`<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y quién avanza.</div>`:"";
+  let html=!isAdmin
+    ?(locked?deadlineBanner():`<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y quién avanza.</div>`)
+    :"";
   html+=`<div class="dss-grid">`;
   BRACKET.forEach(lv=>{
     const comp=bk[lv.id]||{t1:"?",t2:"?"};
     const t1=comp.t1, t2=comp.t2;
     const of=isAdmin?{}:(p.dssForecasts[lv.id]||{});
     const oa=isAdmin?"":(p.dssAdvances[lv.id]||"");
-    const dis=isAdmin?"disabled":"";
+    const dis=(isAdmin||locked)?"disabled":"";
     const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Grupo ${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
     html+=`<div class="dss-card">
       <div class="dss-title">${lv.lbl}</div>
@@ -478,13 +534,16 @@ function renderDieciseisavos(){
   el.innerHTML=html;
 }
 
+window.renderGrupos = renderGrupos;
+window.renderDieciseisavos = renderDieciseisavos;
+
 // ── SAVES ─────────────────────────────────────────────────────
 window.saveScore = function(matchId,side,val){
   if(currentRole==="admin") return;
   const p=getP(); if(!p.forecasts[matchId]) p.forecasts[matchId]={};
   p.forecasts[matchId][side]=val===""?undefined:parseInt(val);
   state.participants[currentUser]=p;
-  if(document.getElementById("sub-dieciseisavos").classList.contains("active")) renderDieciseisavos();
+  if(document.getElementById("sub-dieciseisavos").classList.contains("active")) window.renderDieciseisavos?.();
 };
 window.saveDssScore = function(id,side,val){
   if(currentRole==="admin") return;
@@ -497,6 +556,7 @@ window.saveDssAdvance = function(id,val){
   const p=getP(); p.dssAdvances[id]=val; state.participants[currentUser]=p;
 };
 window.saveAll = async function(){
+  if(isDeadlinePassed()){ alert("El plazo para guardar pronósticos venció el 11 de junio a la 1:00 pm."); return; }
   await fbSave();
   const msg=document.getElementById("save-msg");
   if(msg){ msg.textContent="Guardado en Firebase ✓"; setTimeout(()=>{ msg.textContent=""; },3000); }
@@ -563,7 +623,7 @@ function renderStandings(){
 window.showDetail = function(name){
   const{pts,detail}=calcPoints(getP(name),state.realResults||{},state.dssResults||{});
   const el=document.getElementById("standings-content");
-  let html=`<button class="btn" onclick="renderStandings()" style="margin-bottom:14px"><i class="ti ti-arrow-left"></i> Volver</button>`;
+  let html=`<button class="btn" onclick="window.renderStandings()" style="margin-bottom:14px"><i class="ti ti-arrow-left"></i> Volver</button>`;
   html+=`<div class="detail-header"><div class="avatar">${name.charAt(0).toUpperCase()}</div><div><div class="pts-big">${pts}</div><div class="pts-label">puntos totales · ${name}</div></div></div>`;
   if(!detail.length){ html+=`<div class="notice warn">Sin puntos aún. El admin debe ingresar resultados reales.</div>`; }
   else {
@@ -590,7 +650,7 @@ function renderTransparencia(){
     </select></div>`;
   html+=`<div style="margin-bottom:14px">
     <button class="tab-sub-btn ${tView.section==="grupos"?"active":""}" onclick="tView.section='grupos';renderTBody()">Grupos</button>
-    <button class="tab-sub-btn ${tView.section==="dieciseisavos"?"active":""}" onclick="tView.section="dieciseisavos";renderTBody()">Dieciseisavos</button>
+    <button class="tab-sub-btn ${tView.section==="dieciseisavos"?"active":""}" onclick="tView.section='dieciseisavos';renderTBody()">Dieciseisavos</button>
     <button class="tab-sub-btn ${tView.section==="bracket"?"active":""}" onclick="tView.section='bracket';renderTBody()">Bracket</button>
   </div><div id="t-body"></div>`;
   el.innerHTML=html;
@@ -724,19 +784,75 @@ window.saveRealResults = async function(){ await fbSave(); alert("Resultados gua
 function renderGestion(){
   const el=document.getElementById("gestion-content");
   const names=Object.keys(state.participants);
-  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes.</div>`; return; }
   const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
-  let html=`<div class="notice info"><i class="ti ti-eye"></i> Estado de todos los participantes en tiempo real.</div>`;
-  html+=`<table class="standings-table"><thead><tr><th>Participante</th><th>Grupos</th><th>Dieciseisavos</th><th>Puntos</th><th></th></tr></thead><tbody>`;
+
+  // ── Create user panel ──
+  let html=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px">
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px"><i class="ti ti-user-plus" style="color:var(--red)"></i> Crear nuevo participante</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end;flex-wrap:wrap">
+      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Nombre completo</label>
+        <input id="new-name" type="text" placeholder="Juan Pérez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
+      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Usuario (sin espacios)</label>
+        <input id="new-user" type="text" placeholder="juan.perez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text);text-transform:lowercase"></div>
+      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">PIN (4 dígitos)</label>
+        <input id="new-pin" type="text" inputmode="numeric" maxlength="4" placeholder="1234" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
+      <button class="btn primary" onclick="createUser()" style="white-space:nowrap"><i class="ti ti-plus"></i> Crear</button>
+    </div>
+    <div id="create-msg" style="font-size:12px;margin-top:8px;display:none"></div>
+  </div>`;
+
+  if(!names.length){
+    html+=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes aún. Crea el primero arriba.</div>`;
+    el.innerHTML=html; return;
+  }
+
+  html+=`<div class="notice info"><i class="ti ti-eye"></i> ${names.length} participantes registrados. Estado en tiempo real.</div>`;
+  html+=`<table class="standings-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>PIN</th><th>Grupos</th><th>DSS</th><th>Pts</th><th></th></tr></thead><tbody>`;
   names.forEach(name=>{
     const pData=getP(name);
     const fc=Object.values(pData.forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
     const oc=Object.values(pData.dssForecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
     const{pts}=calcPoints(pData,state.realResults||{},state.dssResults||{});
-    html+=`<tr><td class="participant-name">${name}</td><td><span class="chip ${fc>=totalM*0.8?"gold":"red"}">${fc}/${totalM}</span></td><td><span class="chip ${oc>=12?"gold":"red"}">${oc}/16</span></td><td class="pts-cell">${pts}</td><td><button class="btn sm" onclick="deleteParticipant('${name}')"><i class="ti ti-trash"></i></button></td></tr>`;
+    html+=`<tr>
+      <td class="participant-name">${pData.displayName||name}</td>
+      <td style="font-size:12px;color:var(--muted)">${name}</td>
+      <td><span class="chip gold">${pData.pin||"—"}</span></td>
+      <td><span class="chip ${fc>=totalM*0.8?"gold":"red"}">${fc}/${totalM}</span></td>
+      <td><span class="chip ${oc>=12?"gold":"red"}">${oc}/16</span></td>
+      <td class="pts-cell">${pts}</td>
+      <td><button class="btn sm" onclick="deleteParticipant('${name}')"><i class="ti ti-trash"></i></button></td>
+    </tr>`;
   });
   html+=`</tbody></table>`;
   el.innerHTML=html;
+}
+
+window.createUser = async function(){
+  const displayName = document.getElementById("new-name").value.trim();
+  const username = document.getElementById("new-user").value.trim().toLowerCase().replace(/\s+/g,"");
+  const pin = document.getElementById("new-pin").value.trim();
+  const msgEl = document.getElementById("create-msg");
+
+  if(!displayName||!username||!pin){ showCreateMsg("Completa todos los campos","error"); return; }
+  if(pin.length!==4||isNaN(pin)){ showCreateMsg("El PIN debe ser exactamente 4 dígitos","error"); return; }
+  if(state.participants[username]){ showCreateMsg(`El usuario "${username}" ya existe`,"error"); return; }
+
+  state.participants[username] = { displayName, pin, forecasts:{}, dssForecasts:{}, dssAdvances:{} };
+  await fbSave();
+  document.getElementById("new-name").value="";
+  document.getElementById("new-user").value="";
+  document.getElementById("new-pin").value="";
+  showCreateMsg(`✓ Usuario "${username}" creado. PIN: ${pin}`,"ok");
+  window.renderGestion?.();
+};
+
+function showCreateMsg(msg, type){
+  const el=document.getElementById("create-msg");
+  if(!el) return;
+  el.textContent=msg;
+  el.style.color=type==="ok"?"#16a34a":"var(--red)";
+  el.style.display="block";
+  setTimeout(()=>{ el.style.display="none"; },4000);
 }
 window.renderGestion = renderGestion;
 
@@ -744,7 +860,7 @@ window.deleteParticipant = async function(name){
   if(!confirm(`¿Eliminar a ${name}?`)) return;
   delete state.participants[name];
   await fbSave();
-  renderGestion(); renderStandings();
+  window.renderGestion?.(); window.renderStandings?.();
 };
 
 </script>
