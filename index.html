@@ -195,7 +195,7 @@ const db = firebase.firestore();
 
 // ── CONFIG ────────────────────────────────────────────────────
 const ADMIN_PASS = "polla2026";
-const DEADLINE = new Date("2025-06-11T13:00:00-05:00");
+const DEADLINE = new Date("2026-06-11T13:00:00-05:00");
 function isDeadlinePassed(){ return new Date() > DEADLINE; }
 function deadlineBanner(){
   if(!isDeadlinePassed()) return "";
