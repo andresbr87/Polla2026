@@ -7,110 +7,102 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --red:#c00000;--gold:#b8860b;--gl:#daa520;
-  --card:#ffffff;--border:#e5e7eb;--text:#111827;
-  --muted:#6b7280;--surface:#f9fafb;
-  --info-bg:#eff6ff;--info-text:#1d4ed8;--info-border:#3b82f6;
-  --warn-bg:#fffbeb;--warn-text:#92400e;--warn-border:#f59e0b;
-  --radius:8px;--radius-sm:6px;--radius-lg:12px;
-}
-@media(prefers-color-scheme:dark){
-  :root{--card:#1f2937;--border:#374151;--text:#f9fafb;--muted:#9ca3af;--surface:#111827;
-    --info-bg:#1e3a5f;--info-text:#93c5fd;--info-border:#3b82f6;
-    --warn-bg:#3b2f00;--warn-text:#fcd34d;--warn-border:#f59e0b;}
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--text);background:#f3f4f6;min-height:100vh}
-.app{max-width:1100px;margin:0 auto;background:var(--card);border-radius:var(--radius-lg);box-shadow:0 4px 24px rgba(0,0,0,.10);overflow:hidden;min-height:100vh}
+:root{--red:#c00000;--gold:#b8860b;--gl:#daa520;--card:#fff;--border:#e5e7eb;--text:#111827;--muted:#6b7280;--surface:#f9fafb;--radius:8px;--radius-lg:12px}
+@media(prefers-color-scheme:dark){:root{--card:#1f2937;--border:#374151;--text:#f9fafb;--muted:#9ca3af;--surface:#111827}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f3f4f6;min-height:100vh;color:var(--text)}
+.app{max-width:1100px;margin:0 auto;background:var(--card);border-radius:var(--radius-lg);box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden;min-height:100vh}
 .topbar{background:#1a1a1a;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
 .topbar-title{font-size:16px;font-weight:600;color:#daa520}
 .topbar-sub{font-size:12px;color:#888;margin-top:2px}
 .tabs{display:flex;border-bottom:1.5px solid var(--border);background:var(--surface);flex-wrap:wrap}
-.tab{padding:10px 16px;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent;margin-bottom:-1.5px;transition:all .15s;white-space:nowrap}
+.tab{padding:10px 16px;font-size:13px;cursor:pointer;color:var(--muted);border-bottom:2.5px solid transparent;margin-bottom:-1.5px;white-space:nowrap}
 .tab.active{color:var(--red);border-bottom-color:var(--red);font-weight:500}
-.tab:hover:not(.active){color:var(--text)}
-.tab-panel{display:none;padding:16px}
-.tab-panel.active{display:block}
-.sub-tabs{display:flex;margin-bottom:14px;border:0.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;width:fit-content}
-.sub-tab{padding:8px 22px;font-size:13px;cursor:pointer;color:var(--muted);background:var(--surface);border-right:0.5px solid var(--border);transition:all .15s}
+.panel{display:none;padding:16px}.panel.active{display:block}
+.sub-tabs{display:flex;margin-bottom:14px;border:.5px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content}
+.sub-tab{padding:8px 20px;font-size:13px;cursor:pointer;color:var(--muted);background:var(--surface);border-right:.5px solid var(--border)}
 .sub-tab:last-child{border-right:none}
 .sub-tab.active{background:var(--red);color:#fff;font-weight:500}
-.sub-tab:hover:not(.active){background:var(--card)}
 .sub-panel{display:none}.sub-panel.active{display:block}
 .auth-wrap{display:flex;align-items:center;justify-content:center;padding:40px 16px;min-height:60vh}
-.auth-box{width:100%;max-width:380px;background:var(--card);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.auth-box{width:100%;max-width:380px;background:var(--card);border:.5px solid var(--border);border-radius:var(--radius-lg);padding:28px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
 .auth-box h2{font-size:18px;font-weight:600;margin-bottom:6px}
 .auth-box p{font-size:13px;color:var(--muted);margin-bottom:20px}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500}
-.field input,.field select{width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;transition:border .15s}
-.field input:focus,.field select:focus{border-color:var(--red)}
-.btn{padding:9px 18px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:transparent;color:var(--text);transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-.btn:hover{background:var(--surface)}
+.field input,.field select{width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);outline:none}
+.field input:focus{border-color:var(--red)}
+.btn{padding:9px 18px;font-size:13px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:transparent;color:var(--text)}
 .btn.primary{background:var(--red);color:#fff;border-color:var(--red)}
-.btn.primary:hover{opacity:.88}
 .btn.sm{padding:5px 11px;font-size:12px}
 .btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.err{color:var(--red);font-size:12px;margin-top:10px;display:none}
 .groups-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-.group-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
-.group-header{background:#1a1a1a;padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
-.group-label{font-size:13px;font-weight:600;color:#daa520}
-.pts-badge{font-size:10px;background:#b8860b22;color:#daa520;padding:2px 8px;border-radius:20px}
-.group-body{padding:10px 14px}
-.match-row{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--border)}
-.match-row:last-child{border-bottom:none}
-.team-name{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.team-name.left{text-align:right;padding-right:4px}
-.team-name.right{text-align:left;padding-left:4px}
-.score-inp{width:36px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
-.score-inp:focus{outline:none;border-color:var(--red)}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.ghead{background:#1a1a1a;padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
+.glabel{font-size:13px;font-weight:600;color:#daa520}
+.gbadge{font-size:10px;background:#b8860b22;color:#daa520;padding:2px 8px;border-radius:20px}
+.gbody{padding:10px 14px}
+.mrow{display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:.5px solid var(--border)}
+.mrow:last-child{border-bottom:none}
+.tname{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tname.l{text-align:right;padding-right:4px}
+.tname.r{padding-left:4px}
+.sinp{width:36px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
+.sinp:focus{outline:none;border-color:var(--red)}
 .vs{font-size:10px;color:var(--muted);min-width:14px;text-align:center}
-.section-title{font-size:14px;font-weight:600;margin:16px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)}
-.save-bar{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:16px;z-index:10}
+.save-bar{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--border);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;margin-top:16px}
 .save-msg{font-size:12px;color:#16a34a;font-weight:500}
 .dss-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-.dss-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px}
-.dss-title{font-size:13px;font-weight:600;margin-bottom:3px}
-.dss-desc{font-size:10px;color:var(--gl);margin-bottom:8px}
-.dss-match{display:flex;align-items:center;gap:6px;padding:4px 0}
-.dss-team-label{flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dss-team-label.left{text-align:right}
-.dss-team-label.pending{color:var(--muted);font-style:italic}
-.advance-pick{width:100%;margin-top:7px;font-size:12px;padding:5px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
-.standings-table{width:100%;border-collapse:collapse;font-size:13px}
-.standings-table th{text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface)}
-.standings-table td{padding:9px 12px;border-bottom:.5px solid var(--border)}
-.standings-table tbody tr{cursor:pointer;transition:background .12s}
-.standings-table tbody tr:hover td{background:var(--surface)}
-.gold-rank{color:#ca8a04;font-weight:700}.silver-rank{color:#9ca3af;font-weight:700}.bronze-rank{color:#b45309;font-weight:700}.rank{color:var(--muted);font-weight:500}
-.pts-cell{font-weight:700;color:var(--red)}
-.participant-name{font-weight:600}
-.results-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
-.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px}
-.result-header{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:.5px solid var(--border)}
-.result-match{display:flex;align-items:center;gap:5px;padding:4px 0}
-.result-team{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.result-score{width:32px;text-align:center;padding:3px;font-size:12px;font-weight:500;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
-.notice{padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:12px;display:flex;align-items:flex-start;gap:8px}
-.notice.info{background:var(--info-bg);color:var(--info-text);border-left:3px solid var(--info-border)}
-.notice.warn{background:var(--warn-bg);color:var(--warn-text);border-left:3px solid var(--warn-border)}
-.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500}
-.chip.red{background:#fee2e2;color:#dc2626}.chip.gold{background:#fef3c7;color:#92400e}
-.empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
-.empty-state i{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
-.detail-header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.dcard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px}
+.dtitle{font-size:13px;font-weight:600;margin-bottom:3px}
+.ddesc{font-size:10px;color:var(--gl);margin-bottom:8px}
+.dmatch{display:flex;align-items:center;gap:6px;padding:4px 0}
+.dlabel{flex:1;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dlabel.l{text-align:right}
+.dlabel.pend{color:var(--muted);font-style:italic}
+.apick{width:100%;margin-top:7px;font-size:12px;padding:5px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
+.stable{width:100%;border-collapse:collapse;font-size:13px}
+.stable th{text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface)}
+.stable td{padding:9px 12px;border-bottom:.5px solid var(--border)}
+.stable tbody tr:hover td{background:var(--surface)}
+.grank{color:#ca8a04;font-weight:700}.srank{color:#9ca3af;font-weight:700}.brank{color:#b45309;font-weight:700}.rank{color:var(--muted);font-weight:500}
+.pts{font-weight:700;color:var(--red)}
+.pname{font-weight:600}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px}
+.rhead{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:.5px solid var(--border)}
+.rmatch{display:flex;align-items:center;gap:5px;padding:4px 0}
+.rteam{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rsinp{width:32px;text-align:center;padding:3px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)}
+.notice{padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:12px;border-left:3px solid}
+.notice.info{background:#eff6ff;color:#1d4ed8;border-color:#3b82f6}
+.notice.warn{background:#fffbeb;color:#92400e;border-color:#f59e0b}
+.notice.gold{background:#fef3c7;color:#78350f;border-color:var(--gold)}
+.chip{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500}
+.chip.r{background:#fee2e2;color:#dc2626}.chip.g{background:#fef3c7;color:#92400e}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty i{font-size:36px;display:block;margin-bottom:10px;opacity:.4}
+.detail-hdr{display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .avatar{width:48px;height:48px;border-radius:50%;background:#fee2e2;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--red);font-size:18px}
 .pts-big{font-size:32px;font-weight:700;color:var(--red);line-height:1}
-.pts-label{font-size:12px;color:var(--muted);margin-top:3px}
-.tab-sub-btn{padding:6px 14px;font-size:12px;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:transparent;color:var(--muted);transition:all .15s;margin-right:6px;margin-bottom:6px}
-.tab-sub-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
-.sync-indicator{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
-.sync-ok{background:#dcfce7;color:#166534}
-.sync-err{background:#fee2e2;color:#dc2626}
-.sync-loading{background:#fef3c7;color:#92400e}
-.loading-screen{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:12px;color:var(--muted)}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+.pts-lbl{font-size:12px;color:var(--muted);margin-top:3px}
+.tsub-btn{padding:6px 14px;font-size:12px;border:1px solid var(--border);border-radius:20px;cursor:pointer;background:transparent;color:var(--muted);margin-right:6px;margin-bottom:6px}
+.tsub-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+.sync{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;display:none}
+.sync.ok{background:#dcfce7;color:#166534}.sync.err{background:#fee2e2;color:#dc2626}.sync.loading{background:#fef3c7;color:#92400e}
+.loader{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:12px;color:var(--muted)}
+.spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.create-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px}
+.create-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end}
+.coming-soon{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--muted);gap:12px}
+.coming-soon i{font-size:48px;opacity:.3}
+.coming-soon h3{font-size:18px;font-weight:600;opacity:.5}
+.coming-soon p{font-size:13px;opacity:.4;text-align:center}
+.fp-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;background:#fef3c722;border:1px solid #b8860b44;border-radius:6px}
+.fp-row label{font-size:11px;color:var(--gl);font-weight:500;flex:1}
+.fp-inp{width:60px;padding:4px 8px;font-size:12px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);text-align:center}
+@media(max-width:600px){.create-grid{grid-template-columns:1fr 1fr}.dss-grid,.groups-grid,.rgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -121,88 +113,83 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:va
     <div class="topbar-sub">FIFA World Cup · Canada · Mexico · USA · #WeAre26</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
-    <span id="sync-badge" class="sync-indicator sync-loading" style="display:none">Conectando...</span>
-    <span id="user-badge" style="font-size:12px;color:#aaa"></span>
-    <button class="btn sm" id="logout-btn" style="display:none;color:#daa520;border-color:#b8860b66" onclick="logout()">Salir</button>
+    <span id="sync" class="sync"></span>
+    <span id="ubadge" style="font-size:12px;color:#aaa"></span>
+    <button class="btn sm" id="logoutbtn" style="display:none;color:#daa520;border-color:#b8860b66" onclick="doLogout()">Salir</button>
   </div>
 </div>
 
-<div id="loading-screen" class="loading-screen">
-  <div class="spinner"></div>
-  <span>Conectando con Firebase...</span>
-</div>
+<div id="screen-loading" class="loader"><div class="spin"></div><span>Conectando...</span></div>
 
-<div id="auth-screen" style="display:none">
+<div id="screen-auth" style="display:none">
   <div class="auth-wrap">
     <div class="auth-box">
-      <h2>🏆 Polla Mundialista 2026</h2>
-      <p>Ingresa tu usuario y PIN para acceder a tus pronósticos. Si aún no tienes usuario, contacta al organizador.</p>
-      <div class="field"><label>Usuario</label><input id="login-user" type="text" placeholder="Ej: andres.perez" autocomplete="username" style="text-transform:lowercase"></div>
-      <div class="field"><label>PIN (4 dígitos)</label><input id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"></div>
-      <div class="btn-row"><button class="btn primary" onclick="doLogin()"><i class="ti ti-arrow-right"></i> Entrar</button></div>
-      <div id="login-error" style="color:var(--red);font-size:12px;margin-top:10px;display:none"></div>
+      <h2>Bienvenido</h2>
+      <p>Ingresa tu usuario y PIN para acceder. Si no tienes acceso, contacta al organizador.</p>
+      <div class="field"><label>Usuario</label><input id="inp-user" type="text" placeholder="ej: juan.perez" autocomplete="username"></div>
+      <div class="field"><label>PIN (4 dígitos)</label><input id="inp-pin" type="password" inputmode="numeric" maxlength="4" placeholder="••••"></div>
+      <div class="btn-row"><button class="btn primary" onclick="doLogin()">Entrar &rarr;</button></div>
+      <div id="login-err" class="err"></div>
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);text-align:center">
-        ¿Administrador? <span style="color:var(--red);cursor:pointer;font-weight:500" onclick="toggleAdminLogin()">Acceso admin</span>
+        ¿Administrador? <span style="color:var(--red);cursor:pointer;font-weight:500" onclick="document.getElementById('admin-sec').style.display='block';this.parentElement.style.display='none'">Acceso admin</span>
       </div>
-      <div id="admin-login-section" style="display:none;margin-top:12px">
-        <div class="field"><label>Contraseña admin</label><input id="admin-pass" type="password" placeholder="••••••"></div>
-        <div class="btn-row"><button class="btn primary" onclick="doAdminLogin()"><i class="ti ti-shield"></i> Entrar como admin</button></div>
+      <div id="admin-sec" style="display:none;margin-top:12px">
+        <div class="field"><label>Contraseña admin</label><input id="inp-apass" type="password" placeholder="••••••"></div>
+        <div class="btn-row"><button class="btn primary" onclick="doAdminLogin()">Entrar como admin</button></div>
       </div>
     </div>
   </div>
 </div>
 
-<div id="main-screen" style="display:none">
-  <div class="tabs">
-    <div class="tab active" data-tab="pronosticos" onclick="switchTab(this)">Mis pronósticos</div>
-    <div class="tab" data-tab="standings" onclick="switchTab(this)">Tabla de posiciones</div>
-    <div class="tab" data-tab="transparencia" onclick="switchTab(this)">Marcadores</div>
-    <div class="tab admin-only" data-tab="resultados" onclick="switchTab(this)" style="display:none">Resultados reales</div>
-    <div class="tab admin-only" data-tab="gestion" onclick="switchTab(this)" style="display:none">Gestión</div>
+<div id="screen-main" style="display:none">
+  <div class="tabs" id="tabs">
+    <div class="tab active" onclick="goTab(this,'t-pron')">Mis pronósticos</div>
+    <div class="tab" onclick="goTab(this,'t-stand')">Tabla de posiciones</div>
+    <div class="tab" onclick="goTab(this,'t-trans')">Marcadores</div>
+    <div class="tab adm" onclick="goTab(this,'t-res')" style="display:none">Resultados reales</div>
+    <div class="tab adm" onclick="goTab(this,'t-gest')" style="display:none">Gestión</div>
   </div>
-  <div class="tab-panel active" id="tab-pronosticos">
+
+  <div class="panel active" id="t-pron">
     <div class="sub-tabs">
-      <div class="sub-tab active" data-sub="grupos" onclick="switchSub(this)">Fase de grupos</div>
-      <div class="sub-tab" data-sub="dieciseisavos" onclick="switchSub(this)">Dieciseisavos de final</div>
+      <div class="sub-tab active" onclick="goSub(this,'s-grupos')">Fase de grupos</div>
+      <div class="sub-tab" onclick="goSub(this,'s-dss')">Dieciseisavos</div>
+      <div class="sub-tab" onclick="goSub(this,'s-oct')">Octavos</div>
     </div>
-    <div class="sub-panel active" id="sub-grupos"><div id="grupos-content"></div></div>
-    <div class="sub-panel" id="sub-dieciseisavos"><div id="dieciseisavos-content"></div></div>
-    <div class="save-bar"><span class="save-msg" id="save-msg"></span><button class="btn primary" onclick="saveAll()" id="save-btn"><i class="ti ti-device-floppy"></i> Guardar pronósticos</button></div>
+    <div class="sub-panel active" id="s-grupos"><div id="c-grupos"></div></div>
+    <div class="sub-panel" id="s-dss"><div id="c-dss"></div></div>
+    <div class="sub-panel" id="s-oct"><div id="c-oct"></div></div>
+    <div class="save-bar">
+      <span class="save-msg" id="save-msg"></span>
+      <button class="btn primary" onclick="doSave()">💾 Guardar pronósticos</button>
+    </div>
   </div>
-  <div class="tab-panel" id="tab-standings"><div id="standings-content"></div></div>
-  <div class="tab-panel" id="tab-transparencia"><div id="transparencia-content"></div></div>
-  <div class="tab-panel" id="tab-resultados"><div id="resultados-content"></div></div>
-  <div class="tab-panel" id="tab-gestion"><div id="gestion-content"></div></div>
+
+  <div class="panel" id="t-stand"><div id="c-stand"></div></div>
+  <div class="panel" id="t-trans"><div id="c-trans"></div></div>
+  <div class="panel" id="t-res"><div id="c-res"></div></div>
+  <div class="panel" id="t-gest"><div id="c-gest"></div></div>
 </div>
 </div>
 
-<!-- Firebase SDK -->
-<!-- Firebase Compat (no module needed) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <script>
-// ── FIREBASE CONFIG ───────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyA5wUCZeuKkB0ugGtwqvA7I4Iq4Rgis2cE",
-  authDomain: "polla2026-ab.firebaseapp.com",
-  projectId: "polla2026-ab",
-  storageBucket: "polla2026-ab.firebasestorage.app",
-  messagingSenderId: "127070151549",
-  appId: "1:127070151549:web:5f987c3c6117e8e4ef2214"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+firebase.initializeApp({
+  apiKey:"AIzaSyA5wUCZeuKkB0ugGtwqvA7I4Iq4Rgis2cE",
+  authDomain:"polla2026-ab.firebaseapp.com",
+  projectId:"polla2026-ab",
+  storageBucket:"polla2026-ab.firebasestorage.app",
+  messagingSenderId:"127070151549",
+  appId:"1:127070151549:web:5f987c3c6117e8e4ef2214"
+});
+var db=firebase.firestore();
 
-// ── CONFIG ────────────────────────────────────────────────────
-const ADMIN_PASS = "polla2026";
-const DEADLINE = new Date("2026-06-11T13:00:00-05:00");
-function isDeadlinePassed(){ return new Date() > DEADLINE; }
-function deadlineBanner(){
-  if(!isDeadlinePassed()) return "";
-  return `<div class="notice warn"><i class="ti ti-lock"></i> El plazo venció el 11 de junio a la 1:00 pm. Solo puedes consultar.</div>`;
-}
+var ADMIN_PASS="polla2026";
+var DEADLINE=new Date("2026-06-11T13:00:00-05:00");
+function locked(){return new Date()>DEADLINE;}
 
-const GRP = {
+var GRP={
   A:["México","Sudáfrica","Corea del Sur","Chequia"],
   B:["Canadá","Bosnia","Catar","Suiza"],
   C:["Brasil","Marruecos","Haiti","Escocia"],
@@ -217,621 +204,838 @@ const GRP = {
   L:["Inglaterra","Croacia","Ghana","Panamá"]
 };
 
-const MATCHES = {};
-Object.keys(GRP).forEach(g => {
-  const t = GRP[g];
-  MATCHES[g] = [
-    {id:`${g}1`,t1:t[0],t2:t[1]},{id:`${g}2`,t1:t[0],t2:t[2]},{id:`${g}3`,t1:t[0],t2:t[3]},
-    {id:`${g}4`,t1:t[1],t2:t[2]},{id:`${g}5`,t1:t[1],t2:t[3]},{id:`${g}6`,t1:t[2],t2:t[3]}
+var MATCHES={};
+Object.keys(GRP).forEach(function(g){
+  var t=GRP[g];
+  MATCHES[g]=[
+    {id:g+"1",t1:t[0],t2:t[1]},{id:g+"2",t1:t[0],t2:t[2]},{id:g+"3",t1:t[0],t2:t[3]},
+    {id:g+"4",t1:t[1],t2:t[2]},{id:g+"5",t1:t[1],t2:t[3]},{id:g+"6",t1:t[2],t2:t[3]}
   ];
 });
 
-const BRACKET = [
-  {id:"R01",lbl:"Llave 1", t1g:"E",t1pos:1,t2g:"ABCDF",t2pos:"3best"},
-  {id:"R02",lbl:"Llave 2", t1g:"I",t1pos:1,t2g:"CDFGH",t2pos:"3best"},
-  {id:"R03",lbl:"Llave 3", t1g:"A",t1pos:2,t2g:"B",    t2pos:2},
-  {id:"R04",lbl:"Llave 4", t1g:"F",t1pos:1,t2g:"C",    t2pos:2},
-  {id:"R05",lbl:"Llave 5", t1g:"K",t1pos:2,t2g:"L",    t2pos:2},
-  {id:"R06",lbl:"Llave 6", t1g:"H",t1pos:1,t2g:"J",    t2pos:2},
-  {id:"R07",lbl:"Llave 7", t1g:"D",t1pos:1,t2g:"BEFIJ",t2pos:"3best"},
-  {id:"R08",lbl:"Llave 8", t1g:"C",t1pos:1,t2g:"F",    t2pos:2},
-  {id:"R09",lbl:"Llave 9", t1g:"E",t1pos:2,t2g:"I",    t2pos:2},
-  {id:"R10",lbl:"Llave 10",t1g:"A",t1pos:1,t2g:"CEFHI",t2pos:"3best"},
-  {id:"R11",lbl:"Llave 11",t1g:"L",t1pos:1,t2g:"EHIJK",t2pos:"3best"},
-  {id:"R12",lbl:"Llave 12",t1g:"J",t1pos:1,t2g:"H",    t2pos:2},
-  {id:"R13",lbl:"Llave 13",t1g:"D",t1pos:2,t2g:"G",    t2pos:2},
-  {id:"R14",lbl:"Llave 14",t1g:"B",t1pos:1,t2g:"EFGIJ",t2pos:"3best"},
-  {id:"R15",lbl:"Llave 15",t1g:"K",t1pos:1,t2g:"ABCDF",t2pos:"3best"},
-  {id:"R16",lbl:"Llave 16",t1g:"G",t1pos:1,t2g:"L",    t2pos:2},
+// 16 llaves Dieciseisavos
+var DSS=[
+  {id:"R01",lbl:"Llave 1", t1g:"E",t1p:1,t2g:"ABCDF",t2p:"3b"},
+  {id:"R02",lbl:"Llave 2", t1g:"I",t1p:1,t2g:"CDFGH",t2p:"3b"},
+  {id:"R03",lbl:"Llave 3", t1g:"A",t1p:2,t2g:"B",    t2p:2},
+  {id:"R04",lbl:"Llave 4", t1g:"F",t1p:1,t2g:"C",    t2p:2},
+  {id:"R05",lbl:"Llave 5", t1g:"K",t1p:2,t2g:"L",    t2p:2},
+  {id:"R06",lbl:"Llave 6", t1g:"H",t1p:1,t2g:"J",    t2p:2},
+  {id:"R07",lbl:"Llave 7", t1g:"D",t1p:1,t2g:"BEFIJ",t2p:"3b"},
+  {id:"R08",lbl:"Llave 8", t1g:"G",t1p:1,t2g:"AEHIJ",t2p:"3b"},
+  {id:"R09",lbl:"Llave 9", t1g:"C",t1p:1,t2g:"F",    t2p:2},
+  {id:"R10",lbl:"Llave 10",t1g:"E",t1p:2,t2g:"I",    t2p:2},
+  {id:"R11",lbl:"Llave 11",t1g:"A",t1p:1,t2g:"CEFHI",t2p:"3b"},
+  {id:"R12",lbl:"Llave 12",t1g:"L",t1p:1,t2g:"EHIJK",t2p:"3b"},
+  {id:"R13",lbl:"Llave 13",t1g:"J",t1p:1,t2g:"H",    t2p:2},
+  {id:"R14",lbl:"Llave 14",t1g:"D",t1p:2,t2g:"G",    t2p:2},
+  {id:"R15",lbl:"Llave 15",t1g:"B",t1p:1,t2g:"EFGIJ",t2p:"3b"},
+  {id:"R16",lbl:"Llave 16",t1g:"K",t1p:1,t2g:"DEIJL",t2p:"3b"}
 ];
 
-// ── STATE ─────────────────────────────────────────────────────
-let currentUser = null, currentRole = null;
-let state = { participants:{}, realResults:{}, octResults:{} };
-let unsubscribeDB = null;
+// 8 llaves Octavos (calculadas de DSS)
+var OCT=[
+  {id:"O01",lbl:"Octavo 1", w1:"R01",w2:"R02"},
+  {id:"O02",lbl:"Octavo 2", w1:"R03",w2:"R04"},
+  {id:"O03",lbl:"Octavo 3", w1:"R05",w2:"R06"},
+  {id:"O04",lbl:"Octavo 4", w1:"R07",w2:"R08"},
+  {id:"O05",lbl:"Octavo 5", w1:"R09",w2:"R10"},
+  {id:"O06",lbl:"Octavo 6", w1:"R11",w2:"R12"},
+  {id:"O07",lbl:"Octavo 7", w1:"R13",w2:"R14"},
+  {id:"O08",lbl:"Octavo 8", w1:"R15",w2:"R16"}
+];
 
-// ── FIREBASE ──────────────────────────────────────────────────
-function setSyncBadge(status, msg){
-  const el = document.getElementById("sync-badge");
-  el.style.display = "inline-flex";
-  el.className = `sync-indicator sync-${status}`;
-  el.textContent = msg;
-  if(status==="ok") setTimeout(()=>{ el.style.display="none"; }, 3000);
+var CU=null,CR=null;
+var ST={participants:{},realResults:{},octResults:{},dssResults:{}};
+var unsub=null;
+
+// ── FIREBASE ─────────────────────────────────────────────────
+function setBadge(s,m){
+  var el=document.getElementById("sync");
+  el.className="sync "+s;el.textContent=m;el.style.display="inline-flex";
+  if(s==="ok")setTimeout(function(){el.style.display="none";},3000);
 }
-
-async function fbSave(){
-  try {
-    setSyncBadge("loading","Guardando...");
-    await db.collection("polla2026").doc("state").set(state);
-    setSyncBadge("ok","Guardado ✓");
-  } catch(e){ setSyncBadge("err","Error al guardar"); console.error(e); }
+function fbSave(cb){
+  setBadge("loading","Guardando...");
+  db.collection("polla2026").doc("state").set(ST)
+    .then(function(){setBadge("ok","Guardado ✓");if(cb)cb();})
+    .catch(function(e){setBadge("err","Error");console.error(e);});
 }
-
 function fbListen(){
-  if(unsubscribeDB) unsubscribeDB();
-  unsubscribeDB = db.collection("polla2026").doc("state").onSnapshot(snap => {
+  if(unsub)unsub();
+  unsub=db.collection("polla2026").doc("state").onSnapshot(function(snap){
     if(snap.exists){
-      const remote = snap.data();
-      state.realResults = remote.realResults || {};
-      state.octResults  = remote.octResults  || {};
-      Object.keys(remote.participants||{}).forEach(name => {
-        if(name !== currentUser) state.participants[name] = remote.participants[name];
+      var r=snap.data();
+      ST.realResults=r.realResults||{};
+      ST.octResults=r.octResults||{};
+      ST.dssResults=r.dssResults||{};
+      Object.keys(r.participants||{}).forEach(function(n){
+        if(n!==CU)ST.participants[n]=r.participants[n];
       });
-      if(document.getElementById("tab-standings").classList.contains("active")) renderStandings();
-      if(document.getElementById("tab-transparencia").classList.contains("active")) renderTransparencia();
-      if(document.getElementById("tab-gestion").classList.contains("active")) renderGestion();
+      if(isActive("t-stand"))buildStand();
+      if(isActive("t-trans"))buildTrans();
+      if(isActive("t-gest"))buildGest();
     }
-  }, err => { setSyncBadge("err","Sin conexión"); });
+  },function(){setBadge("err","Sin conexión");});
 }
+function isActive(id){return document.getElementById(id).classList.contains("active");}
 
-async function init(){
-  try {
-    const snap = await db.collection("polla2026").doc("state").get();
-    if(snap.exists) state = snap.data();
-    document.getElementById("loading-screen").style.display = "none";
-    const session = loadSession();
-    if(session){
-      if(session.role==="admin"){
-        currentUser=session.user; currentRole="admin";
-        document.getElementById("main-screen").style.display="block";
-        document.getElementById("user-badge").textContent="admin (Admin)";
-        document.getElementById("logout-btn").style.display="block";
-        document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
-        fbListen(); renderGrupos(); renderStandings();
-      } else if(state.participants && state.participants[session.user]){
-        currentUser=session.user; currentRole="participant";
-        document.getElementById("main-screen").style.display="block";
-        document.getElementById("user-badge").textContent=state.participants[session.user].displayName||session.user;
-        document.getElementById("logout-btn").style.display="block";
-        fbListen(); renderGrupos(); renderStandings();
-      } else {
-        clearSession();
-        document.getElementById("auth-screen").style.display="block";
-      }
-    } else {
-      document.getElementById("auth-screen").style.display="block";
-    }
-  } catch(e){
-    document.getElementById("loading-screen").innerHTML=
-      `<i class="ti ti-wifi-off" style="font-size:36px;color:var(--red)"></i>
-       <span style="color:var(--red);font-weight:500">Error de conexión con Firebase</span>
-       <span style="font-size:12px;color:var(--muted)">${e.message}</span>`;
-    console.error(e);
-  }
+// ── SESSION ──────────────────────────────────────────────────
+function saveSession(u,r){localStorage.setItem("p26s",JSON.stringify({u:u,r:r}));}
+function clearSession(){localStorage.removeItem("p26s");}
+function loadSession(){try{return JSON.parse(localStorage.getItem("p26s"));}catch(e){return null;}}
+
+// ── INIT ─────────────────────────────────────────────────────
+function show(id){
+  ["screen-loading","screen-auth","screen-main"].forEach(function(s){
+    document.getElementById(s).style.display=s===id?"block":"none";
+  });
 }
+db.collection("polla2026").doc("state").get()
+  .then(function(snap){
+    if(snap.exists)ST=snap.data();
+    if(!ST.participants)ST.participants={};
+    if(!ST.realResults)ST.realResults={};
+    if(!ST.octResults)ST.octResults={};
+    if(!ST.dssResults)ST.dssResults={};
+    var ses=loadSession();
+    if(ses){
+      if(ses.r==="admin"){enterApp("admin","admin");}
+      else if(ST.participants[ses.u]){enterApp(ses.u,"participant");}
+      else{clearSession();show("screen-auth");}
+    }else{show("screen-auth");}
+  })
+  .catch(function(e){
+    document.getElementById("screen-loading").innerHTML=
+      '<div style="color:var(--red);text-align:center;padding:40px"><i class="ti ti-wifi-off" style="font-size:36px;display:block;margin-bottom:8px"></i>Error de conexión<br><small>'+e.message+'</small></div>';
+  });
 
-// ── SESSION ───────────────────────────────────────────────────
-function saveSession(user,role){ localStorage.setItem("polla2026_session",JSON.stringify({user,role})); }
-function clearSession(){ localStorage.removeItem("polla2026_session"); }
-function loadSession(){ try{ return JSON.parse(localStorage.getItem("polla2026_session")); }catch(e){return null;} }
-
-// ── AUTH ──────────────────────────────────────────────────────
-function showError(msg){ const el=document.getElementById("login-error"); el.textContent=msg; el.style.display="block"; }
-
-function toggleAdminLogin(){
-  const s=document.getElementById("admin-login-section");
-  s.style.display = s.style.display==="none"?"block":"none";
+// ── AUTH ─────────────────────────────────────────────────────
+function showErr(m){var el=document.getElementById("login-err");el.textContent=m;el.style.display="block";}
+function enterApp(u,r){
+  CU=u;CR=r;saveSession(u,r);
+  var dn=r==="admin"?"admin":((ST.participants[u]&&ST.participants[u].displayName)||u);
+  document.getElementById("ubadge").textContent=dn+(r==="admin"?" (Admin)":"");
+  document.getElementById("logoutbtn").style.display="block";
+  if(r==="admin")document.querySelectorAll(".adm").forEach(function(el){el.style.display="block";});
+  show("screen-main");fbListen();buildGrupos();buildStand();
 }
-
-function enterApp(name, role){
-  currentUser=name; currentRole=role;
-  saveSession(name,role);
-  document.getElementById("auth-screen").style.display="none";
-  document.getElementById("main-screen").style.display="block";
-  const dn = role==="admin"?"admin":(state.participants[name]?.displayName||name);
-  document.getElementById("user-badge").textContent = dn+(role==="admin"?" (Admin)":"");
-  document.getElementById("logout-btn").style.display="block";
-  if(role==="admin") document.querySelectorAll(".admin-only").forEach(el=>el.style.display="block");
-  fbListen(); renderGrupos(); renderStandings();
-}
-
 function doLogin(){
-  const username = document.getElementById("login-user").value.trim().toLowerCase();
-  const pin = document.getElementById("login-pin").value.trim();
-  if(!username){ showError("Ingresa tu usuario"); return; }
-  if(pin.length!==4||isNaN(pin)){ showError("El PIN debe ser de 4 dígitos"); return; }
-  const userData = state.participants[username];
-  if(!userData){ showError("Usuario no encontrado. Contacta al organizador."); return; }
-  if(userData.pin !== pin){ showError("PIN incorrecto"); return; }
-  enterApp(username,"participant");
+  var u=document.getElementById("inp-user").value.trim().toLowerCase();
+  var p=document.getElementById("inp-pin").value.trim();
+  if(!u){showErr("Ingresa tu usuario");return;}
+  if(p.length!==4||isNaN(p)){showErr("PIN debe ser 4 dígitos");return;}
+  if(!ST.participants||!ST.participants[u]){showErr("Usuario no encontrado");return;}
+  if(ST.participants[u].pin!==p){showErr("PIN incorrecto");return;}
+  enterApp(u,"participant");
 }
-
 function doAdminLogin(){
-  const pass = document.getElementById("admin-pass").value;
-  if(pass !== ADMIN_PASS){ showError("Contraseña incorrecta"); return; }
+  if(document.getElementById("inp-apass").value!==ADMIN_PASS){showErr("Contraseña incorrecta");return;}
   enterApp("admin","admin");
 }
-
-function logout(){
-  if(unsubscribeDB){ unsubscribeDB(); unsubscribeDB=null; }
-  currentUser=null; currentRole=null; clearSession();
-  document.getElementById("auth-screen").style.display="block";
-  document.getElementById("main-screen").style.display="none";
-  document.getElementById("logout-btn").style.display="none";
-  document.getElementById("user-badge").textContent="";
-  document.getElementById("login-user").value="";
-  document.getElementById("login-pin").value="";
-  document.getElementById("login-error").style.display="none";
-  document.querySelectorAll(".admin-only").forEach(el=>el.style.display="none");
-  switchTabById("pronosticos");
-  document.querySelector('.sub-tab[data-sub="grupos"]').click();
+function doLogout(){
+  if(unsub){unsub();unsub=null;}
+  CU=null;CR=null;clearSession();
+  document.querySelectorAll(".adm").forEach(function(el){el.style.display="none";});
+  document.getElementById("ubadge").textContent="";
+  document.getElementById("logoutbtn").style.display="none";
+  document.getElementById("inp-user").value="";
+  document.getElementById("inp-pin").value="";
+  document.getElementById("login-err").style.display="none";
+  show("screen-auth");
 }
 
-// ── NAV ───────────────────────────────────────────────────────
-function switchTab(el){
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
+// ── NAV ──────────────────────────────────────────────────────
+function goTab(el,id){
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");});
+  document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active");});
   el.classList.add("active");
-  const tab=el.dataset.tab;
-  document.getElementById("tab-"+tab).classList.add("active");
-  if(tab==="standings")     renderStandings();
-  if(tab==="resultados")    renderResultados();
-  if(tab==="gestion")       renderGestion();
-  if(tab==="transparencia") renderTransparencia();
+  document.getElementById(id).classList.add("active");
+  if(id==="t-stand")buildStand();
+  if(id==="t-res")buildRes();
+  if(id==="t-gest")buildGest();
+  if(id==="t-trans")buildTrans();
 }
-function switchTabById(id){ const el=document.querySelector(`.tab[data-tab="${id}"]`); if(el) switchTab(el); }
-
-function switchSub(el){
-  document.querySelectorAll(".sub-tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".sub-panel").forEach(p=>p.classList.remove("active"));
+function goSub(el,id){
+  document.querySelectorAll(".sub-tab").forEach(function(t){t.classList.remove("active");});
+  document.querySelectorAll(".sub-panel").forEach(function(p){p.classList.remove("active");});
   el.classList.add("active");
-  const sub=el.dataset.sub;
-  document.getElementById("sub-"+sub).classList.add("active");
-  if(sub==="grupos")        renderGrupos();
-  if(sub==="dieciseisavos") renderDieciseisavos();
+  document.getElementById(id).classList.add("active");
+  if(id==="s-grupos")buildGrupos();
+  if(id==="s-dss")buildDss();
+  if(id==="s-oct")buildOct();
 }
 
-// ── MATH ──────────────────────────────────────────────────────
-function calcGroupTable(g, forecasts){
-  const tbl={};
-  GRP[g].forEach(t=>{ tbl[t]={pts:0,gf:0,ga:0,gd:0}; });
-  MATCHES[g].forEach(m=>{
-    const f=forecasts[m.id]||{};
-    if(f.s1===undefined||f.s2===undefined) return;
-    const g1=parseInt(f.s1),g2=parseInt(f.s2);
-    tbl[m.t1].gf+=g1; tbl[m.t1].ga+=g2; tbl[m.t1].gd+=g1-g2;
-    tbl[m.t2].gf+=g2; tbl[m.t2].ga+=g1; tbl[m.t2].gd+=g2-g1;
-    if(g1>g2){ tbl[m.t1].pts+=3; } else if(g2>g1){ tbl[m.t2].pts+=3; } else { tbl[m.t1].pts+=1; tbl[m.t2].pts+=1; }
+// ── MATH ─────────────────────────────────────────────────────
+function calcGrp(g,fc,fp){
+  var tbl={};
+  GRP[g].forEach(function(t){tbl[t]={pts:0,gf:0,ga:0,gd:0,fp:0};});
+  MATCHES[g].forEach(function(m){
+    var f=fc[m.id]||{};
+    if(f.s1===undefined||f.s2===undefined)return;
+    var g1=parseInt(f.s1),g2=parseInt(f.s2);
+    tbl[m.t1].gf+=g1;tbl[m.t1].ga+=g2;tbl[m.t1].gd+=g1-g2;
+    tbl[m.t2].gf+=g2;tbl[m.t2].ga+=g1;tbl[m.t2].gd+=g2-g1;
+    if(g1>g2){tbl[m.t1].pts+=3;}else if(g2>g1){tbl[m.t2].pts+=3;}else{tbl[m.t1].pts+=1;tbl[m.t2].pts+=1;}
   });
-  const sorted=GRP[g].slice().sort((a,b)=>{
-    if(tbl[b].pts!==tbl[a].pts) return tbl[b].pts-tbl[a].pts;
-    if(tbl[b].gd!==tbl[a].gd) return tbl[b].gd-tbl[a].gd;
-    return tbl[b].gf-tbl[a].gf;
+  // apply fair play if provided
+  if(fp){GRP[g].forEach(function(t){if(fp[t]!==undefined)tbl[t].fp=parseFloat(fp[t])||0;});}
+  var sorted=GRP[g].slice().sort(function(a,b){
+    if(tbl[b].pts!==tbl[a].pts)return tbl[b].pts-tbl[a].pts;
+    if(tbl[b].gd!==tbl[a].gd)return tbl[b].gd-tbl[a].gd;
+    if(tbl[b].gf!==tbl[a].gf)return tbl[b].gf-tbl[a].gf;
+    return tbl[a].fp-tbl[b].fp; // lower FP = better
   });
-  return {tbl,sorted};
+  return {tbl:tbl,sorted:sorted};
 }
 
-function getBestThird(cgsStr,forecasts){
-  const thirds=[...cgsStr].map(g=>{
-    const{tbl,sorted}=calcGroupTable(g,forecasts);
-    const third=sorted[2]||GRP[g][2];
-    const s=tbl[third]||{pts:0,gd:0,gf:0};
-    return{team:third,pts:s.pts,gd:s.gd,gf:s.gf};
+// detect if group needs fair play tiebreaker
+function needsFP(g,fc){
+  var r=calcGrp(g,fc,null);
+  var tbl=r.tbl,teams=GRP[g];
+  // find groups of 3+ with identical pts+gd+gf
+  var groups={};
+  teams.forEach(function(t){
+    var k=tbl[t].pts+"|"+tbl[t].gd+"|"+tbl[t].gf;
+    if(!groups[k])groups[k]=[];
+    groups[k].push(t);
   });
-  thirds.sort((a,b)=>b.pts!==a.pts?b.pts-a.pts:b.gd!==a.gd?b.gd-a.gd:b.gf-a.gf);
-  return thirds[0]?thirds[0].team:"?";
+  return Object.values(groups).some(function(arr){return arr.length>=3;});
 }
 
-function computeBracket(forecasts){
-  const bk={};
-  BRACKET.forEach(lv=>{
-    const{sorted:s1}=calcGroupTable(lv.t1g,forecasts);
-    const t1=s1[lv.t1pos-1]||"?";
-    let t2;
-    if(typeof lv.t2pos==="number"){ const{sorted:s2}=calcGroupTable(lv.t2g,forecasts); t2=s2[lv.t2pos-1]||"?"; }
-    else{ t2=getBestThird(lv.t2g,forecasts); }
-    bk[lv.id]={t1,t2};
+// Get ranked list of all 8 best thirds globally
+function getTop8Thirds(fc,fp){
+  var all=Object.keys(GRP).map(function(g){
+    var r=calcGrp(g,fc,fp?fp[g]:null);
+    var t=r.sorted[2]||GRP[g][2];
+    var s=r.tbl[t]||{pts:0,gd:0,gf:0,fp:0};
+    return{team:t,group:g,pts:s.pts,gd:s.gd,gf:s.gf,fp:s.fp};
+  });
+  all.sort(function(a,b){
+    if(b.pts!==a.pts)return b.pts-a.pts;
+    if(b.gd!==a.gd)return b.gd-a.gd;
+    if(b.gf!==a.gf)return b.gf-a.gf;
+    return a.fp-b.fp;
+  });
+  return all.slice(0,8); // top 8 of 12
+}
+
+// Get which thirds are already assigned in other 3b slots
+function getUsedThirds(dssAdvances, excludeId){
+  var used={};
+  DSS.forEach(function(lv){
+    if(lv.t2p==="3b" && lv.id!==excludeId){
+      var v=dssAdvances[lv.id+"_3b"];
+      if(v)used[v]=true;
+    }
+  });
+  return used;
+}
+
+function calcDssBracket(fc,fp,dssAdvances){
+  var bk={};
+  var top8=getTop8Thirds(fc,fp);
+  var top8groups=top8.map(function(x){return x.group;});
+  DSS.forEach(function(lv){
+    var t1=calcGrp(lv.t1g,fc,fp?fp[lv.t1g]:null).sorted[lv.t1p-1]||"?";
+    var t2;
+    if(lv.t2p==="3b"){
+      // get candidate groups = intersection of lv.t2g groups AND top8 groups
+      var cands=lv.t2g.split("").filter(function(g){return top8groups.indexOf(g)>=0;});
+      // check if user already picked for this slot
+      var picked=dssAdvances?dssAdvances[lv.id+"_3b"]:"";
+      if(picked){t2=picked;}
+      else{
+        // show first available candidate as default
+        t2=cands.length>0?(top8.find(function(x){return cands.indexOf(x.group)>=0;})||{team:"?"}).team:"?";
+      }
+    } else {
+      t2=calcGrp(lv.t2g,fc,fp?fp[lv.t2g]:null).sorted[lv.t2p-1]||"?";
+    }
+    bk[lv.id]={t1:t1,t2:t2};
   });
   return bk;
 }
 
-function getP(name){ name=name||currentUser; return state.participants[name]||{forecasts:{},dssForecasts:{},dssAdvances:{}}; }
+function calcOctBracket(dssAdv){
+  var bk={};
+  OCT.forEach(function(o){
+    bk[o.id]={t1:dssAdv[o.w1]||"?",t2:dssAdv[o.w2]||"?"};
+  });
+  return bk;
+}
 
-// ── RENDER GRUPOS ─────────────────────────────────────────────
-function renderGrupos(){
-  const el=document.getElementById("grupos-content"); if(!el) return;
-  const isAdmin=currentRole==="admin";
-  const locked=isDeadlinePassed()&&!isAdmin;
-  const p=isAdmin?null:getP();
-  let html=isAdmin
-    ?`<div class="notice warn"><i class="ti ti-shield"></i> Vista admin — solo lectura.</div>`
-    :locked?deadlineBanner()
-    :`<div class="notice info"><i class="ti ti-info-circle"></i> Ingresa el marcador de cada partido. Los clasificados se calculan automáticamente.</div>`;
-  html+=`<div class="groups-grid">`;
-  Object.keys(GRP).forEach(g=>{
-    html+=`<div class="group-card"><div class="group-header"><span class="group-label">Grupo ${g}</span><span class="pts-badge">3 pts exacto · 1 pt ganador/empate</span></div><div class="group-body">`;
-    MATCHES[g].forEach(m=>{
-      const f=isAdmin?{}:(p.forecasts[m.id]||{});
-      const dis=(isAdmin||locked)?"disabled":"";
-      html+=`<div class="match-row">
-        <span class="team-name left" title="${m.t1}">${m.t1}</span>
-        <input class="score-inp" type="number" min="0" max="20" value="${f.s1??""}" placeholder="-" onchange="saveScore('${m.id}','s1',this.value)" ${dis}>
-        <span class="vs">vs</span>
-        <input class="score-inp" type="number" min="0" max="20" value="${f.s2??""}" placeholder="-" onchange="saveScore('${m.id}','s2',this.value)" ${dis}>
-        <span class="team-name right" title="${m.t2}">${m.t2}</span>
-      </div>`;
+function getP(n){n=n||CU;return ST.participants[n]||{forecasts:{},dssForecasts:{},dssAdvances:{},octForecasts:{},octAdvances:{},fairPlay:{}};}
+
+// ── BUILD GRUPOS ──────────────────────────────────────────────
+function buildGrupos(){
+  var el=document.getElementById("c-grupos");if(!el)return;
+  var adm=CR==="admin",lk=locked()&&!adm,p=adm?null:getP();
+  var h=adm?'<div class="notice warn">Vista admin — solo lectura.</div>'
+          :lk?'<div class="notice warn">⏰ Plazo vencido el 11 jun 1pm. Solo consulta.</div>'
+             :'<div class="notice info">Ingresa el marcador de cada partido. Los clasificados se calculan automáticamente y arman las llaves de Dieciseisavos.</div>';
+  h+='<div class="groups-grid">';
+  Object.keys(GRP).forEach(function(g){
+    var fp=adm?{}:((p.fairPlay&&p.fairPlay[g])||{});
+    var hasFP=!adm&&needsFP(g,p.forecasts||{});
+    h+='<div class="gcard"><div class="ghead"><span class="glabel">Grupo '+g+'</span><span class="gbadge">3 pts exacto · 1 pt ganador</span></div><div class="gbody">';
+    MATCHES[g].forEach(function(m){
+      var f=adm?{}:(p.forecasts[m.id]||{});
+      var d=(adm||lk)?"disabled":"";
+      h+='<div class="mrow">'
+        +'<span class="tname l" title="'+m.t1+'">'+m.t1+'</span>'
+        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s1!==undefined?f.s1:"")+'" placeholder="-" onchange="onScore(\''+g+'\',\''+m.id+'\',\'s1\',this.value)" '+d+'>'
+        +'<span class="vs">vs</span>'
+        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s2!==undefined?f.s2:"")+'" placeholder="-" onchange="onScore(\''+g+'\',\''+m.id+'\',\'s2\',this.value)" '+d+'>'
+        +'<span class="tname r" title="'+m.t2+'">'+m.t2+'</span>'
+        +'</div>';
     });
-    html+=`</div></div>`;
+    if(hasFP&&!adm&&!lk){
+      h+='<div class="fp-row"><label>⚖️ Fair Play FIFA requerido — ingresa penalización estimada por equipo:</label></div>';
+      GRP[g].forEach(function(t){
+        var v=fp[t]!==undefined?fp[t]:"";
+        h+='<div class="fp-row"><label>'+t+'</label>'
+          +'<input class="fp-inp" type="number" min="0" step="0.1" value="'+v+'" placeholder="0" onchange="onFP(\''+g+'\',\''+t+'\',this.value)">'
+          +'</div>';
+      });
+    }
+    h+='</div></div>';
   });
-  html+=`</div>`;
-  el.innerHTML=html;
+  h+='</div>';
+  el.innerHTML=h;
 }
 
-// ── RENDER DIECISEISAVOS ──────────────────────────────────────
-function renderDieciseisavos(){
-  const el=document.getElementById("dieciseisavos-content"); if(!el) return;
-  const isAdmin=currentRole==="admin";
-  const locked=isDeadlinePassed()&&!isAdmin;
-  const p=isAdmin?null:getP();
-  const bk=isAdmin?{}:computeBracket(p.forecasts||{});
-  let html=!isAdmin?(locked?deadlineBanner():`<div class="notice info"><i class="ti ti-bulb"></i> Los equipos se calcularon de tus marcadores de grupos. Solo ingresa el marcador y quién avanza.</div>`):"";
-  html+=`<div class="dss-grid">`;
-  BRACKET.forEach(lv=>{
-    const comp=bk[lv.id]||{t1:"?",t2:"?"};
-    const t1=comp.t1,t2=comp.t2;
-    const of=isAdmin?{}:(p.dssForecasts[lv.id]||{});
-    const oa=isAdmin?"":(p.dssAdvances[lv.id]||"");
-    const dis=(isAdmin||locked)?"disabled":"";
-    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Grupo ${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
-    html+=`<div class="dss-card">
-      <div class="dss-title">${lv.lbl}</div>
-      <div class="dss-desc">${lv.t1pos}° Grupo ${lv.t1g} vs ${t2desc}</div>
-      <div class="dss-match">
-        <span class="dss-team-label left ${t1==="?"?"pending":""}">${t1}</span>
-        <input class="score-inp" type="number" min="0" max="20" value="${of.s1??""}" placeholder="-" onchange="saveDssScore('${lv.id}','s1',this.value)" ${dis}>
-        <span class="vs">vs</span>
-        <input class="score-inp" type="number" min="0" max="20" value="${of.s2??""}" placeholder="-" onchange="saveDssScore('${lv.id}','s2',this.value)" ${dis}>
-        <span class="dss-team-label ${t2==="?"?"pending":""}">${t2}</span>
-      </div>
-      <select class="advance-pick" onchange="saveDssAdvance('${lv.id}',this.value)" ${dis}>
-        <option value="">-- ¿Quién avanza a la siguiente fase? --</option>
-        <option value="${t1}" ${oa===t1&&t1!=="?"?"selected":""}>${t1==="?"?"Pendiente":t1}</option>
-        <option value="${t2}" ${oa===t2&&t2!=="?"?"selected":""}>${t2==="?"?"Pendiente":t2}</option>
-      </select>
-    </div>`;
+// ── BUILD DSS ─────────────────────────────────────────────────
+function buildDss(){
+  var el=document.getElementById("c-dss");if(!el)return;
+  var adm=CR==="admin",lk=locked()&&!adm,p=adm?null:getP();
+  var fc=adm?{}:(p.forecasts||{});
+  var fp=adm?{}:(p.fairPlay||{});
+  var dssAdv=adm?{}:(p.dssAdvances||{});
+  var bk=adm?{}:calcDssBracket(fc,fp,dssAdv);
+  var top8=adm?[]:getTop8Thirds(fc,fp);
+  var top8groups=top8.map(function(x){return x.group;});
+  // track which slot has used which group
+  var usedGroups={};
+  DSS.forEach(function(lv){
+    if(lv.t2p==="3b"){var v=dssAdv[lv.id+"_3b"];if(v)usedGroups[v]=lv.id;}
   });
-  html+=`</div>`;
-  el.innerHTML=html;
+  var h=!adm?(lk?'<div class="notice warn">⏰ Plazo vencido.</div>'
+    :'<div class="notice info">Equipos calculados de tus grupos. En llaves con <span style="color:var(--gl)">Mejor 3°</span> elige uno de los 8 mejores terceros disponibles — cada equipo solo puede aparecer en una llave.</div>'):"";
+  // top8 summary
+  if(!adm&&!lk&&top8.length>0){
+    h+='<div class="notice gold" style="margin-bottom:12px"><strong>🏅 8 mejores terceros clasificados:</strong><br>';
+    top8.forEach(function(x,i){
+      var used=usedGroups[x.group];
+      var badge=used?(' <span style="font-size:10px;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:10px">→ '+used+'</span>'):"";
+      h+=(i+1)+'. <strong>'+x.team+'</strong> (Gr.'+x.group+') '+x.pts+'pts GD:'+x.gd+' GF:'+x.gf+badge+'<br>';
+    });
+    h+='</div>';
+  }
+  h+='<div class="dss-grid">';
+  DSS.forEach(function(lv){
+    var comp=bk[lv.id]||{t1:"?",t2:"?"};
+    var t1=comp.t1;
+    var of=adm?{}:(p.dssForecasts[lv.id]||{});
+    var oa=adm?"":(dssAdv[lv.id]||"");
+    var d=(adm||lk)?"disabled":"";
+    var t2d=lv.t2p==="3b"?"Mejor 3° grupos "+lv.t2g:lv.t2p+"° Grupo "+lv.t2g;
+    var s1v=of.s1!==undefined?of.s1:"",s2v=of.s2!==undefined?of.s2:"";
+    var t2,t2Html="";
+    if(lv.t2p==="3b"&&!adm){
+      var picked3b=dssAdv[lv.id+"_3b"]||"";
+      var candGroups=lv.t2g.split("").filter(function(g){return top8groups.indexOf(g)>=0;});
+      var available=top8.filter(function(x){
+        return candGroups.indexOf(x.group)>=0&&(!usedGroups[x.group]||usedGroups[x.group]===lv.id);
+      });
+      t2=picked3b||(available[0]?available[0].team:"?");
+      if(!lk){
+        t2Html='<div style="margin-bottom:6px"><label style="font-size:10px;color:var(--gl);font-weight:500">Mejor 3° (grupos '+lv.t2g+')</label>'
+          +'<select style="width:100%;font-size:12px;padding:5px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="on3bPick(''+lv.id+'',this.value)">'
+          +'<option value="">-- Elige el mejor 3° --</option>';
+        available.forEach(function(x){
+          t2Html+='<option value="'+x.team+'"'+(picked3b===x.team?" selected":"")+'>'+x.team+' (Gr.'+x.group+') '+x.pts+'pts</option>';
+        });
+        if(available.length===0)t2Html+='<option value="" disabled>Sin terceros disponibles (llena los grupos primero)</option>';
+        t2Html+='</select></div>';
+      }
+    }else{t2=comp.t2;}
+    var autoAdv="";
+    if(s1v!==""&&s2v!==""){
+      var n1=parseInt(s1v),n2=parseInt(s2v);
+      if(!isNaN(n1)&&!isNaN(n2)&&n1!==n2)autoAdv=n1>n2?t1:t2;
+    }
+    var showAdvPick=!adm&&!lk&&(s1v===""||s2v===""||autoAdv==="");
+    h+='<div class="dcard">'
+      +'<div class="dtitle">'+lv.lbl+'</div>'
+      +'<div class="ddesc">'+lv.t1p+'° Grupo '+lv.t1g+' vs '+t2d+'</div>'
+      +t2Html
+      +'<div class="dmatch">'
+      +'<span class="dlabel l'+(t1==="?"?" pend":"")+'">'+t1+'</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s1v+'" placeholder="-" onchange="onDssScore(''+lv.id+'','s1',this.value)" '+d+'>'
+      +'<span class="vs">vs</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s2v+'" placeholder="-" onchange="onDssScore(''+lv.id+'','s2',this.value)" '+d+'>'
+      +'<span class="dlabel'+(t2==="?"?" pend":"")+'">'+t2+'</span>'
+      +'</div>';
+    if(autoAdv){
+      h+='<div style="font-size:11px;color:#16a34a;margin-top:6px;padding:4px 8px;background:#dcfce7;border-radius:4px">✓ Avanza: <strong>'+autoAdv+'</strong></div>';
+    }else if(showAdvPick){
+      h+='<select class="apick" onchange="onDssAdv(''+lv.id+'',this.value)" '+d+'>'
+        +'<option value="">-- ¿Quién avanza? (empate) --</option>'
+        +'<option value="'+t1+'"'+(oa===t1&&t1!=="?"?" selected":"")+'>'+(t1==="?"?"Pendiente":t1)+'</option>'
+        +'<option value="'+t2+'"'+(oa===t2&&t2!=="?"?" selected":"")+'>'+(t2==="?"?"Pendiente":t2)+'</option>'
+        +'</select>';
+    }
+    h+='</div>';
+  });
+  h+='</div>';
+  el.innerHTML=h;
 }
 
-// ── SAVES ─────────────────────────────────────────────────────
-function saveScore(matchId,side,val){
-  if(currentRole==="admin"||isDeadlinePassed()) return;
-  const p=getP(); if(!p.forecasts[matchId]) p.forecasts[matchId]={};
-  p.forecasts[matchId][side]=val===""?undefined:parseInt(val);
-  state.participants[currentUser]=p;
-  if(document.getElementById("sub-dieciseisavos").classList.contains("active")) renderDieciseisavos();
+// ── BUILD OCT ─────────────────────────────────────────────────
+function buildOct(){
+  var el=document.getElementById("c-oct");if(!el)return;
+  var adm=CR==="admin",lk=locked()&&!adm,p=adm?null:getP();
+  var dssAdv=adm?{}:(p.dssAdvances||{});
+  var bk=calcOctBracket(dssAdv);
+  var h=!adm?(lk?'<div class="notice warn">⏰ Plazo vencido.</div>':'<div class="notice info">Equipos calculados de tus pronósticos de Dieciseisavos. Ingresa marcador y quién avanza a Cuartos.</div>'):"";
+  h+='<div class="dss-grid">';
+  OCT.forEach(function(o){
+    var comp=bk[o.id]||{t1:"?",t2:"?"};
+    var t1=comp.t1,t2=comp.t2;
+    var of=adm?{}:(p.octForecasts[o.id]||{});
+    var oa=adm?"":(p.octAdvances[o.id]||"");
+    var d=(adm||lk)?"disabled":"";
+    var s1v=of.s1!==undefined?of.s1:"",s2v=of.s2!==undefined?of.s2:"";
+    var autoAdv="";
+    if(s1v!==""&&s2v!==""){
+      var n1=parseInt(s1v),n2=parseInt(s2v);
+      if(!isNaN(n1)&&!isNaN(n2)&&n1!==n2)autoAdv=n1>n2?t1:t2;
+    }
+    var showPick=!adm&&!lk&&(s1v===""||s2v===""||autoAdv==="");
+    h+='<div class="dcard">'
+      +'<div class="dtitle">'+o.lbl+'</div>'
+      +'<div class="ddesc">Ganador '+o.w1+' vs Ganador '+o.w2+'</div>'
+      +'<div class="dmatch">'
+      +'<span class="dlabel l'+(t1==="?"?" pend":"")+'">'+t1+'</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s1v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s1\',this.value)" '+d+'>'
+      +'<span class="vs">vs</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s2v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s2\',this.value)" '+d+'>'
+      +'<span class="dlabel'+(t2==="?"?" pend":"")+'">'+t2+'</span>'
+      +'</div>';
+    if(autoAdv){
+      h+='<div style="font-size:11px;color:#16a34a;margin-top:6px;padding:4px 8px;background:#dcfce7;border-radius:4px">✓ Avanza: <strong>'+autoAdv+'</strong></div>';
+    }else if(showPick){
+      h+='<select class="apick" onchange="onOctAdv(\''+o.id+'\',this.value)" '+d+'>'
+        +'<option value="">-- ¿Quién avanza a Cuartos? --</option>'
+        +'<option value="'+t1+'"'+(oa===t1&&t1!=="?"?" selected":"")+'>'+(t1==="?"?"Pendiente":t1)+'</option>'
+        +'<option value="'+t2+'"'+(oa===t2&&t2!=="?"?" selected":"")+'>'+(t2==="?"?"Pendiente":t2)+'</option>'
+        +'</select>';
+    }
+    h+='</div>';
+  });
+  h+='</div>';
+  el.innerHTML=h;
 }
-function saveDssScore(id,side,val){
-  if(currentRole==="admin"||isDeadlinePassed()) return;
-  const p=getP(); if(!p.dssForecasts[id]) p.dssForecasts[id]={};
+
+// ── SAVE HANDLERS ────────────────────────────────────────────
+function onScore(g,mid,side,val){
+  if(CR==="admin"||locked())return;
+  var p=getP();if(!p.forecasts[mid])p.forecasts[mid]={};
+  p.forecasts[mid][side]=val===""?undefined:parseInt(val);
+  ST.participants[CU]=p;
+  if(isActive("s-dss"))buildDss();
+  else buildGrupos(); // refresh FP visibility
+}
+function onFP(g,team,val){
+  if(CR==="admin"||locked())return;
+  var p=getP();if(!p.fairPlay)p.fairPlay={};if(!p.fairPlay[g])p.fairPlay[g]={};
+  p.fairPlay[g][team]=parseFloat(val)||0;
+  ST.participants[CU]=p;
+}
+function onDssScore(id,side,val){
+  if(CR==="admin"||locked())return;
+  var p=getP();if(!p.dssForecasts[id])p.dssForecasts[id]={};
   p.dssForecasts[id][side]=val===""?undefined:parseInt(val);
-  state.participants[currentUser]=p;
+  var f=p.dssForecasts[id];
+  if(f.s1!==undefined&&f.s2!==undefined){
+    var bk=calcDssBracket(p.forecasts||{},p.fairPlay||{},p.dssAdvances||{});
+    var teams=bk[id]||{t1:"?",t2:"?"};
+    if(parseInt(f.s1)>parseInt(f.s2))p.dssAdvances[id]=teams.t1;
+    else if(parseInt(f.s2)>parseInt(f.s1))p.dssAdvances[id]=teams.t2;
+    else delete p.dssAdvances[id];
+  }
+  ST.participants[CU]=p;
+  buildDss();
+  if(isActive("s-oct"))buildOct();
 }
-function saveDssAdvance(id,val){
-  if(currentRole==="admin"||isDeadlinePassed()) return;
-  const p=getP(); p.dssAdvances[id]=val; state.participants[currentUser]=p;
+function on3bPick(id,val){
+  if(CR==="admin"||locked())return;
+  var p=getP();
+  if(!p.dssAdvances)p.dssAdvances={};
+  p.dssAdvances[id+"_3b"]=val;
+  ST.participants[CU]=p;
+  buildDss(); // refresh to update used groups
+  if(isActive("s-oct"))buildOct();
 }
-async function saveAll(){
-  if(isDeadlinePassed()){ alert("El plazo para guardar pronósticos venció el 11 de junio a la 1:00 pm."); return; }
-  await fbSave();
-  const msg=document.getElementById("save-msg");
-  if(msg){ msg.textContent="Guardado en Firebase ✓"; setTimeout(()=>{ msg.textContent=""; },3000); }
+function onDssAdv(id,val){
+  if(CR==="admin"||locked())return;
+  var p=getP();p.dssAdvances[id]=val;ST.participants[CU]=p;
+  if(isActive("s-oct"))buildOct();
+}
+function onOctScore(id,side,val){
+  if(CR==="admin"||locked())return;
+  var p=getP();if(!p.octForecasts[id])p.octForecasts[id]={};
+  p.octForecasts[id][side]=val===""?undefined:parseInt(val);
+  var f=p.octForecasts[id];
+  if(f.s1!==undefined&&f.s2!==undefined){
+    var bk=calcOctBracket(p.dssAdvances||{});
+    var teams=bk[id]||{t1:"?",t2:"?"};
+    if(parseInt(f.s1)>parseInt(f.s2))p.octAdvances[id]=teams.t1;
+    else if(parseInt(f.s2)>parseInt(f.s1))p.octAdvances[id]=teams.t2;
+    else delete p.octAdvances[id];
+  }
+  ST.participants[CU]=p;
+  buildOct();
+}
+function onOctAdv(id,val){
+  if(CR==="admin"||locked())return;
+  var p=getP();p.octAdvances[id]=val;ST.participants[CU]=p;
+}
+function doSave(){
+  if(locked()){alert("Plazo vencido el 11 jun 1pm.");return;}
+  fbSave(function(){
+    var m=document.getElementById("save-msg");
+    m.textContent="Guardado ✓";setTimeout(function(){m.textContent="";},3000);
+  });
 }
 
-// ── PUNTOS ────────────────────────────────────────────────────
-function calcPoints(pData,realR,realOct){
-  let pts=0; const detail=[];
-  Object.keys(GRP).forEach(g=>{
-    MATCHES[g].forEach(m=>{
-      const fc=pData.forecasts[m.id]||{},rc=realR[m.id]||{};
-      if(rc.s1===undefined||rc.s2===undefined||fc.s1===undefined||fc.s2===undefined) return;
-      const ps1=parseInt(fc.s1),ps2=parseInt(fc.s2),rs1=parseInt(rc.s1),rs2=parseInt(rc.s2);
-      if(ps1===rs1&&ps2===rs2){ pts+=3; detail.push({match:m.id,pts:3,reason:`Marcador exacto: ${m.t1} ${ps1}-${ps2} ${m.t2}`}); }
+// ── POINTS ───────────────────────────────────────────────────
+function calcPts(pd,rR,rO,rD){
+  var pts=0,det=[];
+  // grupos
+  Object.keys(GRP).forEach(function(g){
+    MATCHES[g].forEach(function(m){
+      var fc=pd.forecasts[m.id]||{},rc=rR[m.id]||{};
+      if(rc.s1===undefined||rc.s2===undefined||fc.s1===undefined||fc.s2===undefined)return;
+      var ps1=parseInt(fc.s1),ps2=parseInt(fc.s2),rs1=parseInt(rc.s1),rs2=parseInt(rc.s2);
+      if(ps1===rs1&&ps2===rs2){pts+=3;det.push({m:m.id,p:3,r:"Exacto: "+m.t1+" "+ps1+"-"+ps2+" "+m.t2});}
       else{
-        const pw=ps1>ps2?m.t1:ps2>ps1?m.t2:"draw",rw=rs1>rs2?m.t1:rs2>rs1?m.t2:"draw";
-        if(pw===rw){ pts+=1; detail.push({match:m.id,pts:1,reason:`Ganador/empate: ${m.id}`}); }
+        var pw=ps1>ps2?m.t1:ps2>ps1?m.t2:"draw",rw=rs1>rs2?m.t1:rs2>rs1?m.t2:"draw";
+        if(pw===rw){pts+=1;det.push({m:m.id,p:1,r:"Ganador/empate "+m.id});}
       }
     });
-    const realAdv=(realOct[`adv_${g}`])||[];
-    const{sorted}=calcGroupTable(g,pData.forecasts||{});
-    [sorted[0],sorted[1]].forEach(t=>{
-      if(t&&t!=="?"&&realAdv.includes(t)){ pts+=4; detail.push({match:`adv_${g}`,pts:4,reason:`${t} avanza de Grupo ${g}`}); }
+    var ra=(rO["adv_"+g])||[];
+    var sorted=calcGrp(g,pd.forecasts||{},null).sorted;
+    [sorted[0],sorted[1]].forEach(function(t){
+      if(t&&t!=="?"&&ra.indexOf(t)>=0){pts+=4;det.push({m:"adv_"+g,p:4,r:t+" avanza Grupo "+g});}
     });
   });
-  BRACKET.forEach(lv=>{
-    const of=pData.dssForecasts[lv.id]||{},rf=realOct[lv.id]||{};
-    if(!rf.t1||!rf.t2) return;
-    const bk=computeBracket(pData.forecasts||{});
-    const ct1=bk[lv.id]?.t1||"?",ct2=bk[lv.id]?.t2||"?";
-    const llaveOk=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
-    if(llaveOk){
-      pts+=4; detail.push({match:lv.id,pts:4,reason:`Llave exacta ${lv.lbl}`});
+  // dieciseisavos
+  DSS.forEach(function(lv){
+    var of=pd.dssForecasts[lv.id]||{},rf=rD[lv.id]||{};
+    if(!rf.t1||!rf.t2)return;
+    var bk=calcDssBracket(pd.forecasts||{},pd.fairPlay||{},pd.dssAdvances||{});
+    var ct1=(bk[lv.id]||{}).t1||"?",ct2=(bk[lv.id]||{}).t2||"?";
+    var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
+    if(ok){
+      pts+=4;det.push({m:lv.id,p:4,r:"Llave exacta "+lv.lbl});
       if(of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined&&parseInt(of.s1)===parseInt(rf.s1)&&parseInt(of.s2)===parseInt(rf.s2)){
-        pts+=3; detail.push({match:lv.id+"_sc",pts:3,reason:`Marcador exacto ${lv.lbl}`});
+        pts+=3;det.push({m:lv.id+"s",p:3,r:"Marcador exacto "+lv.lbl});
       }
     }
-    const radv=realOct[`adv_${lv.id}`],padv=pData.dssAdvances[lv.id];
-    if(radv&&padv&&radv===padv){ pts+=4; detail.push({match:lv.id+"_adv",pts:4,reason:`${padv} avanza en ${lv.lbl}`}); }
+    var ra2=rD["adv_"+lv.id],pa2=pd.dssAdvances[lv.id];
+    if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza "+lv.lbl});}
   });
-  return{pts,detail};
+  // octavos
+  OCT.forEach(function(o){
+    var of=pd.octForecasts[o.id]||{},rf=rO[o.id]||{};
+    if(!rf.t1||!rf.t2)return;
+    var bk=calcOctBracket(pd.dssAdvances||{});
+    var ct1=(bk[o.id]||{}).t1||"?",ct2=(bk[o.id]||{}).t2||"?";
+    var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
+    if(ok){
+      pts+=4;det.push({m:o.id,p:4,r:"Llave exacta "+o.lbl});
+      if(of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined&&parseInt(of.s1)===parseInt(rf.s1)&&parseInt(of.s2)===parseInt(rf.s2)){
+        pts+=3;det.push({m:o.id+"s",p:3,r:"Marcador exacto "+o.lbl});
+      }
+    }
+    var ra2=rO["adv_"+o.id],pa2=pd.octAdvances[o.id];
+    if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:o.id+"a",p:4,r:pa2+" avanza "+o.lbl});}
+  });
+  return{pts:pts,det:det};
 }
 
-// ── STANDINGS ─────────────────────────────────────────────────
-function renderStandings(){
-  const el=document.getElementById("standings-content");
-  const names=Object.keys(state.participants);
-  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>Aún no hay participantes.</div>`; return; }
-  const rows=names.map(n=>{ const{pts}=calcPoints(getP(n),state.realResults||{},state.octResults||{}); return{name:n,pts}; }).sort((a,b)=>b.pts-a.pts);
-  const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
-  let html=`<div class="notice info"><i class="ti ti-trophy"></i> ${names.length} participantes · Clic en un nombre para ver detalle.</div>`;
-  html+=`<table class="standings-table"><thead><tr><th>#</th><th>Participante</th><th>Puntos</th><th>Completado</th></tr></thead><tbody>`;
-  rows.forEach((r,i)=>{
-    const medal=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
-    const rc=i===0?"gold-rank":i===1?"silver-rank":i===2?"bronze-rank":"rank";
-    const fc=Object.values(getP(r.name).forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
-    const pct=Math.round(fc/totalM*100);
-    html+=`<tr onclick="showDetail('${r.name}')"><td class="${rc}">${medal||i+1}</td><td class="participant-name">${state.participants[r.name]?.displayName||r.name}</td><td class="pts-cell">${r.pts}</td><td><span class="chip ${pct>=80?"gold":"red"}">${pct}%</span></td></tr>`;
+// ── STANDINGS ────────────────────────────────────────────────
+function buildStand(){
+  var el=document.getElementById("c-stand");if(!el)return;
+  var names=Object.keys(ST.participants);
+  if(!names.length){el.innerHTML='<div class="empty"><i class="ti ti-users"></i>Sin participantes aún.</div>';return;}
+  var rows=names.map(function(n){
+    var r=calcPts(getP(n),ST.realResults||{},ST.octResults||{},ST.dssResults||{});
+    return{name:n,pts:r.pts};
   });
-  html+=`</tbody></table>`;
-  el.innerHTML=html;
+  rows.sort(function(a,b){return b.pts-a.pts;});
+  var tot=Object.keys(MATCHES).reduce(function(a,g){return a+MATCHES[g].length;},0);
+  var h='<div class="notice info">'+names.length+' participantes · Clic para ver detalle de puntos.</div>';
+  h+='<table class="stable"><thead><tr><th>#</th><th>Participante</th><th>Puntos</th><th>Completado</th></tr></thead><tbody>';
+  rows.forEach(function(r,i){
+    var med=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+    var rc=i===0?"grank":i===1?"srank":i===2?"brank":"rank";
+    var fc=Object.values(getP(r.name).forecasts||{}).filter(function(f){return f.s1!==undefined&&f.s2!==undefined;}).length;
+    var pct=Math.round(fc/tot*100);
+    var dn=(ST.participants[r.name]&&ST.participants[r.name].displayName)||r.name;
+    h+='<tr onclick="showDetail(\''+r.name+'\')"><td class="'+rc+'">'+(med||i+1)+'</td><td class="pname">'+dn+'</td><td class="pts">'+r.pts+'</td><td><span class="chip '+(pct>=80?"g":"r")+'">'+pct+'%</span></td></tr>';
+  });
+  h+='</tbody></table>';
+  el.innerHTML=h;
 }
-
 function showDetail(name){
-  const{pts,detail}=calcPoints(getP(name),state.realResults||{},state.octResults||{});
-  const el=document.getElementById("standings-content");
-  const dn=state.participants[name]?.displayName||name;
-  let html=`<button class="btn" onclick="renderStandings()" style="margin-bottom:14px"><i class="ti ti-arrow-left"></i> Volver</button>`;
-  html+=`<div class="detail-header"><div class="avatar">${dn.charAt(0).toUpperCase()}</div><div><div class="pts-big">${pts}</div><div class="pts-label">puntos totales · ${dn}</div></div></div>`;
-  if(!detail.length){ html+=`<div class="notice warn">Sin puntos aún. El admin debe ingresar resultados reales.</div>`; }
+  var res=calcPts(getP(name),ST.realResults||{},ST.octResults||{},ST.dssResults||{});
+  var dn=(ST.participants[name]&&ST.participants[name].displayName)||name;
+  var el=document.getElementById("c-stand");
+  var h='<button class="btn" onclick="buildStand()" style="margin-bottom:14px">← Volver</button>';
+  h+='<div class="detail-hdr"><div class="avatar">'+dn.charAt(0).toUpperCase()+'</div><div><div class="pts-big">'+res.pts+'</div><div class="pts-lbl">puntos · '+dn+'</div></div></div>';
+  if(!res.det.length){h+='<div class="notice warn">Sin puntos aún.</div>';}
   else{
-    html+=`<table class="standings-table"><thead><tr><th>Evento</th><th>Detalle</th><th>Pts</th></tr></thead><tbody>`;
-    detail.forEach(d=>{ html+=`<tr><td style="font-size:11px;color:var(--muted)">${d.match}</td><td style="font-size:12px">${d.reason}</td><td class="pts-cell">${d.pts}</td></tr>`; });
-    html+=`</tbody></table>`;
+    h+='<table class="stable"><thead><tr><th>Evento</th><th>Detalle</th><th>Pts</th></tr></thead><tbody>';
+    res.det.forEach(function(d){h+='<tr><td style="font-size:11px;color:var(--muted)">'+d.m+'</td><td style="font-size:12px">'+d.r+'</td><td class="pts">'+d.p+'</td></tr>';});
+    h+='</tbody></table>';
   }
-  el.innerHTML=html;
+  el.innerHTML=h;
 }
 
 // ── TRANSPARENCIA ─────────────────────────────────────────────
-let tView={participant:null,section:"grupos"};
-function renderTransparencia(){
-  const el=document.getElementById("transparencia-content");
-  const names=Object.keys(state.participants);
-  if(!names.length){ el.innerHTML=`<div class="empty-state"><i class="ti ti-eye"></i>No hay participantes aún.</div>`; return; }
-  if(!tView.participant||!state.participants[tView.participant]) tView.participant=names[0];
-  let html=`<div class="notice info"><i class="ti ti-eye"></i> Consulta los marcadores de cada participante.</div>`;
-  html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>
-    <select style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)" onchange="tView.participant=this.value;renderTBody()">
-      ${names.map(n=>`<option value="${n}" ${n===tView.participant?"selected":""}>${state.participants[n]?.displayName||n}</option>`).join("")}
-    </select></div>`;
-  html+=`<div style="margin-bottom:14px">
-    <button class="tab-sub-btn ${tView.section==="grupos"?"active":""}" onclick="tView.section='grupos';renderTBody()">Grupos</button>
-    <button class="tab-sub-btn ${tView.section==="dieciseisavos"?"active":""}" onclick="tView.section='dieciseisavos';renderTBody()">Dieciseisavos</button>
-    <button class="tab-sub-btn ${tView.section==="bracket"?"active":""}" onclick="tView.section='bracket';renderTBody()">Bracket</button>
-  </div><div id="t-body"></div>`;
-  el.innerHTML=html;
-  renderTBody();
+var TV={p:null,s:"grupos"};
+function buildTrans(){
+  var el=document.getElementById("c-trans");if(!el)return;
+  var names=Object.keys(ST.participants);
+  if(!names.length){el.innerHTML='<div class="empty"><i class="ti ti-eye"></i>Sin participantes.</div>';return;}
+  if(!TV.p||!ST.participants[TV.p])TV.p=names[0];
+  var opts=names.map(function(n){return'<option value="'+n+'"'+(n===TV.p?" selected":"")+'>'+((ST.participants[n]&&ST.participants[n].displayName)||n)+'</option>';}).join("");
+  var h='<div class="notice info">Consulta los marcadores de cada participante.</div>';
+  h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+    +'<label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>'
+    +'<select style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text)" onchange="TV.p=this.value;buildTransBody()">'+opts+'</select>'
+    +'</div>';
+  h+='<div style="margin-bottom:14px">'
+    +'<button class="tsub-btn'+(TV.s==="grupos"?" active":"")+'" onclick="TV.s=\'grupos\';buildTransBody()">Grupos</button>'
+    +'<button class="tsub-btn'+(TV.s==="dss"?" active":"")+'" onclick="TV.s=\'dss\';buildTransBody()">Dieciseisavos</button>'
+    +'<button class="tsub-btn'+(TV.s==="oct"?" active":"")+'" onclick="TV.s=\'oct\';buildTransBody()">Octavos</button>'
+    +'</div><div id="trans-body"></div>';
+  el.innerHTML=h;buildTransBody();
 }
-
-function renderTBody(){
-  const el=document.getElementById("t-body"); if(!el) return;
-  const pData=getP(tView.participant);
-  let html="";
-  if(tView.section==="grupos"){
-    html+=`<div class="results-grid">`;
-    Object.keys(GRP).forEach(g=>{
-      html+=`<div class="result-card"><div class="result-header">Grupo ${g}</div>`;
-      MATCHES[g].forEach(m=>{
-        const f=pData.forecasts[m.id]||{};
-        html+=`<div class="result-match">
-          <span class="result-team">${m.t1}</span>
-          <span style="font-size:12px;font-weight:600;padding:2px 6px;background:var(--surface);border-radius:4px;color:var(--red);min-width:24px;text-align:center">${f.s1??"-"}</span>
-          <span class="vs">-</span>
-          <span style="font-size:12px;font-weight:600;padding:2px 6px;background:var(--surface);border-radius:4px;color:var(--red);min-width:24px;text-align:center">${f.s2??"-"}</span>
-          <span class="result-team" style="text-align:right">${m.t2}</span>
-        </div>`;
+function buildTransBody(){
+  var el=document.getElementById("trans-body");if(!el)return;
+  var pd=getP(TV.p);var h="";
+  if(TV.s==="grupos"){
+    h+='<div class="rgrid">';
+    Object.keys(GRP).forEach(function(g){
+      h+='<div class="rcard"><div class="rhead">Grupo '+g+'</div>';
+      MATCHES[g].forEach(function(m){
+        var f=pd.forecasts[m.id]||{};
+        h+='<div class="rmatch"><span class="rteam">'+m.t1+'</span>'
+          +'<span style="font-size:12px;font-weight:600;padding:2px 6px;background:var(--surface);border-radius:4px;color:var(--red);min-width:24px;text-align:center">'+(f.s1!==undefined?f.s1:"-")+'</span>'
+          +'<span class="vs">-</span>'
+          +'<span style="font-size:12px;font-weight:600;padding:2px 6px;background:var(--surface);border-radius:4px;color:var(--red);min-width:24px;text-align:center">'+(f.s2!==undefined?f.s2:"-")+'</span>'
+          +'<span class="rteam" style="text-align:right">'+m.t2+'</span></div>';
       });
-      const{sorted}=calcGroupTable(g,pData.forecasts||{});
-      if(sorted[0]&&sorted[0]!=="?") html+=`<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">${sorted[0]}</span> · <span style="color:var(--gl);font-weight:500">${sorted[1]||"?"}</span></div>`;
-      html+=`</div>`;
+      var sorted=calcGrp(g,pd.forecasts||{},null).sorted;
+      if(sorted[0]&&sorted[0]!=="?")h+='<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">'+sorted[0]+'</span> · <span style="color:var(--gl);font-weight:500">'+(sorted[1]||"?")+'</span></div>';
+      h+='</div>';
     });
-    html+=`</div>`;
-  } else if(tView.section==="dieciseisavos"){
-    const bk=computeBracket(pData.forecasts||{});
-    html+=`<div class="dss-grid">`;
-    BRACKET.forEach(lv=>{
-      const of=pData.dssForecasts[lv.id]||{},oa=pData.dssAdvances[lv.id]||"";
-      const{t1,t2}=bk[lv.id]||{t1:"?",t2:"?"};
-      html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
-        <div class="dss-match">
-          <span style="flex:1;font-size:11px;font-weight:500;text-align:right">${t1}</span>
-          <span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">${of.s1??"-"}</span>
-          <span class="vs">-</span>
-          <span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">${of.s2??"-"}</span>
-          <span style="flex:1;font-size:11px;font-weight:500">${t2}</span>
-        </div>
-        ${oa?`<div style="font-size:10px;color:var(--gl);text-align:center;margin-top:5px">Avanza: <strong>${oa}</strong></div>`:""}
-      </div>`;
+    h+='</div>';
+  }else if(TV.s==="dss"){
+    var bk=calcDssBracket(pd.forecasts||{},pd.fairPlay||{},pd.dssAdvances||{});
+    h+='<div class="dss-grid">';
+    DSS.forEach(function(lv){
+      var of=pd.dssForecasts[lv.id]||{},oa=pd.dssAdvances[lv.id]||"";
+      var t1=(bk[lv.id]||{}).t1||"?",t2=(bk[lv.id]||{}).t2||"?";
+      h+='<div class="dcard"><div class="dtitle">'+lv.lbl+'</div>'
+        +'<div class="dmatch"><span style="flex:1;font-size:11px;font-weight:500;text-align:right">'+t1+'</span>'
+        +'<span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">'+(of.s1!==undefined?of.s1:"-")+'</span>'
+        +'<span class="vs">-</span>'
+        +'<span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">'+(of.s2!==undefined?of.s2:"-")+'</span>'
+        +'<span style="flex:1;font-size:11px;font-weight:500">'+t2+'</span></div>'
+        +(oa?'<div style="font-size:10px;color:var(--gl);text-align:center;margin-top:5px">Avanza: <strong>'+oa+'</strong></div>':"")
+        +'</div>';
     });
-    html+=`</div>`;
-  } else {
-    const bk=computeBracket(pData.forecasts||{});
-    html+=`<div class="dss-grid">`;
-    BRACKET.forEach(lv=>{
-      const{t1,t2}=bk[lv.id]||{t1:"?",t2:"?"};
-      const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° (${lv.t2g})`;
-      html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
-        <div class="dss-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
-        <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
-          <span style="flex:1;font-size:12px;font-weight:600;text-align:right;color:${t1==="?"?"var(--muted)":"var(--text)"}">${t1}</span>
-          <span class="vs" style="font-weight:600">vs</span>
-          <span style="flex:1;font-size:12px;font-weight:600;color:${t2==="?"?"var(--muted)":"var(--text)"}">${t2}</span>
-        </div>
-      </div>`;
+    h+='</div>';
+  }else{
+    var bko=calcOctBracket(pd.dssAdvances||{});
+    h+='<div class="dss-grid">';
+    OCT.forEach(function(o){
+      var of=pd.octForecasts[o.id]||{},oa=pd.octAdvances[o.id]||"";
+      var t1=(bko[o.id]||{}).t1||"?",t2=(bko[o.id]||{}).t2||"?";
+      h+='<div class="dcard"><div class="dtitle">'+o.lbl+'</div>'
+        +'<div class="ddesc">G.'+o.w1+' vs G.'+o.w2+'</div>'
+        +'<div class="dmatch"><span style="flex:1;font-size:11px;font-weight:500;text-align:right">'+t1+'</span>'
+        +'<span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">'+(of.s1!==undefined?of.s1:"-")+'</span>'
+        +'<span class="vs">-</span>'
+        +'<span style="font-size:12px;font-weight:600;padding:2px 5px;background:var(--surface);border-radius:4px;color:var(--red);margin:0 3px">'+(of.s2!==undefined?of.s2:"-")+'</span>'
+        +'<span style="flex:1;font-size:11px;font-weight:500">'+t2+'</span></div>'
+        +(oa?'<div style="font-size:10px;color:var(--gl);text-align:center;margin-top:5px">Avanza: <strong>'+oa+'</strong></div>':"")
+        +'</div>';
     });
-    html+=`</div>`;
+    h+='</div>';
   }
-  el.innerHTML=html;
+  el.innerHTML=h;
 }
 
 // ── ADMIN RESULTADOS ──────────────────────────────────────────
-function renderResultados(){
-  const el=document.getElementById("resultados-content");
-  let html=`<div class="notice info"><i class="ti ti-shield"></i> Ingresa los resultados reales. Los puntos se recalculan al guardar.</div>`;
-  html+=`<div class="section-title">Grupos</div><div class="results-grid">`;
-  Object.keys(GRP).forEach(g=>{
-    html+=`<div class="result-card"><div class="result-header">Grupo ${g}</div>`;
-    MATCHES[g].forEach(m=>{
-      const rc=state.realResults[m.id]||{};
-      html+=`<div class="result-match">
-        <span class="result-team">${m.t1}</span>
-        <input class="result-score" type="number" min="0" max="20" value="${rc.s1??""}" placeholder="-" onchange="setReal('${m.id}','s1',this.value)">
-        <span class="vs">-</span>
-        <input class="result-score" type="number" min="0" max="20" value="${rc.s2??""}" placeholder="-" onchange="setReal('${m.id}','s2',this.value)">
-        <span class="result-team" style="text-align:right">${m.t2}</span>
-      </div>`;
+function buildRes(){
+  var el=document.getElementById("c-res");if(!el)return;
+  var h='<div class="notice info">Ingresa resultados reales de cada fase.</div>';
+  // grupos
+  h+='<div style="font-size:14px;font-weight:600;margin:14px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)">Grupos</div>';
+  h+='<div class="rgrid">';
+  Object.keys(GRP).forEach(function(g){
+    h+='<div class="rcard"><div class="rhead">Grupo '+g+'</div>';
+    MATCHES[g].forEach(function(m){
+      var rc=ST.realResults[m.id]||{};
+      h+='<div class="rmatch"><span class="rteam">'+m.t1+'</span>'
+        +'<input class="rsinp" type="number" min="0" max="20" value="'+(rc.s1!==undefined?rc.s1:"")+'" placeholder="-" onchange="setReal(\''+m.id+'\',\'s1\',this.value)">'
+        +'<span class="vs">-</span>'
+        +'<input class="rsinp" type="number" min="0" max="20" value="'+(rc.s2!==undefined?rc.s2:"")+'" placeholder="-" onchange="setReal(\''+m.id+'\',\'s2\',this.value)">'
+        +'<span class="rteam" style="text-align:right">'+m.t2+'</span></div>';
     });
-    const teams=GRP[g],adv=(state.octResults[`adv_${g}`])||[];
-    [0,1].forEach(pos=>{
-      html+=`<div style="margin-top:${pos===0?8:4}px"><label style="font-size:10px;color:var(--muted);font-weight:500">${pos+1}° clasificado</label>
-        <select style="width:100%;font-size:12px;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="setRealAdv('${g}',${pos},this.value)">
-          <option value="">--</option>
-          ${teams.map(t=>`<option value="${t}" ${adv[pos]===t?"selected":""}>${t}</option>`).join("")}
-        </select></div>`;
+    var adv=(ST.octResults["adv_"+g])||[];
+    [0,1].forEach(function(pos){
+      h+='<div style="margin-top:'+(pos===0?8:4)+'px"><label style="font-size:10px;color:var(--muted);font-weight:500">'+(pos+1)+'° clasificado</label>'
+        +'<select style="width:100%;font-size:12px;padding:4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="setRealAdv(\''+g+'\','+pos+',this.value)">'
+        +'<option value="">--</option>'
+        +GRP[g].map(function(t){return'<option value="'+t+'"'+(adv[pos]===t?" selected":"")+'>'+t+'</option>';}).join("")
+        +'</select></div>';
     });
-    html+=`</div>`;
+    h+='</div>';
   });
-  html+=`</div><div class="section-title" style="margin-top:20px">Dieciseisavos de Final</div><div class="dss-grid">`;
-  BRACKET.forEach(lv=>{
-    const rf=state.octResults[lv.id]||{},radv=state.octResults[`adv_${lv.id}`]||"";
-    const t2desc=typeof lv.t2pos==="number"?`${lv.t2pos}° Gr.${lv.t2g}`:`Mejor 3° grupos ${lv.t2g}`;
-    html+=`<div class="dss-card"><div class="dss-title">${lv.lbl}</div>
-      <div class="dss-desc">${lv.t1pos}° Gr.${lv.t1g} vs ${t2desc}</div>
-      <div class="dss-match">
-        <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo local" value="${rf.t1||""}" onchange="setRealOct('${lv.id}','t1',this.value)">
-        <input class="score-inp" type="number" min="0" max="20" value="${rf.s1??""}" placeholder="-" onchange="setRealOct('${lv.id}','s1',this.value)">
-        <span class="vs">-</span>
-        <input class="score-inp" type="number" min="0" max="20" value="${rf.s2??""}" placeholder="-" onchange="setRealOct('${lv.id}','s2',this.value)">
-        <input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Equipo visitante" value="${rf.t2||""}" onchange="setRealOct('${lv.id}','t2',this.value)">
-      </div>
-      <select class="advance-pick" onchange="setRealOct('${lv.id}','adv',this.value)">
-        <option value="">-- ¿Quién avanzó? --</option>
-        <option value="${rf.t1||''}" ${radv===(rf.t1||"")?"selected":""}>${rf.t1||"Equipo local"}</option>
-        <option value="${rf.t2||''}" ${radv===(rf.t2||"")?"selected":""}>${rf.t2||"Equipo visitante"}</option>
-      </select>
-    </div>`;
+  h+='</div>';
+  // dss
+  h+='<div style="font-size:14px;font-weight:600;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)">Dieciseisavos de Final</div>';
+  h+='<div class="dss-grid">';
+  DSS.forEach(function(lv){
+    var rf=ST.dssResults[lv.id]||{},ra=ST.dssResults["adv_"+lv.id]||"";
+    var t2d=lv.t2p==="3b"?"Mejor 3° grp "+lv.t2g:lv.t2p+"° Grupo "+lv.t2g;
+    h+='<div class="dcard"><div class="dtitle">'+lv.lbl+'</div><div class="ddesc">'+lv.t1p+'° Gr.'+lv.t1g+' vs '+t2d+'</div>'
+      +'<div class="dmatch">'
+      +'<input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Local" value="'+(rf.t1||"")+'" onchange="setRealDss(\''+lv.id+'\',\'t1\',this.value)">'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+(rf.s1!==undefined?rf.s1:"")+'" placeholder="-" onchange="setRealDss(\''+lv.id+'\',\'s1\',this.value)">'
+      +'<span class="vs">-</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+(rf.s2!==undefined?rf.s2:"")+'" placeholder="-" onchange="setRealDss(\''+lv.id+'\',\'s2\',this.value)">'
+      +'<input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Visitante" value="'+(rf.t2||"")+'" onchange="setRealDss(\''+lv.id+'\',\'t2\',this.value)">'
+      +'</div>'
+      +'<select class="apick" onchange="setRealDss(\''+lv.id+'\',\'adv\',this.value)">'
+      +'<option value="">-- ¿Quién avanzó? --</option>'
+      +'<option value="'+(rf.t1||"")+'"'+(ra===(rf.t1||"")?" selected":"")+'>'+(rf.t1||"Local")+'</option>'
+      +'<option value="'+(rf.t2||"")+'"'+(ra===(rf.t2||"")?" selected":"")+'>'+(rf.t2||"Visitante")+'</option>'
+      +'</select></div>';
   });
-  html+=`</div><div class="save-bar"><span></span><button class="btn primary" onclick="saveRealResults()"><i class="ti ti-device-floppy"></i> Guardar resultados reales</button></div>`;
-  el.innerHTML=html;
+  h+='</div>';
+  // octavos
+  h+='<div style="font-size:14px;font-weight:600;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)">Octavos de Final</div>';
+  h+='<div class="dss-grid">';
+  OCT.forEach(function(o){
+    var rf=ST.octResults[o.id]||{},ra=ST.octResults["adv_"+o.id]||"";
+    h+='<div class="dcard"><div class="dtitle">'+o.lbl+'</div>'
+      +'<div class="dmatch">'
+      +'<input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Local" value="'+(rf.t1||"")+'" onchange="setRealOct(\''+o.id+'\',\'t1\',this.value)">'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+(rf.s1!==undefined?rf.s1:"")+'" placeholder="-" onchange="setRealOct(\''+o.id+'\',\'s1\',this.value)">'
+      +'<span class="vs">-</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+(rf.s2!==undefined?rf.s2:"")+'" placeholder="-" onchange="setRealOct(\''+o.id+'\',\'s2\',this.value)">'
+      +'<input style="flex:1;font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" type="text" placeholder="Visitante" value="'+(rf.t2||"")+'" onchange="setRealOct(\''+o.id+'\',\'t2\',this.value)">'
+      +'</div>'
+      +'<select class="apick" onchange="setRealOct(\''+o.id+'\',\'adv\',this.value)">'
+      +'<option value="">-- ¿Quién avanzó? --</option>'
+      +'<option value="'+(rf.t1||"")+'"'+(ra===(rf.t1||"")?" selected":"")+'>'+(rf.t1||"Local")+'</option>'
+      +'<option value="'+(rf.t2||"")+'"'+(ra===(rf.t2||"")?" selected":"")+'>'+(rf.t2||"Visitante")+'</option>'
+      +'</select></div>';
+  });
+  h+='</div>';
+  h+='<div class="save-bar"><span></span><button class="btn primary" onclick="saveRes()">💾 Guardar resultados</button></div>';
+  el.innerHTML=h;
 }
-
-function setReal(id,side,val){ if(!state.realResults[id]) state.realResults[id]={}; state.realResults[id][side]=val===""?undefined:parseInt(val); }
-function setRealAdv(g,pos,team){ if(!state.octResults[`adv_${g}`]) state.octResults[`adv_${g}`]=[]; state.octResults[`adv_${g}`][pos]=team; }
-function setRealOct(id,key,val){
-  if(!state.octResults[id]) state.octResults[id]={};
-  if(key==="adv"){ state.octResults[`adv_${id}`]=val; return; }
-  state.octResults[id][key]=["s1","s2"].includes(key)?(val===""?undefined:parseInt(val)):val;
+function setReal(id,s,v){if(!ST.realResults[id])ST.realResults[id]={};ST.realResults[id][s]=v===""?undefined:parseInt(v);}
+function setRealAdv(g,p,t){if(!ST.octResults["adv_"+g])ST.octResults["adv_"+g]=[];ST.octResults["adv_"+g][p]=t;}
+function setRealDss(id,k,v){
+  if(!ST.dssResults[id])ST.dssResults[id]={};
+  if(k==="adv"){ST.dssResults["adv_"+id]=v;return;}
+  ST.dssResults[id][k]=["s1","s2"].indexOf(k)>=0?(v===""?undefined:parseInt(v)):v;
 }
-async function saveRealResults(){ await fbSave(); alert("Resultados guardados en Firebase."); }
+function setRealOct(id,k,v){
+  if(!ST.octResults[id])ST.octResults[id]={};
+  if(k==="adv"){ST.octResults["adv_"+id]=v;return;}
+  ST.octResults[id][k]=["s1","s2"].indexOf(k)>=0?(v===""?undefined:parseInt(v)):v;
+}
+function saveRes(){fbSave(function(){alert("Resultados guardados.");});}
 
 // ── GESTIÓN ───────────────────────────────────────────────────
-function renderGestion(){
-  const el=document.getElementById("gestion-content");
-  const names=Object.keys(state.participants);
-  const totalM=Object.keys(MATCHES).reduce((a,g)=>a+MATCHES[g].length,0);
-  let html=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px">
-    <div style="font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px"><i class="ti ti-user-plus" style="color:var(--red)"></i> Crear nuevo participante</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end">
-      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Nombre completo</label>
-        <input id="new-name" type="text" placeholder="Juan Pérez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
-      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Usuario (sin espacios)</label>
-        <input id="new-user" type="text" placeholder="juan.perez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
-      <div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">PIN (4 dígitos)</label>
-        <input id="new-pin" type="text" inputmode="numeric" maxlength="4" placeholder="1234" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);color:var(--text)"></div>
-      <button class="btn primary" onclick="createUser()"><i class="ti ti-plus"></i> Crear</button>
-    </div>
-    <div id="create-msg" style="font-size:12px;margin-top:8px;display:none"></div>
-  </div>`;
+function buildGest(){
+  var el=document.getElementById("c-gest");if(!el)return;
+  var names=Object.keys(ST.participants);
+  var tot=Object.keys(MATCHES).reduce(function(a,g){return a+MATCHES[g].length;},0);
+  var h='<div class="create-panel">'
+    +'<div style="font-size:14px;font-weight:600;margin-bottom:12px"><i class="ti ti-user-plus" style="color:var(--red)"></i> Crear participante</div>'
+    +'<div class="create-grid">'
+    +'<div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Nombre completo</label>'
+    +'<input id="inp-name" type="text" placeholder="Juan Pérez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text)"></div>'
+    +'<div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Usuario</label>'
+    +'<input id="inp-uname" type="text" placeholder="juan.perez" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text)"></div>'
+    +'<div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">PIN (4 dígitos)</label>'
+    +'<input id="inp-npin" type="text" inputmode="numeric" maxlength="4" placeholder="1234" style="width:100%;padding:8px 10px;font-size:13px;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text)"></div>'
+    +'<button class="btn primary" onclick="createUser()" style="height:38px;white-space:nowrap">+ Crear</button>'
+    +'</div>'
+    +'<div id="cmsg" style="font-size:12px;margin-top:8px;display:none"></div>'
+    +'</div>';
   if(!names.length){
-    html+=`<div class="empty-state"><i class="ti ti-users"></i>No hay participantes aún. Crea el primero arriba.</div>`;
-    el.innerHTML=html; return;
+    h+='<div class="empty"><i class="ti ti-users"></i>No hay participantes. Crea el primero arriba.</div>';
+    el.innerHTML=h;return;
   }
-  html+=`<div class="notice info"><i class="ti ti-eye"></i> ${names.length} participantes registrados.</div>`;
-  html+=`<table class="standings-table"><thead><tr><th>Nombre</th><th>Usuario</th><th>PIN</th><th>Grupos</th><th>DSS</th><th>Pts</th><th></th></tr></thead><tbody>`;
-  names.forEach(name=>{
-    const pData=getP(name);
-    const fc=Object.values(pData.forecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
-    const oc=Object.values(pData.dssForecasts||{}).filter(f=>f.s1!==undefined&&f.s2!==undefined).length;
-    const{pts}=calcPoints(pData,state.realResults||{},state.octResults||{});
-    html+=`<tr>
-      <td class="participant-name">${pData.displayName||name}</td>
-      <td style="font-size:12px;color:var(--muted)">${name}</td>
-      <td><span class="chip gold">${pData.pin||"—"}</span></td>
-      <td><span class="chip ${fc>=totalM*0.8?"gold":"red"}">${fc}/${totalM}</span></td>
-      <td><span class="chip ${oc>=12?"gold":"red"}">${oc}/16</span></td>
-      <td class="pts-cell">${pts}</td>
-      <td><button class="btn sm" onclick="deleteParticipant('${name}')"><i class="ti ti-trash"></i></button></td>
-    </tr>`;
+  h+='<div class="notice info">'+names.length+' participantes registrados.</div>';
+  h+='<table class="stable"><thead><tr><th>Nombre</th><th>Usuario</th><th>PIN</th><th>Grupos</th><th>DSS</th><th>Oct</th><th>Pts</th><th></th></tr></thead><tbody>';
+  names.forEach(function(n){
+    var pd=getP(n);
+    var fc=Object.values(pd.forecasts||{}).filter(function(f){return f.s1!==undefined&&f.s2!==undefined;}).length;
+    var dc=Object.values(pd.dssForecasts||{}).filter(function(f){return f.s1!==undefined&&f.s2!==undefined;}).length;
+    var oc=Object.values(pd.octForecasts||{}).filter(function(f){return f.s1!==undefined&&f.s2!==undefined;}).length;
+    var pts=calcPts(pd,ST.realResults||{},ST.octResults||{},ST.dssResults||{}).pts;
+    var dn=pd.displayName||n;
+    h+='<tr><td class="pname">'+dn+'</td><td style="font-size:12px;color:var(--muted)">'+n+'</td>'
+      +'<td><span class="chip g">'+(pd.pin||"—")+'</span></td>'
+      +'<td><span class="chip '+(fc>=tot*0.8?"g":"r")+'">'+fc+'/'+tot+'</span></td>'
+      +'<td><span class="chip '+(dc>=12?"g":"r")+'">'+dc+'/16</span></td>'
+      +'<td><span class="chip '+(oc>=6?"g":"r")+'">'+oc+'/8</span></td>'
+      +'<td class="pts">'+pts+'</td>'
+      +'<td><button class="btn sm" onclick="delUser(\''+n+'\')">🗑</button></td></tr>';
   });
-  html+=`</tbody></table>`;
-  el.innerHTML=html;
+  h+='</tbody></table>';
+  el.innerHTML=h;
 }
-
 function createUser(){
-  const displayName=document.getElementById("new-name").value.trim();
-  const username=document.getElementById("new-user").value.trim().toLowerCase().replace(/\s/g,"");
-  const pin=document.getElementById("new-pin").value.trim();
-  if(!displayName||!username||!pin){ showCreateMsg("Completa todos los campos","error"); return; }
-  if(pin.length!==4||isNaN(pin)){ showCreateMsg("El PIN debe ser exactamente 4 dígitos","error"); return; }
-  if(state.participants[username]){ showCreateMsg(`El usuario "${username}" ya existe`,"error"); return; }
-  state.participants[username]={displayName,pin,forecasts:{},dssForecasts:{},dssAdvances:{}};
-  fbSave().then(()=>{
-    document.getElementById("new-name").value="";
-    document.getElementById("new-user").value="";
-    document.getElementById("new-pin").value="";
-    showCreateMsg(`✓ Usuario "${username}" creado · PIN: ${pin}`,"ok");
-    renderGestion();
+  var dn=document.getElementById("inp-name").value.trim();
+  var un=document.getElementById("inp-uname").value.trim().toLowerCase().replace(/\s/g,"");
+  var pin=document.getElementById("inp-npin").value.trim();
+  if(!dn||!un||!pin){showCMsg("Completa todos los campos","err");return;}
+  if(pin.length!==4||isNaN(pin)){showCMsg("PIN debe ser 4 dígitos","err");return;}
+  if(ST.participants[un]){showCMsg("Usuario '"+un+"' ya existe","err");return;}
+  ST.participants[un]={displayName:dn,pin:pin,forecasts:{},dssForecasts:{},dssAdvances:{},octForecasts:{},octAdvances:{},fairPlay:{}};
+  fbSave(function(){
+    document.getElementById("inp-name").value="";
+    document.getElementById("inp-uname").value="";
+    document.getElementById("inp-npin").value="";
+    showCMsg("✓ "+un+" creado · PIN: "+pin,"ok");
+    buildGest();
   });
 }
-
-function showCreateMsg(msg,type){
-  const el=document.getElementById("create-msg");
-  if(!el) return;
-  el.textContent=msg;
-  el.style.color=type==="ok"?"#16a34a":"var(--red)";
-  el.style.display="block";
-  setTimeout(()=>{ el.style.display="none"; },4000);
+function showCMsg(m,t){
+  var el=document.getElementById("cmsg");if(!el)return;
+  el.textContent=m;el.style.color=t==="ok"?"#16a34a":"var(--red)";el.style.display="block";
+  setTimeout(function(){el.style.display="none";},4000);
 }
-
-function deleteParticipant(name){
-  if(!confirm(`¿Eliminar a ${name}?`)) return;
-  delete state.participants[name];
-  fbSave().then(()=>{ renderGestion(); renderStandings(); });
+function delUser(n){
+  if(!confirm("¿Eliminar a "+n+"?"))return;
+  delete ST.participants[n];
+  fbSave(function(){buildGest();buildStand();});
 }
-
-// ── START ─────────────────────────────────────────────────────
-init();
 </script>
 </body>
 </html>
