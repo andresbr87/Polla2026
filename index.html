@@ -166,14 +166,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="panel" id="t-stand"><div id="c-stand"></div></div>
-  <div class="panel" id="t-trans"><div id="c-trans"></div></div>
+  <div class="panel" id="t-trans">
+    <div id="trans-participant-bar" style="display:none">
+      <div class="notice info">Consulta los marcadores de cada participante.</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>
+        <select id="trans-select" style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text)" onchange="TV.p=this.value;buildTransBody()"></select>
+      </div>
+      <div style="margin-bottom:14px">
+        <button id="tbtn-grupos" class="tsub-btn active" onclick="setTransTab('grupos')">Grupos</button>
+        <button id="tbtn-dss"    class="tsub-btn"        onclick="setTransTab('dss')">Dieciseisavos</button>
+        <button id="tbtn-oct"    class="tsub-btn"        onclick="setTransTab('oct')">Octavos</button>
+      </div>
+      <div id="trans-body"></div>
+    </div>
+    <div id="trans-empty" class="empty" style="display:none"><i class="ti ti-eye"></i>Sin participantes.</div>
+  </div>
   <div class="panel" id="t-res"><div id="c-res"></div></div>
   <div class="panel" id="t-gest"><div id="c-gest"></div></div>
 </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyA5wUCZeuKkB0ugGtwqvA7I4Iq4Rgis2cE",
@@ -298,6 +313,16 @@ db.collection("polla2026").doc("state").get()
     if(!ST.realResults)ST.realResults={};
     if(!ST.octResults)ST.octResults={};
     if(!ST.dssResults)ST.dssResults={};
+    // ensure all participant records are complete
+    Object.keys(ST.participants).forEach(function(n){
+      var p=ST.participants[n];
+      if(!p.forecasts)p.forecasts={};
+      if(!p.dssForecasts)p.dssForecasts={};
+      if(!p.dssAdvances)p.dssAdvances={};
+      if(!p.octForecasts)p.octForecasts={};
+      if(!p.octAdvances)p.octAdvances={};
+      if(!p.fairPlay)p.fairPlay={};
+    });
     var ses=loadSession();
     if(ses){
       if(ses.r==="admin"){enterApp("admin","admin");}
@@ -465,7 +490,20 @@ function calcOctBracket(dssAdv){
   return bk;
 }
 
-function getP(n){n=n||CU;return ST.participants[n]||{forecasts:{},dssForecasts:{},dssAdvances:{},octForecasts:{},octAdvances:{},fairPlay:{}};}
+function getP(n){
+  n=n||CU;
+  var base=ST.participants[n]||{};
+  return{
+    displayName:base.displayName||n,
+    pin:base.pin||"",
+    forecasts:base.forecasts||{},
+    dssForecasts:base.dssForecasts||{},
+    dssAdvances:base.dssAdvances||{},
+    octForecasts:base.octForecasts||{},
+    octAdvances:base.octAdvances||{},
+    fairPlay:base.fairPlay||{}
+  };
+}
 
 // ── BUILD GRUPOS ──────────────────────────────────────────────
 function buildGrupos(){
@@ -551,7 +589,7 @@ function buildDss(){
       t2=picked3b||(available[0]?available[0].team:"?");
       if(!lk){
         t2Html='<div style="margin-bottom:6px"><label style="font-size:10px;color:var(--gl);font-weight:500">Mejor 3° (grupos '+lv.t2g+')</label>'
-          +'<select style="width:100%;font-size:12px;padding:5px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="on3bPick(''+lv.id+'',this.value)">'
+          +'<select style="width:100%;font-size:12px;padding:5px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);margin-top:3px" onchange="on3bPick(\''+lv.id+'\',this.value)">'
           +'<option value="">-- Elige el mejor 3° --</option>';
         available.forEach(function(x){
           t2Html+='<option value="'+x.team+'"'+(picked3b===x.team?" selected":"")+'>'+x.team+' (Gr.'+x.group+') '+x.pts+'pts</option>';
@@ -572,15 +610,15 @@ function buildDss(){
       +t2Html
       +'<div class="dmatch">'
       +'<span class="dlabel l'+(t1==="?"?" pend":"")+'">'+t1+'</span>'
-      +'<input class="sinp" type="number" min="0" max="20" value="'+s1v+'" placeholder="-" onchange="onDssScore(''+lv.id+'','s1',this.value)" '+d+'>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s1v+'" placeholder="-" onchange="onDssScore(\''+lv.id+'\',\'s1\',this.value)" '+d+'>'
       +'<span class="vs">vs</span>'
-      +'<input class="sinp" type="number" min="0" max="20" value="'+s2v+'" placeholder="-" onchange="onDssScore(''+lv.id+'','s2',this.value)" '+d+'>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s2v+'" placeholder="-" onchange="onDssScore(\''+lv.id+'\',\'s2\',this.value)" '+d+'>'
       +'<span class="dlabel'+(t2==="?"?" pend":"")+'">'+t2+'</span>'
       +'</div>';
     if(autoAdv){
       h+='<div style="font-size:11px;color:#16a34a;margin-top:6px;padding:4px 8px;background:#dcfce7;border-radius:4px">✓ Avanza: <strong>'+autoAdv+'</strong></div>';
     }else if(showAdvPick){
-      h+='<select class="apick" onchange="onDssAdv(''+lv.id+'',this.value)" '+d+'>'
+     h+='<select class="apick" onchange="onDssAdv(\''+lv.id+'\',this.value)" '+d+'>'
         +'<option value="">-- ¿Quién avanza? (empate) --</option>'
         +'<option value="'+t1+'"'+(oa===t1&&t1!=="?"?" selected":"")+'>'+(t1==="?"?"Pendiente":t1)+'</option>'
         +'<option value="'+t2+'"'+(oa===t2&&t2!=="?"?" selected":"")+'>'+(t2==="?"?"Pendiente":t2)+'</option>'
@@ -713,10 +751,18 @@ function doSave(){
 // ── POINTS ───────────────────────────────────────────────────
 function calcPts(pd,rR,rO,rD){
   var pts=0,det=[];
+  // defensive defaults
+  var forecasts=pd.forecasts||{};
+  var dssForecasts=pd.dssForecasts||{};
+  var dssAdvances=pd.dssAdvances||{};
+  var octForecasts=pd.octForecasts||{};
+  var octAdvances=pd.octAdvances||{};
+  var fairPlay=pd.fairPlay||{};
+  rR=rR||{}; rO=rO||{}; rD=rD||{};
   // grupos
   Object.keys(GRP).forEach(function(g){
     MATCHES[g].forEach(function(m){
-      var fc=pd.forecasts[m.id]||{},rc=rR[m.id]||{};
+      var fc=forecasts[m.id]||{},rc=rR[m.id]||{};
       if(rc.s1===undefined||rc.s2===undefined||fc.s1===undefined||fc.s2===undefined)return;
       var ps1=parseInt(fc.s1),ps2=parseInt(fc.s2),rs1=parseInt(rc.s1),rs2=parseInt(rc.s2);
       if(ps1===rs1&&ps2===rs2){pts+=3;det.push({m:m.id,p:3,r:"Exacto: "+m.t1+" "+ps1+"-"+ps2+" "+m.t2});}
@@ -726,16 +772,16 @@ function calcPts(pd,rR,rO,rD){
       }
     });
     var ra=(rO["adv_"+g])||[];
-    var sorted=calcGrp(g,pd.forecasts||{},null).sorted;
+    var sorted=calcGrp(g,forecasts,null).sorted;
     [sorted[0],sorted[1]].forEach(function(t){
       if(t&&t!=="?"&&ra.indexOf(t)>=0){pts+=4;det.push({m:"adv_"+g,p:4,r:t+" avanza Grupo "+g});}
     });
   });
   // dieciseisavos
   DSS.forEach(function(lv){
-    var of=pd.dssForecasts[lv.id]||{},rf=rD[lv.id]||{};
+    var of=dssForecasts[lv.id]||{},rf=rD[lv.id]||{};
     if(!rf.t1||!rf.t2)return;
-    var bk=calcDssBracket(pd.forecasts||{},pd.fairPlay||{},pd.dssAdvances||{});
+    var bk=calcDssBracket(pd.forecasts,pd.fairPlay,pd.dssAdvances);
     var ct1=(bk[lv.id]||{}).t1||"?",ct2=(bk[lv.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
     if(ok){
@@ -744,14 +790,14 @@ function calcPts(pd,rR,rO,rD){
         pts+=3;det.push({m:lv.id+"s",p:3,r:"Marcador exacto "+lv.lbl});
       }
     }
-    var ra2=rD["adv_"+lv.id],pa2=pd.dssAdvances[lv.id];
+    var ra2=rD["adv_"+lv.id],pa2=dssAdvances[lv.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza "+lv.lbl});}
   });
   // octavos
   OCT.forEach(function(o){
-    var of=pd.octForecasts[o.id]||{},rf=rO[o.id]||{};
+    var of=octForecasts[o.id]||{},rf=rO[o.id]||{};
     if(!rf.t1||!rf.t2)return;
-    var bk=calcOctBracket(pd.dssAdvances||{});
+    var bk=calcOctBracket(dssAdvances);
     var ct1=(bk[o.id]||{}).t1||"?",ct2=(bk[o.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
     if(ok){
@@ -760,7 +806,7 @@ function calcPts(pd,rR,rO,rD){
         pts+=3;det.push({m:o.id+"s",p:3,r:"Marcador exacto "+o.lbl});
       }
     }
-    var ra2=rO["adv_"+o.id],pa2=pd.octAdvances[o.id];
+    var ra2=rO["adv_"+o.id],pa2=octAdvances[o.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:o.id+"a",p:4,r:pa2+" avanza "+o.lbl});}
   });
   return{pts:pts,det:det};
@@ -808,22 +854,35 @@ function showDetail(name){
 // ── TRANSPARENCIA ─────────────────────────────────────────────
 var TV={p:null,s:"grupos"};
 function buildTrans(){
-  var el=document.getElementById("c-trans");if(!el)return;
   var names=Object.keys(ST.participants);
-  if(!names.length){el.innerHTML='<div class="empty"><i class="ti ti-eye"></i>Sin participantes.</div>';return;}
+  var emptyEl=document.getElementById("trans-empty");
+  var barEl=document.getElementById("trans-participant-bar");
+  if(!names.length){
+    if(emptyEl)emptyEl.style.display="block";
+    if(barEl)barEl.style.display="none";
+    return;
+  }
+  if(emptyEl)emptyEl.style.display="none";
+  if(barEl)barEl.style.display="block";
   if(!TV.p||!ST.participants[TV.p])TV.p=names[0];
-  var opts=names.map(function(n){return'<option value="'+n+'"'+(n===TV.p?" selected":"")+'>'+((ST.participants[n]&&ST.participants[n].displayName)||n)+'</option>';}).join("");
-  var h='<div class="notice info">Consulta los marcadores de cada participante.</div>';
-  h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
-    +'<label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>'
-    +'<select style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text)" onchange="TV.p=this.value;buildTransBody()">'+opts+'</select>'
-    +'</div>';
-  h+='<div style="margin-bottom:14px">'
-    +'<button class="tsub-btn'+(TV.s==="grupos"?" active":"")+'" onclick="TV.s=\'grupos\';buildTransBody()">Grupos</button>'
-    +'<button class="tsub-btn'+(TV.s==="dss"?" active":"")+'" onclick="TV.s=\'dss\';buildTransBody()">Dieciseisavos</button>'
-    +'<button class="tsub-btn'+(TV.s==="oct"?" active":"")+'" onclick="TV.s=\'oct\';buildTransBody()">Octavos</button>'
-    +'</div><div id="trans-body"></div>';
-  el.innerHTML=h;buildTransBody();
+  // populate select
+  var sel=document.getElementById("trans-select");
+  if(sel){
+    sel.innerHTML=names.map(function(n){
+      var dn=(ST.participants[n]&&ST.participants[n].displayName)||n;
+      return'<option value="'+n+'"'+(n===TV.p?" selected":"")+'>'+dn+'</option>';
+    }).join("");
+  }
+  buildTransBody();
+}
+function setTransTab(s){
+  TV.s=s;
+  // update button active states using static ids
+  ["grupos","dss","oct"].forEach(function(tab){
+    var btn=document.getElementById("tbtn-"+tab);
+    if(btn)btn.className="tsub-btn"+(tab===s?" active":"");
+  });
+  buildTransBody();
 }
 function buildTransBody(){
   var el=document.getElementById("trans-body");if(!el)return;
@@ -840,13 +899,17 @@ function buildTransBody(){
           +'<span style="font-size:12px;font-weight:600;padding:2px 6px;background:var(--surface);border-radius:4px;color:var(--red);min-width:24px;text-align:center">'+(f.s2!==undefined?f.s2:"-")+'</span>'
           +'<span class="rteam" style="text-align:right">'+m.t2+'</span></div>';
       });
-      var sorted=calcGrp(g,pd.forecasts||{},null).sorted;
+      var sorted=calcGrp(g,pd.forecasts || {},null).sorted;
       if(sorted[0]&&sorted[0]!=="?")h+='<div style="margin-top:7px;font-size:10px;color:var(--muted)">Clasifica: <span style="color:var(--gl);font-weight:500">'+sorted[0]+'</span> · <span style="color:var(--gl);font-weight:500">'+(sorted[1]||"?")+'</span></div>';
       h+='</div>';
     });
     h+='</div>';
   }else if(TV.s==="dss"){
-    var bk=calcDssBracket(pd.forecasts||{},pd.fairPlay||{},pd.dssAdvances||{});
+    var bk = calcDssBracket(
+    pd.forecasts || {},
+    pd.fairPlay || {},
+    pd.dssAdvances || {}
+);
     h+='<div class="dss-grid">';
     DSS.forEach(function(lv){
       var of=pd.dssForecasts[lv.id]||{},oa=pd.dssAdvances[lv.id]||"";
