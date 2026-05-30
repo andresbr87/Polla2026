@@ -633,50 +633,27 @@ function buildDss(){
 // ── BUILD OCT ─────────────────────────────────────────────────
 function buildOct(){
   var el=document.getElementById("c-oct");if(!el)return;
-  var adm=CR==="admin",lk=locked()&&!adm,p=adm?null:getP();
+  var adm=CR==="admin",p=adm?null:getP();
   var dssAdv=adm?{}:(p.dssAdvances||{});
   var bk=calcOctBracket(dssAdv);
-  var h=!adm?(lk?'<div class="notice warn">⏰ Plazo vencido.</div>':'<div class="notice info">Equipos calculados de tus pronósticos de Dieciseisavos. Ingresa marcador y quién avanza a Cuartos.</div>'):"";
+  var h='<div class="notice gold"><strong>🔒 Fase 1 — Solo llaves</strong> En Octavos solo se evalúan las llaves acertadas (4 pts c/u). Los marcadores se ingresan en la Fase 2.</div>';
   h+='<div class="dss-grid">';
   OCT.forEach(function(o){
     var comp=bk[o.id]||{t1:"?",t2:"?"};
     var t1=comp.t1,t2=comp.t2;
-    var of=adm?{}:(p.octForecasts[o.id]||{});
-    var oa=adm?"":(p.octAdvances[o.id]||"");
-    var d=(adm||lk)?"disabled":"";
-    var s1v=of.s1!==undefined?of.s1:"",s2v=of.s2!==undefined?of.s2:"";
-    var autoAdv="";
-    if(s1v!==""&&s2v!==""){
-      var n1=parseInt(s1v),n2=parseInt(s2v);
-      if(!isNaN(n1)&&!isNaN(n2)&&n1!==n2)autoAdv=n1>n2?t1:t2;
-    }
-    var showPick=!adm&&!lk&&(s1v===""||s2v===""||autoAdv==="");
     h+='<div class="dcard">'
-      +'<div class="dtitle">'+o.lbl+'</div>'
+      +'<div class="dtitle">'+o.lbl+' <span style="font-size:10px;color:var(--gl);font-weight:400">4 pts si llave exacta</span></div>'
       +'<div class="ddesc">Ganador '+o.w1+' vs Ganador '+o.w2+'</div>'
-      +'<div class="dmatch">'
-      +'<span class="dlabel l'+(t1==="?"?" pend":"")+'">'+t1+'</span>'
-      +'<input class="sinp" type="number" min="0" max="20" value="'+s1v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s1\',this.value)" '+d+'>'
-      +'<span class="vs">vs</span>'
-      +'<input class="sinp" type="number" min="0" max="20" value="'+s2v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s2\',this.value)" '+d+'>'
-      +'<span class="dlabel'+(t2==="?"?" pend":"")+'">'+t2+'</span>'
+      +'<div style="display:flex;align-items:center;gap:10px;padding:8px 0">'
+      +'<span style="flex:1;font-size:13px;font-weight:600;text-align:right;color:'+(t1==="?"?"var(--muted)":"var(--text)")+'">'+t1+'</span>'
+      +'<span style="font-size:12px;color:var(--muted);padding:2px 8px;background:var(--surface);border-radius:4px">vs</span>'
+      +'<span style="flex:1;font-size:13px;font-weight:600;color:'+(t2==="?"?"var(--muted)":"var(--text)")+'">'+t2+'</span>'
+      +'</div>'
       +'</div>';
-    if(autoAdv){
-      h+='<div style="font-size:11px;color:#16a34a;margin-top:6px;padding:4px 8px;background:#dcfce7;border-radius:4px">✓ Avanza: <strong>'+autoAdv+'</strong></div>';
-    }else if(showPick){
-      h+='<select class="apick" onchange="onOctAdv(\''+o.id+'\',this.value)" '+d+'>'
-        +'<option value="">-- ¿Quién avanza a Cuartos? --</option>'
-        +'<option value="'+t1+'"'+(oa===t1&&t1!=="?"?" selected":"")+'>'+(t1==="?"?"Pendiente":t1)+'</option>'
-        +'<option value="'+t2+'"'+(oa===t2&&t2!=="?"?" selected":"")+'>'+(t2==="?"?"Pendiente":t2)+'</option>'
-        +'</select>';
-    }
-    h+='</div>';
   });
   h+='</div>';
   el.innerHTML=h;
 }
-
-// ── SAVE HANDLERS ────────────────────────────────────────────
 function onScore(g,mid,side,val){
   if(CR==="admin"||locked())return;
   var p=getP();if(!p.forecasts[mid])p.forecasts[mid]={};
@@ -793,21 +770,34 @@ function calcPts(pd,rR,rO,rD){
     var ra2=rD["adv_"+lv.id],pa2=dssAdvances[lv.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza "+lv.lbl});}
   });
-  // octavos
+  // octavos Fase 1 — llave exacta = 4 pts
   OCT.forEach(function(o){
-    var of=octForecasts[o.id]||{},rf=rO[o.id]||{};
+    var rf=rO[o.id]||{};
     if(!rf.t1||!rf.t2)return;
     var bk=calcOctBracket(dssAdvances);
     var ct1=(bk[o.id]||{}).t1||"?",ct2=(bk[o.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
-    if(ok){
-      pts+=4;det.push({m:o.id,p:4,r:"Llave exacta "+o.lbl});
-      if(of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined&&parseInt(of.s1)===parseInt(rf.s1)&&parseInt(of.s2)===parseInt(rf.s2)){
-        pts+=3;det.push({m:o.id+"s",p:3,r:"Marcador exacto "+o.lbl});
+    if(ok){pts+=4;det.push({m:o.id,p:4,r:"Llave exacta F1 "+o.lbl});}
+  });
+  // octavos Fase 2 — marcador exacto 3pts, ganador 1pt, avance a cuartos 4pts
+  OCT.forEach(function(o){
+    var of2=octForecasts[o.id+"_f2"]||{};
+    var rf=rO[o.id]||{};
+    if(!rf.t1||!rf.t2)return;
+    // marcador exacto / ganador
+    if(rf.s1!==undefined&&rf.s2!==undefined&&of2.s1!==undefined&&of2.s2!==undefined){
+      var ps1=parseInt(of2.s1),ps2=parseInt(of2.s2),rs1=parseInt(rf.s1),rs2=parseInt(rf.s2);
+      if(ps1===rs1&&ps2===rs2){
+        pts+=3;det.push({m:o.id+"_f2s",p:3,r:"Marcador exacto F2 "+o.lbl});
+      } else {
+        var pw=ps1>ps2?rf.t1:ps2>ps1?rf.t2:"draw";
+        var rw=rs1>rs2?rf.t1:rs2>rs1?rf.t2:"draw";
+        if(pw===rw){pts+=1;det.push({m:o.id+"_f2g",p:1,r:"Ganador F2 "+o.lbl});}
       }
     }
-    var ra2=rO["adv_"+o.id],pa2=octAdvances[o.id];
-    if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:o.id+"a",p:4,r:pa2+" avanza "+o.lbl});}
+    // avance a cuartos
+    var ra=rO["adv_"+o.id],pa=octAdvances[o.id+"_f2"];
+    if(ra&&pa&&ra===pa){pts+=4;det.push({m:o.id+"_f2a",p:4,r:pa+" avanza Cuartos "+o.lbl});}
   });
   return{pts:pts,det:det};
 }
