@@ -482,10 +482,25 @@ function calcDssBracket(fc,fp,dssAdvances){
   return bk;
 }
 
-function calcOctBracket(dssAdv){
+function calcOctBracket(dssAdv,fc,fp){
   var bk={};
+  // Always recalculate DSS teams from groups — never trust dssAdv for team identity
+  var dssBk = fc ? calcDssBracket(fc,fp||{},dssAdv) : null;
+
+  function resolveWinner(lvId){
+    var stored = dssAdv ? dssAdv[lvId] : null;
+    if(!dssBk) return stored||"?";
+    // Get the actual computed teams for this llave
+    var matchTeams = dssBk[lvId]||{t1:"?",t2:"?"};
+    var t1 = matchTeams.t1, t2 = matchTeams.t2;
+    // Only trust stored winner if it matches one of the computed teams
+    if(stored && (stored===t1||stored===t2)) return stored;
+    // Stored value is corrupted or missing — return "?" (not played/decided yet)
+    return "?";
+  }
+
   OCT.forEach(function(o){
-    bk[o.id]={t1:dssAdv[o.w1]||"?",t2:dssAdv[o.w2]||"?"};
+    bk[o.id]={t1:resolveWinner(o.w1), t2:resolveWinner(o.w2)};
   });
   return bk;
 }
@@ -635,7 +650,7 @@ function buildOct(){
   var el=document.getElementById("c-oct");if(!el)return;
   var adm=CR==="admin",p=adm?null:getP();
   var dssAdv=adm?{}:(p.dssAdvances||{});
-  var bk=calcOctBracket(dssAdv);
+  var bk=calcOctBracket(dssAdv, p?p.forecasts:{}, p?p.fairPlay:{});
   var h='<div class="notice gold"><strong>🔒 Fase 1 — Solo llaves</strong> En Octavos solo se evalúan las llaves acertadas (4 pts c/u). Los marcadores se ingresan en la Fase 2.</div>';
   h+='<div class="dss-grid">';
   OCT.forEach(function(o){
@@ -676,6 +691,17 @@ function onDssScore(id,side,val){
   if(f.s1!==undefined&&f.s2!==undefined){
     var bk=calcDssBracket(p.forecasts||{},p.fairPlay||{},p.dssAdvances||{});
     var teams=bk[id]||{t1:"?",t2:"?"};
+    // Recalculate t1 directly from groups to ensure accuracy
+    var lv=DSS.find(function(x){return x.id===id;});
+    if(lv){
+      var directT1=calcGrp(lv.t1g,p.forecasts||{},null).sorted[lv.t1p-1]||"?";
+      if(directT1!=="?") teams.t1=directT1;
+      // t2: if not 3b use calcGrp directly too
+      if(lv.t2p!=="3b"){
+        var directT2=calcGrp(lv.t2g,p.forecasts||{},null).sorted[lv.t2p-1]||"?";
+        if(directT2!=="?") teams.t2=directT2;
+      }
+    }
     if(parseInt(f.s1)>parseInt(f.s2))p.dssAdvances[id]=teams.t1;
     else if(parseInt(f.s2)>parseInt(f.s1))p.dssAdvances[id]=teams.t2;
     else delete p.dssAdvances[id];
@@ -704,7 +730,7 @@ function onOctScore(id,side,val){
   p.octForecasts[id][side]=val===""?undefined:parseInt(val);
   var f=p.octForecasts[id];
   if(f.s1!==undefined&&f.s2!==undefined){
-    var bk=calcOctBracket(p.dssAdvances||{});
+    var bk=calcOctBracket(p.dssAdvances||{},p.forecasts||{},p.fairPlay||{});
     var teams=bk[id]||{t1:"?",t2:"?"};
     if(parseInt(f.s1)>parseInt(f.s2))p.octAdvances[id]=teams.t1;
     else if(parseInt(f.s2)>parseInt(f.s1))p.octAdvances[id]=teams.t2;
@@ -774,7 +800,7 @@ function calcPts(pd,rR,rO,rD){
   OCT.forEach(function(o){
     var rf=rO[o.id]||{};
     if(!rf.t1||!rf.t2)return;
-    var bk=calcOctBracket(dssAdvances);
+    var bk=calcOctBracket(dssAdvances,forecasts,fairPlay);
     var ct1=(bk[o.id]||{}).t1||"?",ct2=(bk[o.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
     if(ok){pts+=4;det.push({m:o.id,p:4,r:"Llave exacta F1 "+o.lbl});}
@@ -915,7 +941,7 @@ function buildTransBody(){
     });
     h+='</div>';
   }else{
-    var bko=calcOctBracket(pd.dssAdvances||{});
+    var bko=calcOctBracket(pd.dssAdvances||{},pd.forecasts||{},pd.fairPlay||{});
     h+='<div class="dss-grid">';
     OCT.forEach(function(o){
       var of=pd.octForecasts[o.id]||{},oa=pd.octAdvances[o.id]||"";
