@@ -166,29 +166,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 
   <div class="panel" id="t-stand"><div id="c-stand"></div></div>
-  <div class="panel" id="t-trans">
-    <div id="trans-participant-bar" style="display:none">
-      <div class="notice info">Consulta los marcadores de cada participante.</div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-        <label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>
-        <select id="trans-select" style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text)" onchange="TV.p=this.value;buildTransBody()"></select>
-      </div>
-      <div style="margin-bottom:14px">
-        <button id="tbtn-grupos" class="tsub-btn active" onclick="setTransTab('grupos')">Grupos</button>
-        <button id="tbtn-dss"    class="tsub-btn"        onclick="setTransTab('dss')">Dieciseisavos</button>
-        <button id="tbtn-oct"    class="tsub-btn"        onclick="setTransTab('oct')">Octavos</button>
-      </div>
-      <div id="trans-body"></div>
-    </div>
-    <div id="trans-empty" class="empty" style="display:none"><i class="ti ti-eye"></i>Sin participantes.</div>
-  </div>
+  <div class="panel" id="t-trans"><div id="c-trans"></div></div>
   <div class="panel" id="t-res"><div id="c-res"></div></div>
   <div class="panel" id="t-gest"><div id="c-gest"></div></div>
 </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyA5wUCZeuKkB0ugGtwqvA7I4Iq4Rgis2cE",
@@ -201,9 +186,8 @@ firebase.initializeApp({
 var db=firebase.firestore();
 
 var ADMIN_PASS="polla2026";
-var DEADLINE=new Date("2026-06-11T13:59:00-05:00"); // Extended for leo.b and other user
-// Partidos ya jugados — agregar o quitar IDs aquí para bloquear/desbloquear
-var LOCKED_MATCHES=["A1"]; // Ej: ["A1","A2","B1"]
+var DEADLINE=new Date("2026-06-13T23:59:00-05:00");
+var LOCKED_MATCHES=["A1"]; // Partidos ya jugados — agregar IDs aqui
 function locked(){return new Date()>DEADLINE;}
 
 var GRP={
@@ -296,7 +280,6 @@ function fbSave(cb){
     .then(function(){setBadge("ok","Guardado ✓");if(cb)cb();})
     .catch(function(e){setBadge("err","Error al guardar");console.error(e);});
 }
-
 function fbListen(){
   if(unsub)unsub();
   unsub=db.collection("polla2026").doc("state").onSnapshot(function(snap){
@@ -306,12 +289,10 @@ function fbListen(){
       ST.octResults=r.octResults||{};
       ST.dssResults=r.dssResults||{};
       var remote=r.participants||{};
-      // Update all remote participants except current user's unsaved data
       Object.keys(remote).forEach(function(n){
         if(n!==CU) ST.participants[n]=remote[n];
         else if(CU&&!ST.participants[CU]) ST.participants[CU]=remote[CU];
       });
-      // Remove participants deleted by admin
       Object.keys(ST.participants).forEach(function(n){
         if(!remote[n]&&n!==CU) delete ST.participants[n];
       });
@@ -321,7 +302,6 @@ function fbListen(){
     }
   },function(){setBadge("err","Sin conexión");});
 }
-
 function isActive(id){return document.getElementById(id).classList.contains("active");}
 
 // ── SESSION ──────────────────────────────────────────────────
@@ -511,25 +491,10 @@ function calcDssBracket(fc,fp,dssAdvances){
   return bk;
 }
 
-function calcOctBracket(dssAdv,fc,fp){
+function calcOctBracket(dssAdv){
   var bk={};
-  // Always recalculate DSS teams from groups — never trust dssAdv for team identity
-  var dssBk = fc ? calcDssBracket(fc,fp||{},dssAdv) : null;
-
-  function resolveWinner(lvId){
-    var stored = dssAdv ? dssAdv[lvId] : null;
-    if(!dssBk) return stored||"?";
-    // Get the actual computed teams for this llave
-    var matchTeams = dssBk[lvId]||{t1:"?",t2:"?"};
-    var t1 = matchTeams.t1, t2 = matchTeams.t2;
-    // Only trust stored winner if it matches one of the computed teams
-    if(stored && (stored===t1||stored===t2)) return stored;
-    // Stored value is corrupted or missing — return "?" (not played/decided yet)
-    return "?";
-  }
-
   OCT.forEach(function(o){
-    bk[o.id]={t1:resolveWinner(o.w1), t2:resolveWinner(o.w2)};
+    bk[o.id]={t1:dssAdv[o.w1]||"?",t2:dssAdv[o.w2]||"?"};
   });
   return bk;
 }
@@ -563,18 +528,17 @@ function buildGrupos(){
     h+='<div class="gcard"><div class="ghead"><span class="glabel">Grupo '+g+'</span><span class="gbadge">3 pts exacto · 1 pt ganador</span></div><div class="gbody">';
     MATCHES[g].forEach(function(m){
       var f=adm?{}:(p.forecasts[m.id]||{});
-      // Lock A1 (Mexico vs Sudafrica) — already played
       var matchLocked=(!adm&&LOCKED_MATCHES.indexOf(m.id)>=0);
       var d=(adm||lk||matchLocked)?"disabled":"";
-      var lockTag=matchLocked?' <span style="font-size:9px;color:var(--red)">🔒 jugado</span>':"";
+      var lockTag=matchLocked?"🔒":"";
       h+='<div class="mrow">'
-        +'<span class="tname l" title="'+m.t1+'">'+m.t1+lockTag+'</span>'
+        +'<span class="tname l" title="'+m.t1+'">'+m.t1+' '+lockTag+'</span>'
         +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s1!==undefined?f.s1:"")+'" placeholder="-" onchange="onScore(''+g+'',''+m.id+'','s1',this.value)" '+d+'>'
         +'<span class="vs">vs</span>'
         +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s2!==undefined?f.s2:"")+'" placeholder="-" onchange="onScore(''+g+'',''+m.id+'','s2',this.value)" '+d+'>'
         +'<span class="tname r" title="'+m.t2+'">'+m.t2+'</span>'
         +'</div>';
-    });
+});
     if(hasFP&&!adm&&!lk){
       h+='<div class="fp-row"><label>⚖️ Fair Play FIFA requerido — ingresa penalización estimada por equipo:</label></div>';
       GRP[g].forEach(function(t){
@@ -600,14 +564,10 @@ function buildDss(){
   var bk=adm?{}:calcDssBracket(fc,fp,dssAdv);
   var top8=adm?[]:getTop8Thirds(fc,fp);
   var top8groups=top8.map(function(x){return x.group;});
-  // track which team is already assigned to a 3b slot
-  // key = team name, value = llave id that already uses it
-  var usedTeams={};
+  // track which slot has used which group
+  var usedGroups={};
   DSS.forEach(function(lv){
-    if(lv.t2p==="3b"){
-      var v=dssAdv[lv.id+"_3b"];
-      if(v) usedTeams[v]=lv.id; // v is team name e.g. "Japón"
-    }
+    if(lv.t2p==="3b"){var v=dssAdv[lv.id+"_3b"];if(v)usedGroups[v]=lv.id;}
   });
   var h=!adm?(lk?'<div class="notice warn">⏰ Plazo vencido.</div>'
     :'<div class="notice info">Equipos calculados de tus grupos. En llaves con <span style="color:var(--gl)">Mejor 3°</span> elige uno de los 8 mejores terceros disponibles — cada equipo solo puede aparecer en una llave.</div>'):"";
@@ -615,7 +575,7 @@ function buildDss(){
   if(!adm&&!lk&&top8.length>0){
     h+='<div class="notice gold" style="margin-bottom:12px"><strong>🏅 8 mejores terceros clasificados:</strong><br>';
     top8.forEach(function(x,i){
-      var used=usedTeams[x.team];
+      var used=usedGroups[x.group];
       var badge=used?(' <span style="font-size:10px;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:10px">→ '+used+'</span>'):"";
       h+=(i+1)+'. <strong>'+x.team+'</strong> (Gr.'+x.group+') '+x.pts+'pts GD:'+x.gd+' GF:'+x.gf+badge+'<br>';
     });
@@ -635,8 +595,7 @@ function buildDss(){
       var picked3b=dssAdv[lv.id+"_3b"]||"";
       var candGroups=lv.t2g.split("").filter(function(g){return top8groups.indexOf(g)>=0;});
       var available=top8.filter(function(x){
-        // team must be a candidate group AND not already used in another slot
-        return candGroups.indexOf(x.group)>=0&&(!usedTeams[x.team]||usedTeams[x.team]===lv.id);
+        return candGroups.indexOf(x.group)>=0&&(!usedGroups[x.group]||usedGroups[x.group]===lv.id);
       });
       t2=picked3b||(available[0]?available[0].team:"?");
       if(!lk){
@@ -685,30 +644,53 @@ function buildDss(){
 // ── BUILD OCT ─────────────────────────────────────────────────
 function buildOct(){
   var el=document.getElementById("c-oct");if(!el)return;
-  var adm=CR==="admin",p=adm?null:getP();
+  var adm=CR==="admin",lk=locked()&&!adm,p=adm?null:getP();
   var dssAdv=adm?{}:(p.dssAdvances||{});
-  var bk=calcOctBracket(dssAdv, p?p.forecasts:{}, p?p.fairPlay:{});
-  var h='<div class="notice gold"><strong>🔒 Fase 1 — Solo llaves</strong> En Octavos solo se evalúan las llaves acertadas (4 pts c/u). Los marcadores se ingresan en la Fase 2.</div>';
+  var bk=calcOctBracket(dssAdv);
+  var h=!adm?(lk?'<div class="notice warn">⏰ Plazo vencido.</div>':'<div class="notice info">Equipos calculados de tus pronósticos de Dieciseisavos. Ingresa marcador y quién avanza a Cuartos.</div>'):"";
   h+='<div class="dss-grid">';
   OCT.forEach(function(o){
     var comp=bk[o.id]||{t1:"?",t2:"?"};
     var t1=comp.t1,t2=comp.t2;
+    var of=adm?{}:(p.octForecasts[o.id]||{});
+    var oa=adm?"":(p.octAdvances[o.id]||"");
+    var d=(adm||lk)?"disabled":"";
+    var s1v=of.s1!==undefined?of.s1:"",s2v=of.s2!==undefined?of.s2:"";
+    var autoAdv="";
+    if(s1v!==""&&s2v!==""){
+      var n1=parseInt(s1v),n2=parseInt(s2v);
+      if(!isNaN(n1)&&!isNaN(n2)&&n1!==n2)autoAdv=n1>n2?t1:t2;
+    }
+    var showPick=!adm&&!lk&&(s1v===""||s2v===""||autoAdv==="");
     h+='<div class="dcard">'
-      +'<div class="dtitle">'+o.lbl+' <span style="font-size:10px;color:var(--gl);font-weight:400">4 pts si llave exacta</span></div>'
+      +'<div class="dtitle">'+o.lbl+'</div>'
       +'<div class="ddesc">Ganador '+o.w1+' vs Ganador '+o.w2+'</div>'
-      +'<div style="display:flex;align-items:center;gap:10px;padding:8px 0">'
-      +'<span style="flex:1;font-size:13px;font-weight:600;text-align:right;color:'+(t1==="?"?"var(--muted)":"var(--text)")+'">'+t1+'</span>'
-      +'<span style="font-size:12px;color:var(--muted);padding:2px 8px;background:var(--surface);border-radius:4px">vs</span>'
-      +'<span style="flex:1;font-size:13px;font-weight:600;color:'+(t2==="?"?"var(--muted)":"var(--text)")+'">'+t2+'</span>'
-      +'</div>'
+      +'<div class="dmatch">'
+      +'<span class="dlabel l'+(t1==="?"?" pend":"")+'">'+t1+'</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s1v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s1\',this.value)" '+d+'>'
+      +'<span class="vs">vs</span>'
+      +'<input class="sinp" type="number" min="0" max="20" value="'+s2v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s2\',this.value)" '+d+'>'
+      +'<span class="dlabel'+(t2==="?"?" pend":"")+'">'+t2+'</span>'
       +'</div>';
+    if(autoAdv){
+      h+='<div style="font-size:11px;color:#16a34a;margin-top:6px;padding:4px 8px;background:#dcfce7;border-radius:4px">✓ Avanza: <strong>'+autoAdv+'</strong></div>';
+    }else if(showPick){
+      h+='<select class="apick" onchange="onOctAdv(\''+o.id+'\',this.value)" '+d+'>'
+        +'<option value="">-- ¿Quién avanza a Cuartos? --</option>'
+        +'<option value="'+t1+'"'+(oa===t1&&t1!=="?"?" selected":"")+'>'+(t1==="?"?"Pendiente":t1)+'</option>'
+        +'<option value="'+t2+'"'+(oa===t2&&t2!=="?"?" selected":"")+'>'+(t2==="?"?"Pendiente":t2)+'</option>'
+        +'</select>';
+    }
+    h+='</div>';
   });
   h+='</div>';
   el.innerHTML=h;
 }
+
+// ── SAVE HANDLERS ────────────────────────────────────────────
 function onScore(g,mid,side,val){
   if(CR==="admin"||locked())return;
-  if(LOCKED_MATCHES.indexOf(mid)>=0)return; // partido ya jugado
+  if(LOCKED_MATCHES.indexOf(mid)>=0)return;
   var p=getP();if(!p.forecasts[mid])p.forecasts[mid]={};
   p.forecasts[mid][side]=val===""?undefined:parseInt(val);
   ST.participants[CU]=p;
@@ -729,17 +711,6 @@ function onDssScore(id,side,val){
   if(f.s1!==undefined&&f.s2!==undefined){
     var bk=calcDssBracket(p.forecasts||{},p.fairPlay||{},p.dssAdvances||{});
     var teams=bk[id]||{t1:"?",t2:"?"};
-    // Recalculate t1 directly from groups to ensure accuracy
-    var lv=DSS.find(function(x){return x.id===id;});
-    if(lv){
-      var directT1=calcGrp(lv.t1g,p.forecasts||{},null).sorted[lv.t1p-1]||"?";
-      if(directT1!=="?") teams.t1=directT1;
-      // t2: if not 3b use calcGrp directly too
-      if(lv.t2p!=="3b"){
-        var directT2=calcGrp(lv.t2g,p.forecasts||{},null).sorted[lv.t2p-1]||"?";
-        if(directT2!=="?") teams.t2=directT2;
-      }
-    }
     if(parseInt(f.s1)>parseInt(f.s2))p.dssAdvances[id]=teams.t1;
     else if(parseInt(f.s2)>parseInt(f.s1))p.dssAdvances[id]=teams.t2;
     else delete p.dssAdvances[id];
@@ -768,7 +739,7 @@ function onOctScore(id,side,val){
   p.octForecasts[id][side]=val===""?undefined:parseInt(val);
   var f=p.octForecasts[id];
   if(f.s1!==undefined&&f.s2!==undefined){
-    var bk=calcOctBracket(p.dssAdvances||{},p.forecasts||{},p.fairPlay||{});
+    var bk=calcOctBracket(p.dssAdvances||{});
     var teams=bk[id]||{t1:"?",t2:"?"};
     if(parseInt(f.s1)>parseInt(f.s2))p.octAdvances[id]=teams.t1;
     else if(parseInt(f.s2)>parseInt(f.s1))p.octAdvances[id]=teams.t2;
@@ -822,7 +793,7 @@ function calcPts(pd,rR,rO,rD){
   DSS.forEach(function(lv){
     var of=dssForecasts[lv.id]||{},rf=rD[lv.id]||{};
     if(!rf.t1||!rf.t2)return;
-    var bk=calcDssBracket(pd.forecasts,pd.fairPlay,pd.dssAdvances);
+    var bk=calcDssBracket(forecasts,fairPlay,dssAdvances);
     var ct1=(bk[lv.id]||{}).t1||"?",ct2=(bk[lv.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
     if(ok){
@@ -834,34 +805,21 @@ function calcPts(pd,rR,rO,rD){
     var ra2=rD["adv_"+lv.id],pa2=dssAdvances[lv.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza "+lv.lbl});}
   });
-  // octavos Fase 1 — llave exacta = 4 pts
+  // octavos
   OCT.forEach(function(o){
-    var rf=rO[o.id]||{};
+    var of=octForecasts[o.id]||{},rf=rO[o.id]||{};
     if(!rf.t1||!rf.t2)return;
-    var bk=calcOctBracket(dssAdvances,forecasts,fairPlay);
+    var bk=calcOctBracket(dssAdvances);
     var ct1=(bk[o.id]||{}).t1||"?",ct2=(bk[o.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
-    if(ok){pts+=4;det.push({m:o.id,p:4,r:"Llave exacta F1 "+o.lbl});}
-  });
-  // octavos Fase 2 — marcador exacto 3pts, ganador 1pt, avance a cuartos 4pts
-  OCT.forEach(function(o){
-    var of2=octForecasts[o.id+"_f2"]||{};
-    var rf=rO[o.id]||{};
-    if(!rf.t1||!rf.t2)return;
-    // marcador exacto / ganador
-    if(rf.s1!==undefined&&rf.s2!==undefined&&of2.s1!==undefined&&of2.s2!==undefined){
-      var ps1=parseInt(of2.s1),ps2=parseInt(of2.s2),rs1=parseInt(rf.s1),rs2=parseInt(rf.s2);
-      if(ps1===rs1&&ps2===rs2){
-        pts+=3;det.push({m:o.id+"_f2s",p:3,r:"Marcador exacto F2 "+o.lbl});
-      } else {
-        var pw=ps1>ps2?rf.t1:ps2>ps1?rf.t2:"draw";
-        var rw=rs1>rs2?rf.t1:rs2>rs1?rf.t2:"draw";
-        if(pw===rw){pts+=1;det.push({m:o.id+"_f2g",p:1,r:"Ganador F2 "+o.lbl});}
+    if(ok){
+      pts+=4;det.push({m:o.id,p:4,r:"Llave exacta "+o.lbl});
+      if(of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined&&parseInt(of.s1)===parseInt(rf.s1)&&parseInt(of.s2)===parseInt(rf.s2)){
+        pts+=3;det.push({m:o.id+"s",p:3,r:"Marcador exacto "+o.lbl});
       }
     }
-    // avance a cuartos
-    var ra=rO["adv_"+o.id],pa=octAdvances[o.id+"_f2"];
-    if(ra&&pa&&ra===pa){pts+=4;det.push({m:o.id+"_f2a",p:4,r:pa+" avanza Cuartos "+o.lbl});}
+    var ra2=rO["adv_"+o.id],pa2=octAdvances[o.id];
+    if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:o.id+"a",p:4,r:pa2+" avanza "+o.lbl});}
   });
   return{pts:pts,det:det};
 }
@@ -908,35 +866,22 @@ function showDetail(name){
 // ── TRANSPARENCIA ─────────────────────────────────────────────
 var TV={p:null,s:"grupos"};
 function buildTrans(){
+  var el=document.getElementById("c-trans");if(!el)return;
   var names=Object.keys(ST.participants);
-  var emptyEl=document.getElementById("trans-empty");
-  var barEl=document.getElementById("trans-participant-bar");
-  if(!names.length){
-    if(emptyEl)emptyEl.style.display="block";
-    if(barEl)barEl.style.display="none";
-    return;
-  }
-  if(emptyEl)emptyEl.style.display="none";
-  if(barEl)barEl.style.display="block";
+  if(!names.length){el.innerHTML='<div class="empty"><i class="ti ti-eye"></i>Sin participantes.</div>';return;}
   if(!TV.p||!ST.participants[TV.p])TV.p=names[0];
-  // populate select
-  var sel=document.getElementById("trans-select");
-  if(sel){
-    sel.innerHTML=names.map(function(n){
-      var dn=(ST.participants[n]&&ST.participants[n].displayName)||n;
-      return'<option value="'+n+'"'+(n===TV.p?" selected":"")+'>'+dn+'</option>';
-    }).join("");
-  }
-  buildTransBody();
-}
-function setTransTab(s){
-  TV.s=s;
-  // update button active states using static ids
-  ["grupos","dss","oct"].forEach(function(tab){
-    var btn=document.getElementById("tbtn-"+tab);
-    if(btn)btn.className="tsub-btn"+(tab===s?" active":"");
-  });
-  buildTransBody();
+  var opts=names.map(function(n){return'<option value="'+n+'"'+(n===TV.p?" selected":"")+'>'+((ST.participants[n]&&ST.participants[n].displayName)||n)+'</option>';}).join("");
+  var h='<div class="notice info">Consulta los marcadores de cada participante.</div>';
+  h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+    +'<label style="font-size:13px;color:var(--muted);font-weight:500">Participante:</label>'
+    +'<select style="font-size:13px;padding:7px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text)" onchange="TV.p=this.value;buildTransBody()">'+opts+'</select>'
+    +'</div>';
+  h+='<div style="margin-bottom:14px">'
+    +'<button class="tsub-btn'+(TV.s==="grupos"?" active":"")+'" onclick="TV.s=\'grupos\';buildTransBody()">Grupos</button>'
+    +'<button class="tsub-btn'+(TV.s==="dss"?" active":"")+'" onclick="TV.s=\'dss\';buildTransBody()">Dieciseisavos</button>'
+    +'<button class="tsub-btn'+(TV.s==="oct"?" active":"")+'" onclick="TV.s=\'oct\';buildTransBody()">Octavos</button>'
+    +'</div><div id="trans-body"></div>';
+  el.innerHTML=h;buildTransBody();
 }
 function buildTransBody(){
   var el=document.getElementById("trans-body");if(!el)return;
@@ -979,7 +924,7 @@ function buildTransBody(){
     });
     h+='</div>';
   }else{
-    var bko=calcOctBracket(pd.dssAdvances||{},pd.forecasts||{},pd.fairPlay||{});
+    var bko=calcOctBracket(pd.dssAdvances||{});
     h+='<div class="dss-grid">';
     OCT.forEach(function(o){
       var of=pd.octForecasts[o.id]||{},oa=pd.octAdvances[o.id]||"";
