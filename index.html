@@ -201,7 +201,9 @@ firebase.initializeApp({
 var db=firebase.firestore();
 
 var ADMIN_PASS="polla2026";
-var DEADLINE=new Date("2026-06-12T23:59:00-05:00"); // Extended for leo.b and other user
+var DEADLINE=new Date("2026-06-13T23:59:00-05:00"); // Extended for leo.b and other user
+// Partidos ya jugados — agregar o quitar IDs aquí para bloquear/desbloquear
+var LOCKED_MATCHES=["A1"]; // Ej: ["A1","A2","B1"]
 function locked(){return new Date()>DEADLINE;}
 
 var GRP={
@@ -562,7 +564,7 @@ function buildGrupos(){
     MATCHES[g].forEach(function(m){
       var f=adm?{}:(p.forecasts[m.id]||{});
       // Lock A1 (Mexico vs Sudafrica) — already played
-      var matchLocked=(!adm&&m.id==="A1");
+      var matchLocked=(!adm&&LOCKED_MATCHES.indexOf(m.id)>=0);
       var d=(adm||lk||matchLocked)?"disabled":"";
       var lockTag=matchLocked?' <span style="font-size:9px;color:var(--red)">🔒 jugado</span>':"";
       h+='<div class="mrow">'
@@ -706,6 +708,7 @@ function buildOct(){
 }
 function onScore(g,mid,side,val){
   if(CR==="admin"||locked())return;
+  if(LOCKED_MATCHES.indexOf(mid)>=0)return; // partido ya jugado
   var p=getP();if(!p.forecasts[mid])p.forecasts[mid]={};
   p.forecasts[mid][side]=val===""?undefined:parseInt(val);
   ST.participants[CU]=p;
