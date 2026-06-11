@@ -533,9 +533,9 @@ function buildGrupos(){
       var lockTag=matchLocked?"🔒":"";
       h+='<div class="mrow">'
         +'<span class="tname l" title="'+m.t1+'">'+m.t1+' '+lockTag+'</span>'
-        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s1!==undefined?f.s1:"")+'" placeholder="-" onchange="onScore(''+g+'',''+m.id+'','s1',this.value)" '+d+'>'
+        +'<input class="sinp score-inp" type="number" min="0" max="20" value="'+(f.s1!==undefined?f.s1:"")+'" placeholder="-" data-g="'+g+'" data-mid="'+m.id+'" data-side="s1" '+d+'>'
         +'<span class="vs">vs</span>'
-        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s2!==undefined?f.s2:"")+'" placeholder="-" onchange="onScore(''+g+'',''+m.id+'','s2',this.value)" '+d+'>'
+        +'<input class="sinp score-inp" type="number" min="0" max="20" value="'+(f.s2!==undefined?f.s2:"")+'" placeholder="-" data-g="'+g+'" data-mid="'+m.id+'" data-side="s2" '+d+'>'
         +'<span class="tname r" title="'+m.t2+'">'+m.t2+'</span>'
         +'</div>';
 });
@@ -691,6 +691,16 @@ function buildOct(){
 }
 
 // ── SAVE HANDLERS ────────────────────────────────────────────
+// Event delegation for score inputs — avoids inline quote issues
+document.addEventListener("change", function(e){
+  var el=e.target;
+  if(!el.classList.contains("score-inp")) return;
+  var g=el.getAttribute("data-g");
+  var mid=el.getAttribute("data-mid");
+  var side=el.getAttribute("data-side");
+  if(g&&mid&&side) onScore(g,mid,side,el.value);
+});
+
 function onScore(g,mid,side,val){
   if(CR==="admin"||locked())return;
   if(LOCKED_MATCHES.indexOf(mid)>=0)return;
