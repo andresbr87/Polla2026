@@ -201,7 +201,7 @@ firebase.initializeApp({
 var db=firebase.firestore();
 
 var ADMIN_PASS="polla2026";
-var DEADLINE=new Date("2026-06-11T13:59:00-05:00");
+var DEADLINE=new Date("2026-06-11T13:00:00-05:00");
 function locked(){return new Date()>DEADLINE;}
 
 var GRP={
@@ -272,10 +272,29 @@ function setBadge(s,m){
 }
 function fbSave(cb){
   setBadge("loading","Guardando...");
-  db.collection("polla2026").doc("state").set(ST)
+  db.collection("polla2026").doc("state").get()
+    .then(function(snap){
+      var latest=snap.exists?snap.data():{};
+      var merged={
+        realResults:ST.realResults||latest.realResults||{},
+        octResults:ST.octResults||latest.octResults||{},
+        dssResults:ST.dssResults||latest.dssResults||{},
+        participants:Object.assign({},latest.participants||{})
+      };
+      if(CR==="admin"){
+        merged.realResults=ST.realResults||{};
+        merged.octResults=ST.octResults||{};
+        merged.dssResults=ST.dssResults||{};
+        merged.participants=Object.assign({},latest.participants||{},ST.participants||{});
+      } else if(CU){
+        merged.participants[CU]=ST.participants[CU];
+      }
+      return db.collection("polla2026").doc("state").set(merged);
+    })
     .then(function(){setBadge("ok","Guardado ✓");if(cb)cb();})
-    .catch(function(e){setBadge("err","Error");console.error(e);});
+    .catch(function(e){setBadge("err","Error al guardar");console.error(e);});
 }
+
 function fbListen(){
   if(unsub)unsub();
   unsub=db.collection("polla2026").doc("state").onSnapshot(function(snap){
@@ -284,8 +303,15 @@ function fbListen(){
       ST.realResults=r.realResults||{};
       ST.octResults=r.octResults||{};
       ST.dssResults=r.dssResults||{};
-      Object.keys(r.participants||{}).forEach(function(n){
-        if(n!==CU)ST.participants[n]=r.participants[n];
+      var remote=r.participants||{};
+      // Update all remote participants except current user's unsaved data
+      Object.keys(remote).forEach(function(n){
+        if(n!==CU) ST.participants[n]=remote[n];
+        else if(CU&&!ST.participants[CU]) ST.participants[CU]=remote[CU];
+      });
+      // Remove participants deleted by admin
+      Object.keys(ST.participants).forEach(function(n){
+        if(!remote[n]&&n!==CU) delete ST.participants[n];
       });
       if(isActive("t-stand"))buildStand();
       if(isActive("t-trans"))buildTrans();
@@ -293,6 +319,7 @@ function fbListen(){
     }
   },function(){setBadge("err","Sin conexión");});
 }
+
 function isActive(id){return document.getElementById(id).classList.contains("active");}
 
 // ── SESSION ──────────────────────────────────────────────────
