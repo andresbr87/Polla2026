@@ -172,8 +172,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyA5wUCZeuKkB0ugGtwqvA7I4Iq4Rgis2cE",
@@ -565,9 +565,9 @@ function buildDss(){
   var top8=adm?[]:getTop8Thirds(fc,fp);
   var top8groups=top8.map(function(x){return x.group;});
   // track which slot has used which group
-  var usedGroups={};
+  var usedTeams={};
   DSS.forEach(function(lv){
-    if(lv.t2p==="3b"){var v=dssAdv[lv.id+"_3b"];if(v)usedGroups[v]=lv.id;}
+    if(lv.t2p==="3b"){var v=dssAdv[lv.id+"_3b"];if(v)usedTeams[v]=lv.id;} // key=teamName
   });
   var h="";
   if(!adm){
@@ -578,7 +578,7 @@ function buildDss(){
   if(!adm&&!lk&&top8.length>0){
     h+='<div class="notice gold" style="margin-bottom:12px"><strong>🏅 8 mejores terceros clasificados:</strong><br>';
     top8.forEach(function(x,i){
-      var used=usedGroups[x.group];
+      var used=usedTeams[x.team];
       var badge=used?(' <span style="font-size:10px;color:#92400e;background:#fef3c7;padding:1px 6px;border-radius:10px">→ '+used+'</span>'):"";
       h+=(i+1)+'. <strong>'+x.team+'</strong> (Gr.'+x.group+') '+x.pts+'pts GD:'+x.gd+' GF:'+x.gf+badge+'<br>';
     });
@@ -598,7 +598,7 @@ function buildDss(){
       var picked3b=dssAdv[lv.id+"_3b"]||"";
       var candGroups=lv.t2g.split("").filter(function(g){return top8groups.indexOf(g)>=0;});
       var available=top8.filter(function(x){
-        return candGroups.indexOf(x.group)>=0&&(!usedGroups[x.group]||usedGroups[x.group]===lv.id);
+        return candGroups.indexOf(x.group)>=0&&(!usedTeams[x.team]||usedTeams[x.team]===lv.id);
       });
       t2=picked3b||(available[0]?available[0].team:"?");
       if(!lk){
