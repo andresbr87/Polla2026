@@ -201,7 +201,7 @@ firebase.initializeApp({
 var db=firebase.firestore();
 
 var ADMIN_PASS="polla2026";
-var DEADLINE=new Date("2026-06-12T13:59:00-05:00");
+var DEADLINE=new Date("2026-06-12T23:59:00-05:00"); // Extended for leo.b and other user
 function locked(){return new Date()>DEADLINE;}
 
 var GRP={
@@ -561,12 +561,15 @@ function buildGrupos(){
     h+='<div class="gcard"><div class="ghead"><span class="glabel">Grupo '+g+'</span><span class="gbadge">3 pts exacto · 1 pt ganador</span></div><div class="gbody">';
     MATCHES[g].forEach(function(m){
       var f=adm?{}:(p.forecasts[m.id]||{});
-      var d=(adm||lk)?"disabled":"";
+      // Lock A1 (Mexico vs Sudafrica) — already played
+      var matchLocked=(!adm&&m.id==="A1");
+      var d=(adm||lk||matchLocked)?"disabled":"";
+      var lockTag=matchLocked?' <span style="font-size:9px;color:var(--red)">🔒 jugado</span>':"";
       h+='<div class="mrow">'
-        +'<span class="tname l" title="'+m.t1+'">'+m.t1+'</span>'
-        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s1!==undefined?f.s1:"")+'" placeholder="-" onchange="onScore(\''+g+'\',\''+m.id+'\',\'s1\',this.value)" '+d+'>'
+        +'<span class="tname l" title="'+m.t1+'">'+m.t1+lockTag+'</span>'
+        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s1!==undefined?f.s1:"")+'" placeholder="-" onchange="onScore(''+g+'',''+m.id+'','s1',this.value)" '+d+'>'
         +'<span class="vs">vs</span>'
-        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s2!==undefined?f.s2:"")+'" placeholder="-" onchange="onScore(\''+g+'\',\''+m.id+'\',\'s2\',this.value)" '+d+'>'
+        +'<input class="sinp" type="number" min="0" max="20" value="'+(f.s2!==undefined?f.s2:"")+'" placeholder="-" onchange="onScore(''+g+'',''+m.id+'','s2',this.value)" '+d+'>'
         +'<span class="tname r" title="'+m.t2+'">'+m.t2+'</span>'
         +'</div>';
     });
