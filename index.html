@@ -185,7 +185,7 @@ firebase.initializeApp({
 });
 var db=firebase.firestore();
 
-var ADMIN_PASS="p0llA2026";
+var ADMIN_PASS="polla2026";
 var DEADLINE=new Date("2026-06-13T23:59:00-05:00");
 var LOCKED_MATCHES=["A1","A6"]; // Partidos ya jugados — agregar IDs aqui
 function locked(){return new Date()>DEADLINE;}
@@ -629,6 +629,7 @@ function buildDss(){
     var showAdvPick=!adm&&!lk&&(s1v===""||s2v===""||autoAdv==="");
     h+='<div class="dcard">'
       +'<div class="dtitle">'+lv.lbl+'</div>'
+      +'<div style="font-size:10px;color:var(--muted);margin-bottom:5px">4 pts llave · 3 pts marcador · 1 pt ganador · 4 pts avance</div>'
       +'<div class="ddesc">'+lv.t1p+'° Grupo '+lv.t1g+' vs '+t2d+'</div>'
       +t2Html
       +'<div class="dmatch">'
@@ -656,48 +657,27 @@ function buildDss(){
 // ── BUILD OCT ─────────────────────────────────────────────────
 function buildOct(){
   var el=document.getElementById("c-oct");if(!el)return;
-  var adm=CR==="admin",lk=locked()&&!adm,p=adm?null:getP();
+  var adm=CR==="admin",p=adm?null:getP();
   var dssAdv=adm?{}:(p.dssAdvances||{});
   var bk=calcOctBracket(dssAdv,p?p.forecasts:{},p?p.fairPlay:{});
-  var h=!adm?(lk?'<div class="notice warn">⏰ Plazo vencido.</div>':'<div class="notice info">Equipos calculados de tus pronósticos de Dieciseisavos. Ingresa marcador y quién avanza a Cuartos.</div>'):"";
+  var h='<div class="notice gold"><strong>Fase 1 - Solo llaves</strong> En Octavos solo se evaluan las llaves acertadas (4 pts c/u). Los marcadores se ingresan en la Fase 2.</div>';
   h+='<div class="dss-grid">';
   OCT.forEach(function(o){
     var comp=bk[o.id]||{t1:"?",t2:"?"};
     var t1=comp.t1,t2=comp.t2;
-    var of=adm?{}:(p.octForecasts[o.id]||{});
-    var oa=adm?"":(p.octAdvances[o.id]||"");
-    var d=(adm||lk)?"disabled":"";
-    var s1v=of.s1!==undefined?of.s1:"",s2v=of.s2!==undefined?of.s2:"";
-    var autoAdv="";
-    if(s1v!==""&&s2v!==""){
-      var n1=parseInt(s1v),n2=parseInt(s2v);
-      if(!isNaN(n1)&&!isNaN(n2)&&n1!==n2)autoAdv=n1>n2?t1:t2;
-    }
-    var showPick=!adm&&!lk&&(s1v===""||s2v===""||autoAdv==="");
     h+='<div class="dcard">'
-      +'<div class="dtitle">'+o.lbl+'</div>'
+      +'<div class="dtitle">'+o.lbl+' <span style="font-size:10px;color:var(--gl)">4 pts si llave exacta</span></div>'
       +'<div class="ddesc">Ganador '+o.w1+' vs Ganador '+o.w2+'</div>'
-      +'<div class="dmatch">'
-      +'<span class="dlabel l'+(t1==="?"?" pend":"")+'">'+t1+'</span>'
-      +'<input class="sinp" type="number" min="0" max="20" value="'+s1v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s1\',this.value)" '+d+'>'
-      +'<span class="vs">vs</span>'
-      +'<input class="sinp" type="number" min="0" max="20" value="'+s2v+'" placeholder="-" onchange="onOctScore(\''+o.id+'\',\'s2\',this.value)" '+d+'>'
-      +'<span class="dlabel'+(t2==="?"?" pend":"")+'">'+t2+'</span>'
-      +'</div>';
-    if(autoAdv){
-      h+='<div style="font-size:11px;color:#16a34a;margin-top:6px;padding:4px 8px;background:#dcfce7;border-radius:4px">✓ Avanza: <strong>'+autoAdv+'</strong></div>';
-    }else if(showPick){
-      h+='<select class="apick" onchange="onOctAdv(\''+o.id+'\',this.value)" '+d+'>'
-        +'<option value="">-- ¿Quién avanza a Cuartos? --</option>'
-        +'<option value="'+t1+'"'+(oa===t1&&t1!=="?"?" selected":"")+'>'+(t1==="?"?"Pendiente":t1)+'</option>'
-        +'<option value="'+t2+'"'+(oa===t2&&t2!=="?"?" selected":"")+'>'+(t2==="?"?"Pendiente":t2)+'</option>'
-        +'</select>';
-    }
-    h+='</div>';
+      +'<div style="display:flex;align-items:center;gap:10px;padding:10px 0">'
+      +'<span style="flex:1;font-size:13px;font-weight:600;text-align:right;color:'+(t1==="?"?"var(--muted)":"var(--text)")+'">'+t1+'</span>'
+      +'<span style="font-size:12px;color:var(--muted);padding:3px 10px;background:var(--surface);border-radius:4px">vs</span>'
+      +'<span style="flex:1;font-size:13px;font-weight:600;color:'+(t2==="?"?"var(--muted)":"var(--text)")+'">'+t2+'</span>'
+      +'</div></div>';
   });
   h+='</div>';
   el.innerHTML=h;
 }
+
 
 // ── SAVE HANDLERS ────────────────────────────────────────────
 // Event delegation for score inputs — avoids inline quote issues
