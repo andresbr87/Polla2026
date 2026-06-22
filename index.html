@@ -892,7 +892,8 @@ function buildStand(){
   rows.sort(function(a,b){return b.pts-a.pts;});
   var tot=Object.keys(MATCHES).reduce(function(a,g){return a+MATCHES[g].length;},0);
   var h=prizeHtml+'<div class="notice info">'+names.length+' participantes · Clic para ver detalle de puntos.</div>';
-  h+='<table class="stable"><thead><tr><th>#</th><th>Participante</th>
+  h+='<div style="overflow-x:auto"><table class="stable" style="min-width:680px"><thead><tr>'
+    +'<th>#</th><th>Participante</th>'
     +'<th style="text-align:center">Grupos</th>'
     +'<th style="text-align:center">16avos</th>'
     +'<th style="text-align:center">Octavos</th>'
@@ -911,7 +912,7 @@ function buildStand(){
       if(!act) return '<td style="text-align:center;color:var(--muted);font-size:12px">-</td>';
       return '<td style="text-align:center;font-weight:'+(v>0?'600':'400')+';color:'+(v>0?'var(--red)':'var(--muted)')+'">'+v+'</td>';
     }
-    h+='<tr onclick="showDetail(''+r.name+')">'
+    h+='<tr onclick="showDetail(\''+r.name+'\')">'
       +'<td class="'+rc+'">'+(med||i+1)+'</td>'
       +'<td class="pname">'+dn+'</td>'
       +pc(bd.grupos,true)+pc(bd.dss,true)+pc(bd.oct,true)
@@ -919,7 +920,7 @@ function buildStand(){
       +'<td class="pts" style="text-align:center">'+r.pts+'</td>'
       +'</tr>';
   });
-  h+='</tbody></table>';
+  h+='</tbody></table></div>';
   el.innerHTML=h;
 }
 function showDetail(name){
