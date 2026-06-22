@@ -185,8 +185,8 @@ firebase.initializeApp({
 });
 var db=firebase.firestore();
 
-var ADMIN_PASS="polla2026";
-var DEADLINE=new Date("2026-06-11T23:59:00-05:00");
+var ADMIN_PASS="p0llA2026";
+var DEADLINE=new Date("2026-06-13T23:59:00-05:00");
 var LOCKED_MATCHES=["A1","A6"]; // Partidos ya jugados — agregar IDs aqui
 function locked(){return new Date()>DEADLINE;}
 
@@ -491,10 +491,19 @@ function calcDssBracket(fc,fp,dssAdvances){
   return bk;
 }
 
-function calcOctBracket(dssAdv){
+function calcOctBracket(dssAdv,fc,fp){
   var bk={};
+  var dssBk=fc?calcDssBracket(fc,fp||{},dssAdv):null;
+  function resolveWinner(lvId){
+    var stored=dssAdv?dssAdv[lvId]:null;
+    if(!dssBk) return stored||"?";
+    var matchTeams=dssBk[lvId]||{t1:"?",t2:"?"};
+    // Only trust stored winner if it matches computed teams
+    if(stored&&(stored===matchTeams.t1||stored===matchTeams.t2)) return stored;
+    return "?";
+  }
   OCT.forEach(function(o){
-    bk[o.id]={t1:dssAdv[o.w1]||"?",t2:dssAdv[o.w2]||"?"};
+    bk[o.id]={t1:resolveWinner(o.w1),t2:resolveWinner(o.w2)};
   });
   return bk;
 }
@@ -649,7 +658,7 @@ function buildOct(){
   var el=document.getElementById("c-oct");if(!el)return;
   var adm=CR==="admin",lk=locked()&&!adm,p=adm?null:getP();
   var dssAdv=adm?{}:(p.dssAdvances||{});
-  var bk=calcOctBracket(dssAdv);
+  var bk=calcOctBracket(dssAdv,p?p.forecasts:{},p?p.fairPlay:{});
   var h=!adm?(lk?'<div class="notice warn">⏰ Plazo vencido.</div>':'<div class="notice info">Equipos calculados de tus pronósticos de Dieciseisavos. Ingresa marcador y quién avanza a Cuartos.</div>'):"";
   h+='<div class="dss-grid">';
   OCT.forEach(function(o){
@@ -752,7 +761,7 @@ function onOctScore(id,side,val){
   p.octForecasts[id][side]=val===""?undefined:parseInt(val);
   var f=p.octForecasts[id];
   if(f.s1!==undefined&&f.s2!==undefined){
-    var bk=calcOctBracket(p.dssAdvances||{});
+    var bk=calcOctBracket(p.dssAdvances||{},p.forecasts||{},p.fairPlay||{});
     var teams=bk[id]||{t1:"?",t2:"?"};
     if(parseInt(f.s1)>parseInt(f.s2))p.octAdvances[id]=teams.t1;
     else if(parseInt(f.s2)>parseInt(f.s1))p.octAdvances[id]=teams.t2;
@@ -822,7 +831,7 @@ function calcPts(pd,rR,rO,rD){
   OCT.forEach(function(o){
     var of=octForecasts[o.id]||{},rf=rO[o.id]||{};
     if(!rf.t1||!rf.t2)return;
-    var bk=calcOctBracket(dssAdvances);
+    var bk=calcOctBracket(dssAdvances,forecasts,fairPlay);
     var ct1=(bk[o.id]||{}).t1||"?",ct2=(bk[o.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
     if(ok){
@@ -842,13 +851,41 @@ function buildStand(){
   var el=document.getElementById("c-stand");if(!el)return;
   var names=Object.keys(ST.participants);
   if(!names.length){el.innerHTML='<div class="empty"><i class="ti ti-users"></i>Sin participantes aún.</div>';return;}
+  // Prize pool widget
+  var prizeHtml='<div style="background:linear-gradient(135deg,#1a1a1a 0%,#2a1a00 100%);border:1px solid #b8860b;border-radius:12px;padding:18px 20px;margin-bottom:16px">'
+    +'<div style="font-size:11px;font-weight:700;color:#b8860b;letter-spacing:2px;margin-bottom:6px">POZO DE PREMIOS</div>'
+    +'<div style="font-size:36px;font-weight:800;color:#fff;line-height:1;margin-bottom:4px">$1.320.000</div>'
+    +'<div style="font-size:12px;color:#888;margin-bottom:16px">22 participantes × $60.000 COP</div>'
+    +'<div style="display:flex;flex-direction:column;gap:10px">'
+    // 1st
+    +'<div style="display:flex;align-items:center;gap:12px">'
+    +'<span style="font-size:13px;color:#daa520;font-weight:600;min-width:28px">🥇</span>'
+    +'<div style="flex:1;background:#333;border-radius:20px;height:8px;overflow:hidden">'
+    +'<div style="width:70%;height:100%;background:#daa520;border-radius:20px"></div></div>'
+    +'<span style="font-size:14px;font-weight:700;color:#daa520;min-width:110px;text-align:right">$924.000 COP</span>'
+    +'</div>'
+    // 2nd
+    +'<div style="display:flex;align-items:center;gap:12px">'
+    +'<span style="font-size:13px;color:#9ca3af;font-weight:600;min-width:28px">🥈</span>'
+    +'<div style="flex:1;background:#333;border-radius:20px;height:8px;overflow:hidden">'
+    +'<div style="width:15%;height:100%;background:#9ca3af;border-radius:20px"></div></div>'
+    +'<span style="font-size:14px;font-weight:700;color:#9ca3af;min-width:110px;text-align:right">$198.000 COP</span>'
+    +'</div>'
+    // 3rd
+    +'<div style="display:flex;align-items:center;gap:12px">'
+    +'<span style="font-size:13px;color:#b45309;font-weight:600;min-width:28px">🥉</span>'
+    +'<div style="flex:1;background:#333;border-radius:20px;height:8px;overflow:hidden">'
+    +'<div style="width:5%;height:100%;background:#b45309;border-radius:20px"></div></div>'
+    +'<span style="font-size:14px;font-weight:700;color:#b45309;min-width:110px;text-align:right">$66.000 COP</span>'
+    +'</div>'
+    +'</div></div>';
   var rows=names.map(function(n){
     var r=calcPts(getP(n),ST.realResults||{},ST.octResults||{},ST.dssResults||{});
     return{name:n,pts:r.pts};
   });
   rows.sort(function(a,b){return b.pts-a.pts;});
   var tot=Object.keys(MATCHES).reduce(function(a,g){return a+MATCHES[g].length;},0);
-  var h='<div class="notice info">'+names.length+' participantes · Clic para ver detalle de puntos.</div>';
+  var h=prizeHtml+'<div class="notice info">'+names.length+' participantes · Clic para ver detalle de puntos.</div>';
   h+='<table class="stable"><thead><tr><th>#</th><th>Participante</th><th>Puntos</th><th>Completado</th></tr></thead><tbody>';
   rows.forEach(function(r,i){
     var med=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
@@ -937,7 +974,7 @@ function buildTransBody(){
     });
     h+='</div>';
   }else{
-    var bko=calcOctBracket(pd.dssAdvances||{});
+    var bko=calcOctBracket(pd.dssAdvances||{},pd.forecasts||{},pd.fairPlay||{});
     h+='<div class="dss-grid">';
     OCT.forEach(function(o){
       var of=pd.octForecasts[o.id]||{},oa=pd.octAdvances[o.id]||"";
