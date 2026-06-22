@@ -790,6 +790,7 @@ function calcPts(pd,rR,rO,rD){
     [sorted[0],sorted[1]].forEach(function(t){
       if(t&&t!=="?"&&ra.indexOf(t)>=0){pts+=4;det.push({m:"adv_"+g,p:4,r:t+" avanza Grupo "+g});}
     });
+    // 4 pts for best 3rd advance — handled after DSS loop
   });
   // dieciseisavos
   DSS.forEach(function(lv){
@@ -807,6 +808,21 @@ function calcPts(pd,rR,rO,rD){
     var ra2=rD["adv_"+lv.id],pa2=dssAdvances[lv.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza "+lv.lbl});}
   });
+  // best 3rd advance — 4 pts if participant picked a team that really classified as best 3rd
+  var realB3=rR.best3rds||[];
+  if(realB3.length>0){
+    DSS.forEach(function(lv){
+      if(lv.t2p!=="3b") return;
+      var picked=dssAdvances[lv.id+"_3b"];
+      if(picked&&realB3.indexOf(picked)>=0){
+        var alreadyCounted=det.some(function(d){return d.m==="b3_"+picked;});
+        if(!alreadyCounted){
+          pts+=4;det.push({m:"b3_"+picked,p:4,r:picked+" clasifica como mejor 3°"});
+        }
+      }
+    });
+  }
+
   // octavos
   OCT.forEach(function(o){
     var of=octForecasts[o.id]||{},rf=rO[o.id]||{};
@@ -823,7 +839,17 @@ function calcPts(pd,rR,rO,rD){
     var ra2=rO["adv_"+o.id],pa2=octAdvances[o.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:o.id+"a",p:4,r:pa2+" avanza "+o.lbl});}
   });
-  return{pts:pts,det:det};
+  // Calculate phase breakdown
+  var ptsGrupos=0,ptsDss=0,ptsOct=0;
+  det.forEach(function(d){
+    if(d.m.startsWith("adv_")&&d.m.length===5) ptsGrupos+=d.p; // adv_A, adv_B etc
+    else if(d.m.startsWith("b3_")) ptsGrupos+=d.p; // best 3rd
+    else if(d.m.length<=3&&/^[A-L]\d$/.test(d.m)) ptsGrupos+=d.p; // A1, B3 etc
+    else if(d.m.startsWith("R")) ptsDss+=d.p; // R01, R02 etc
+    else if(d.m.startsWith("O")) ptsOct+=d.p; // O01 etc
+    else ptsGrupos+=d.p; // fallback
+  });
+  return{pts:pts,det:det,breakdown:{grupos:ptsGrupos,dss:ptsDss,oct:ptsOct,cuartos:0,semi:0,tercero:0,final:0}};
 }
 
 // ── STANDINGS ────────────────────────────────────────────────
@@ -861,19 +887,37 @@ function buildStand(){
     +'</div></div>';
   var rows=names.map(function(n){
     var r=calcPts(getP(n),ST.realResults||{},ST.octResults||{},ST.dssResults||{});
-    return{name:n,pts:r.pts};
+    return{name:n,pts:r.pts,breakdown:r.breakdown};
   });
   rows.sort(function(a,b){return b.pts-a.pts;});
   var tot=Object.keys(MATCHES).reduce(function(a,g){return a+MATCHES[g].length;},0);
   var h=prizeHtml+'<div class="notice info">'+names.length+' participantes · Clic para ver detalle de puntos.</div>';
-  h+='<table class="stable"><thead><tr><th>#</th><th>Participante</th><th>Puntos</th><th>Completado</th></tr></thead><tbody>';
+  h+='<table class="stable"><thead><tr><th>#</th><th>Participante</th>
+    +'<th style="text-align:center">Grupos</th>'
+    +'<th style="text-align:center">16avos</th>'
+    +'<th style="text-align:center">Octavos</th>'
+    +'<th style="text-align:center;color:var(--muted)">Cuartos</th>'
+    +'<th style="text-align:center;color:var(--muted)">Semi</th>'
+    +'<th style="text-align:center;color:var(--muted)">3/4</th>'
+    +'<th style="text-align:center;color:var(--muted)">Final</th>'
+    +'<th style="text-align:center">Total</th>'
+    +'</tr></thead><tbody>';
   rows.forEach(function(r,i){
     var med=i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
     var rc=i===0?"grank":i===1?"srank":i===2?"brank":"rank";
-    var fc=Object.values(getP(r.name).forecasts||{}).filter(function(f){return f.s1!==undefined&&f.s2!==undefined;}).length;
-    var pct=Math.round(fc/tot*100);
     var dn=(ST.participants[r.name]&&ST.participants[r.name].displayName)||r.name;
-    h+='<tr onclick="showDetail(\''+r.name+'\')"><td class="'+rc+'">'+(med||i+1)+'</td><td class="pname">'+dn+'</td><td class="pts">'+r.pts+'</td><td><span class="chip '+(pct>=80?"g":"r")+'">'+pct+'%</span></td></tr>';
+    var bd=r.breakdown||{grupos:0,dss:0,oct:0};
+    function pc(v,act){
+      if(!act) return '<td style="text-align:center;color:var(--muted);font-size:12px">-</td>';
+      return '<td style="text-align:center;font-weight:'+(v>0?'600':'400')+';color:'+(v>0?'var(--red)':'var(--muted)')+'">'+v+'</td>';
+    }
+    h+='<tr onclick="showDetail(''+r.name+')">'
+      +'<td class="'+rc+'">'+(med||i+1)+'</td>'
+      +'<td class="pname">'+dn+'</td>'
+      +pc(bd.grupos,true)+pc(bd.dss,true)+pc(bd.oct,true)
+      +pc(0,false)+pc(0,false)+pc(0,false)+pc(0,false)
+      +'<td class="pts" style="text-align:center">'+r.pts+'</td>'
+      +'</tr>';
   });
   h+='</tbody></table>';
   el.innerHTML=h;
@@ -1003,6 +1047,28 @@ function buildRes(){
   });
   h+='</div>';
   // dss
+  // ── 8 Mejores Terceros Clasificados ──
+  var b3 = ST.realResults.best3rds||[];
+  // Build list of all 3rd place teams from groups
+  var all3rds = Object.keys(GRP).map(function(g){ return {g:g, team:GRP[g][2]}; });
+  // Actually we need all possible 3rd teams — just use all teams per group
+  h+='<div style="font-size:14px;font-weight:600;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)">8 Mejores Terceros Clasificados</div>';
+  h+='<div class="notice info">Selecciona los 8 equipos que clasificaron como mejores terceros. Se usan para calcular los 4 pts de avance a Dieciseisavos.</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px">';
+  for(var bi=0;bi<8;bi++){
+    var selVal=b3[bi]||"";
+    h+='<div><label style="font-size:11px;color:var(--muted);font-weight:500;display:block;margin-bottom:4px">Mejor 3° #'+(bi+1)+'</label>'
+      +'<select style="width:100%;font-size:12px;padding:5px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text)" onchange="setBest3rd('+bi+',this.value)">'
+      +'<option value="">-- Seleccionar equipo --</option>';
+    Object.keys(GRP).forEach(function(g){
+      GRP[g].forEach(function(t){
+        h+='<option value="'+t+'"'+(selVal===t?" selected":"")+'>'+t+' (Gr.'+g+')</option>';
+      });
+    });
+    h+='</select></div>';
+  }
+  h+='</div>';
+
   h+='<div style="font-size:14px;font-weight:600;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid var(--border)">Dieciseisavos de Final</div>';
   h+='<div class="dss-grid">';
   DSS.forEach(function(lv){
@@ -1046,6 +1112,11 @@ function buildRes(){
   h+='<div class="save-bar"><span></span><button class="btn primary" onclick="saveRes()">💾 Guardar resultados</button></div>';
   el.innerHTML=h;
 }
+function setBest3rd(idx,team){
+  if(!ST.realResults.best3rds) ST.realResults.best3rds=[];
+  ST.realResults.best3rds[idx]=team;
+}
+
 function setReal(id,s,v){if(!ST.realResults[id])ST.realResults[id]={};ST.realResults[id][s]=v===""?undefined:parseInt(v);}
 function setRealAdv(g,p,t){if(!ST.octResults["adv_"+g])ST.octResults["adv_"+g]=[];ST.octResults["adv_"+g][p]=t;}
 function setRealDss(id,k,v){
