@@ -155,10 +155,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="sub-tab active" onclick="goSub(this,'s-grupos')">Fase de grupos</div>
       <div class="sub-tab" onclick="goSub(this,'s-dss')">Dieciseisavos</div>
       <div class="sub-tab" onclick="goSub(this,'s-oct')">Octavos</div>
+      <div class="sub-tab" id="tab-f2" style="display:none" onclick="goSub(this,'s-f2')">Fase 2</div>
     </div>
     <div class="sub-panel active" id="s-grupos"><div id="c-grupos"></div></div>
     <div class="sub-panel" id="s-dss"><div id="c-dss"></div></div>
     <div class="sub-panel" id="s-oct"><div id="c-oct"></div></div>
+    <div class="sub-panel" id="s-f2"><div id="c-f2"></div></div>
     <div class="save-bar">
       <span class="save-msg" id="save-msg"></span>
       <button class="btn primary" onclick="doSave()">💾 Guardar pronósticos</button>
@@ -188,6 +190,36 @@ var db=firebase.firestore();
 var ADMIN_PASS="polla2026";
 var DEADLINE=new Date("2026-06-13T23:59:00-05:00");
 var LOCKED_MATCHES=["A1","A6"]; // Partidos ya jugados — agregar IDs aqui
+
+// ── FASE 2 CONFIG ─────────────────────────────────────────────
+var FASE2_ENABLED=false; // admin activa con true
+var FASE2_DEADLINE=new Date("2026-07-04T14:30:00-05:00"); // 30min antes primer octavo
+var FASE2_LOCKED={oct:false,qtr:false,semi:false,third:false,final:false};
+// Llaves reales de Octavos F2 — admin las llena cuando se conozcan
+var OCT_F2=[
+  {id:"F2O1",lbl:"Octavo F2 1",t1:"",t2:""},
+  {id:"F2O2",lbl:"Octavo F2 2",t1:"",t2:""},
+  {id:"F2O3",lbl:"Octavo F2 3",t1:"",t2:""},
+  {id:"F2O4",lbl:"Octavo F2 4",t1:"",t2:""},
+  {id:"F2O5",lbl:"Octavo F2 5",t1:"",t2:""},
+  {id:"F2O6",lbl:"Octavo F2 6",t1:"",t2:""},
+  {id:"F2O7",lbl:"Octavo F2 7",t1:"",t2:""},
+  {id:"F2O8",lbl:"Octavo F2 8",t1:"",t2:""}
+];
+// Cuartos bracket: Q1=W(O1)vsW(O2), Q2=W(O3)vsW(O4), etc
+var QTR_F2=[
+  {id:"F2Q1",lbl:"Cuarto 1",w1:"F2O1",w2:"F2O2"},
+  {id:"F2Q2",lbl:"Cuarto 2",w1:"F2O3",w2:"F2O4"},
+  {id:"F2Q3",lbl:"Cuarto 3",w1:"F2O5",w2:"F2O6"},
+  {id:"F2Q4",lbl:"Cuarto 4",w1:"F2O7",w2:"F2O8"}
+];
+var SEMI_F2=[
+  {id:"F2S1",lbl:"Semifinal 1",w1:"F2Q1",w2:"F2Q2"},
+  {id:"F2S2",lbl:"Semifinal 2",w1:"F2Q3",w2:"F2Q4"}
+];
+var FINAL_F2={id:"F2F",lbl:"Gran Final",w1:"F2S1",w2:"F2S2"};
+var THIRD_F2={id:"F2T",lbl:"3er y 4to Puesto",l1:"F2S1",l2:"F2S2"};
+function f2Locked(phase){ return FASE2_LOCKED[phase]||new Date()>(FASE2_DEADLINE); }
 function locked(){return new Date()>DEADLINE;}
 
 var GRP={
@@ -352,6 +384,7 @@ function enterApp(u,r){
   document.getElementById("ubadge").textContent=dn+(r==="admin"?" (Admin)":"");
   document.getElementById("logoutbtn").style.display="block";
   if(r==="admin")document.querySelectorAll(".adm").forEach(function(el){el.style.display="block";});
+  if(FASE2_ENABLED){var t2=document.getElementById("tab-f2");if(t2)t2.style.display="block";}
   show("screen-main");fbListen();buildGrupos();buildStand();
 }
 function doLogin(){
@@ -398,6 +431,7 @@ function goSub(el,id){
   if(id==="s-grupos")buildGrupos();
   if(id==="s-dss")buildDss();
   if(id==="s-oct")buildOct();
+  if(id==="s-f2")buildF2();
 }
 
 // ── MATH ─────────────────────────────────────────────────────
@@ -799,12 +833,23 @@ function calcPts(pd,rR,rO,rD){
     var bk=calcDssBracket(forecasts,fairPlay,dssAdvances);
     var ct1=(bk[lv.id]||{}).t1||"?",ct2=(bk[lv.id]||{}).t2||"?";
     var ok=(ct1===rf.t1&&ct2===rf.t2)||(ct1===rf.t2&&ct2===rf.t1);
+    var marcadorExacto=false;
     if(ok){
       pts+=4;det.push({m:lv.id,p:4,r:"Llave exacta "+lv.lbl});
       if(of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined&&parseInt(of.s1)===parseInt(rf.s1)&&parseInt(of.s2)===parseInt(rf.s2)){
         pts+=3;det.push({m:lv.id+"s",p:3,r:"Marcador exacto "+lv.lbl});
+        marcadorExacto=true;
       }
     }
+    // 1pt ganador — si no hubo marcador exacto
+    if(!marcadorExacto&&of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined){
+      var fcWin=parseInt(of.s1)>parseInt(of.s2)?rf.t1:parseInt(of.s2)>parseInt(of.s1)?rf.t2:"draw";
+      var realWin=parseInt(rf.s1)>parseInt(rf.s2)?rf.t1:parseInt(rf.s2)>parseInt(rf.s1)?rf.t2:(rf.winner||"draw");
+      if(fcWin!=="draw"&&realWin!=="draw"&&fcWin===realWin){
+        pts+=1;det.push({m:lv.id+"g",p:1,r:"Ganador "+lv.lbl});
+      }
+    }
+    // 4pts equipo avanza a octavos
     var ra2=rD["adv_"+lv.id],pa2=dssAdvances[lv.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza "+lv.lbl});}
   });
@@ -839,17 +884,144 @@ function calcPts(pd,rR,rO,rD){
     var ra2=rO["adv_"+o.id],pa2=octAdvances[o.id];
     if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:o.id+"a",p:4,r:pa2+" avanza "+o.lbl});}
   });
-  // Calculate phase breakdown
-  var ptsGrupos=0,ptsDss=0,ptsOct=0;
-  det.forEach(function(d){
-    if(d.m.startsWith("adv_")&&d.m.length===5) ptsGrupos+=d.p; // adv_A, adv_B etc
-    else if(d.m.startsWith("b3_")) ptsGrupos+=d.p; // best 3rd
-    else if(d.m.length<=3&&/^[A-L]\d$/.test(d.m)) ptsGrupos+=d.p; // A1, B3 etc
-    else if(d.m.startsWith("R")) ptsDss+=d.p; // R01, R02 etc
-    else if(d.m.startsWith("O")) ptsOct+=d.p; // O01 etc
-    else ptsGrupos+=d.p; // fallback
+  // ── FASE 2 SCORING ───────────────────────────────────────────
+  var f2=pd.fase2||{};
+  var f2oct=f2.oct||{},f2qtr=f2.qtr||{},f2semi=f2.semi||{},f2third=f2.third||{},f2final=f2.final||{};
+  var f2octAdv=f2.octAdv||{},f2qtrAdv=f2.qtrAdv||{},f2semiAdv=f2.semiAdv||{},f2thirdAdv=f2.thirdAdv||{},f2finalAdv=f2.finalAdv||{};
+  var rF2=ST.realResults.fase2||{};
+
+  // helper: check score and winner for F2 match
+  function f2Score(matchId,forecast,real,advFc,advReal,lbl,pts_marcador,pts_ganador,pts_adv){
+    if(!real||!real.t1||!real.t2) return;
+    var fc=forecast||{};
+    // marcador exacto
+    if(fc.s1!==undefined&&fc.s2!==undefined&&real.s1!==undefined&&real.s2!==undefined){
+      if(parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
+        pts+=pts_marcador;det.push({m:matchId+"s",p:pts_marcador,r:"Marcador exacto "+lbl});
+      } else {
+        // ganador
+        var pw=parseInt(fc.s1)>parseInt(fc.s2)?real.t1:parseInt(fc.s2)>parseInt(fc.s1)?real.t2:"pen";
+        var rw=parseInt(real.s1)>parseInt(real.s2)?real.t1:parseInt(real.s2)>parseInt(real.s1)?real.t2:(real.winner||"");
+        if(pw!=="pen"&&rw&&pw===rw){pts+=pts_ganador;det.push({m:matchId+"g",p:pts_ganador,r:"Ganador "+lbl});}
+      }
+    }
+    // avance
+    if(pts_adv>0&&advReal&&advFc&&advReal===advFc){pts+=pts_adv;det.push({m:matchId+"a",p:pts_adv,r:advFc+" avanza "+lbl});}
+  }
+
+  // Octavos F2: marcador 3pts, ganador 1pt, avance cuartos 4pts
+  OCT_F2.forEach(function(o){
+    var real=rF2["oct_"+o.id];
+    f2Score(o.id,f2oct[o.id],real,f2octAdv[o.id],rF2["adv_oct_"+o.id],o.lbl,3,1,4);
   });
-  return{pts:pts,det:det,breakdown:{grupos:ptsGrupos,dss:ptsDss,oct:ptsOct,cuartos:0,semi:0,tercero:0,final:0}};
+
+  // Cuartos: llave 5pts, marcador 3pts, ganador 1pt, avance semi 4pts
+  QTR_F2.forEach(function(q){
+    var real=rF2["qtr_"+q.id];
+    if(!real||!real.t1||!real.t2) return;
+    // llave exacta
+    var pt1=f2octAdv[q.w1]||"?",pt2=f2octAdv[q.w2]||"?";
+    var llaveOk=(pt1===real.t1&&pt2===real.t2)||(pt1===real.t2&&pt2===real.t1);
+    if(llaveOk){pts+=5;det.push({m:q.id+"l",p:5,r:"Llave exacta "+q.lbl});}
+    f2Score(q.id,f2qtr[q.id],real,f2qtrAdv[q.id],rF2["adv_qtr_"+q.id],q.lbl,3,1,4);
+  });
+
+  // Semifinal: llave 10pts, marcador 3pts, ganador 1pt, adv 3/4 4pts, adv final 5pts
+  SEMI_F2.forEach(function(s){
+    var real=rF2["semi_"+s.id];
+    if(!real||!real.t1||!real.t2) return;
+    var pt1=f2qtrAdv[s.w1]||"?",pt2=f2qtrAdv[s.w2]||"?";
+    var llaveOk=(pt1===real.t1&&pt2===real.t2)||(pt1===real.t2&&pt2===real.t1);
+    if(llaveOk){pts+=10;det.push({m:s.id+"l",p:10,r:"Llave exacta "+s.lbl});}
+    // marcador y ganador
+    var fc=f2semi[s.id]||{};
+    if(fc.s1!==undefined&&fc.s2!==undefined&&real.s1!==undefined&&real.s2!==undefined){
+      if(parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
+        pts+=3;det.push({m:s.id+"s",p:3,r:"Marcador exacto "+s.lbl});
+      } else {
+        var pw=parseInt(fc.s1)>parseInt(fc.s2)?real.t1:parseInt(fc.s2)>parseInt(fc.s1)?real.t2:"pen";
+        var rw=real.winner||"";
+        if(pw!=="pen"&&rw&&pw===rw){pts+=1;det.push({m:s.id+"g",p:1,r:"Ganador "+s.lbl});}
+      }
+    }
+    // avance a 3/4 (perdedor) — 4pts
+    var realLoser=rF2["loser_semi_"+s.id];
+    var fcAdv=f2semiAdv[s.id]||"";
+    var fcLoser=fcAdv?(fcAdv===real.t1?real.t2:real.t1):"";
+    if(realLoser&&fcLoser&&realLoser===fcLoser){pts+=4;det.push({m:s.id+"3",p:4,r:fcLoser+" al 3°/4° "+s.lbl});}
+    // avance a final (ganador) — 5pts
+    var realWinner=rF2["adv_semi_"+s.id];
+    if(realWinner&&fcAdv&&realWinner===fcAdv){pts+=5;det.push({m:s.id+"f",p:5,r:fcAdv+" a la Final "+s.lbl});}
+  });
+
+  // 3° y 4° puesto: llave 10pts, marcador 3pts, ganador 1pt, 3er 7pts, 4to 6pts
+  var realThird=rF2["third"];
+  if(realThird&&realThird.t1&&realThird.t2){
+    var tpt1=f2semiAdv[SEMI_F2[0].id]||"?",tpt2=f2semiAdv[SEMI_F2[1].id]||"?";
+    // los que van al 3/4 son los perdedores de semi
+    var expT1=tpt1?(tpt1===realThird.t1||tpt1===realThird.t2?"":"?"):"?";
+    var llaveOk3=(expT1!=="?");
+    if(llaveOk3){pts+=10;det.push({m:"third_l",p:10,r:"Llave exacta 3°/4° puesto"});}
+    var fc3=f2third[THIRD_F2.id]||{};
+    if(fc3.s1!==undefined&&fc3.s2!==undefined&&realThird.s1!==undefined&&realThird.s2!==undefined){
+      if(parseInt(fc3.s1)===parseInt(realThird.s1)&&parseInt(fc3.s2)===parseInt(realThird.s2)){
+        pts+=3;det.push({m:"third_s",p:3,r:"Marcador exacto 3°/4° puesto"});
+      } else {
+        var pw3=parseInt(fc3.s1)>parseInt(fc3.s2)?realThird.t1:parseInt(fc3.s2)>parseInt(fc3.s1)?realThird.t2:"pen";
+        var rw3=realThird.winner||"";
+        if(pw3!=="pen"&&rw3&&pw3===rw3){pts+=1;det.push({m:"third_g",p:1,r:"Ganador 3°/4° puesto"});}
+      }
+    }
+    // 3er puesto 7pts, 4to 6pts
+    var real3rd=realThird.winner||"";
+    var real4th=real3rd?(real3rd===realThird.t1?realThird.t2:realThird.t1):"";
+    var fc3adv=f2thirdAdv[THIRD_F2.id]||"";
+    var fc4th=fc3adv?(fc3adv===realThird.t1?realThird.t2:realThird.t1):"";
+    if(real3rd&&fc3adv&&real3rd===fc3adv){pts+=7;det.push({m:"third_3",p:7,r:fc3adv+" 3er puesto"});}
+    if(real4th&&fc4th&&real4th===fc4th){pts+=6;det.push({m:"third_4",p:6,r:fc4th+" 4to puesto"});}
+  }
+
+  // Gran Final: llave 12pts, marcador 3pts, ganador 1pt, campeon 12pts, sub 8pts
+  var realFinal=rF2["final"];
+  if(realFinal&&realFinal.t1&&realFinal.t2){
+    var fpt1=f2semiAdv[SEMI_F2[0].id]||"?",fpt2=f2semiAdv[SEMI_F2[1].id]||"?";
+    var llaveOkF=(fpt1===realFinal.t1&&fpt2===realFinal.t2)||(fpt1===realFinal.t2&&fpt2===realFinal.t1);
+    if(llaveOkF){pts+=12;det.push({m:"final_l",p:12,r:"Llave exacta Gran Final"});}
+    var fcF=f2final[FINAL_F2.id]||{};
+    if(fcF.s1!==undefined&&fcF.s2!==undefined&&realFinal.s1!==undefined&&realFinal.s2!==undefined){
+      if(parseInt(fcF.s1)===parseInt(realFinal.s1)&&parseInt(fcF.s2)===parseInt(realFinal.s2)){
+        pts+=3;det.push({m:"final_s",p:3,r:"Marcador exacto Gran Final"});
+      } else {
+        var pwF=parseInt(fcF.s1)>parseInt(fcF.s2)?realFinal.t1:parseInt(fcF.s2)>parseInt(fcF.s1)?realFinal.t2:"pen";
+        var rwF=realFinal.winner||"";
+        if(pwF!=="pen"&&rwF&&pwF===rwF){pts+=1;det.push({m:"final_g",p:1,r:"Ganador Gran Final"});}
+      }
+    }
+    var realChamp=realFinal.winner||"";
+    var realSub=realChamp?(realChamp===realFinal.t1?realFinal.t2:realFinal.t1):"";
+    var fcFadv=f2finalAdv[FINAL_F2.id]||"";
+    var fcSub=fcFadv?(fcFadv===realFinal.t1?realFinal.t2:realFinal.t1):"";
+    if(realChamp&&fcFadv&&realChamp===fcFadv){pts+=12;det.push({m:"final_c",p:12,r:fcFadv+" Campeon Mundial"});}
+    if(realSub&&fcSub&&realSub===fcSub){pts+=8;det.push({m:"final_r",p:8,r:fcSub+" Subcampeon"});}
+  }
+
+  // ── PHASE BREAKDOWN ──────────────────────────────────────────
+  var ptsGrupos=0,ptsDss=0,ptsOct=0,ptsCuartos=0,ptsSemi=0,ptsTercero=0,ptsFinal=0;
+  det.forEach(function(d){
+    var m=d.m;
+    if(m.startsWith("adv_")&&m.length===5) ptsGrupos+=d.p;
+    else if(m.startsWith("b3_")) ptsGrupos+=d.p;
+    else if(/^[A-L]\d/.test(m)) ptsGrupos+=d.p;
+    else if(m.startsWith("R")) ptsDss+=d.p;
+    else if(m.startsWith("O")) ptsOct+=d.p;
+    else if(m.startsWith("F2O")) ptsOct+=d.p;
+    else if(m.startsWith("F2Q")||m.startsWith("F2q")) ptsCuartos+=d.p;
+    else if(m.startsWith("F2S")||m.startsWith("F2s")) ptsSemi+=d.p;
+    else if(m.startsWith("third")) ptsTercero+=d.p;
+    else if(m.startsWith("final")) ptsFinal+=d.p;
+    else ptsGrupos+=d.p;
+  });
+  return{pts:pts,det:det,breakdown:{grupos:ptsGrupos,dss:ptsDss,oct:ptsOct,cuartos:ptsCuartos,semi:ptsSemi,tercero:ptsTercero,final:ptsFinal}};
 }
 
 // ── STANDINGS ────────────────────────────────────────────────
@@ -916,7 +1088,7 @@ function buildStand(){
       +'<td class="'+rc+'">'+(med||i+1)+'</td>'
       +'<td class="pname">'+dn+'</td>'
       +pc(bd.grupos,true)+pc(bd.dss,true)+pc(bd.oct,true)
-      +pc(0,false)+pc(0,false)+pc(0,false)+pc(0,false)
+      +pc(bd.cuartos,true)+pc(bd.semi,true)+pc(bd.tercero,true)+pc(bd.final,true)
       +'<td class="pts" style="text-align:center">'+r.pts+'</td>'
       +'</tr>';
   });
@@ -1200,6 +1372,247 @@ function delUser(n){
   delete ST.participants[n];
   fbSave(function(){buildGest();buildStand();});
 }
+
+// ── FASE 2 HELPERS ────────────────────────────────────────────
+function getF2P(n){ n=n||CU; var b=ST.participants[n]||{}; return b.fase2||{oct:{},qtr:{},semi:{},third:{},final:{},octAdv:{},qtrAdv:{},semiAdv:{},thirdAdv:{},finalAdv:{}}; }
+
+function saveF2(){ ST.participants[CU].fase2=getF2P(); fbSave(function(){ var m=document.getElementById("save-msg"); if(m){m.textContent="Guardado F2 ✓";setTimeout(function(){m.textContent="";},3000);} }); }
+
+function getF2Winner(matchId){
+  var p=getF2P();
+  if(matchId.startsWith("F2O")){ return p.octAdv[matchId]||"?"; }
+  if(matchId.startsWith("F2Q")){ return p.qtrAdv[matchId]||"?"; }
+  if(matchId.startsWith("F2S")){ return p.semiAdv[matchId]||"?"; }
+  return "?";
+}
+
+function getF2Teams(match){
+  if(match.t1!==undefined) return {t1:match.t1||"?",t2:match.t2||"?"};
+  var t1=getF2Winner(match.w1), t2=getF2Winner(match.w2);
+  return{t1:t1,t2:t2};
+}
+
+function autoF2Adv(id,s1,s2,t1,t2,advObj){
+  if(s1!==""&&s2!==""){
+    var n1=parseInt(s1),n2=parseInt(s2);
+    if(!isNaN(n1)&&!isNaN(n2)&&n1!==n2){ advObj[id]=n1>n2?t1:t2; return true; }
+  }
+  return false;
+}
+
+function teamFlag(name){
+  var flags={"Argentina":"🇦🇷","Brasil":"🇧🇷","Francia":"🇫🇷","Inglaterra":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Alemania":"🇩🇪","España":"🇪🇸","Portugal":"🇵🇹","Países Bajos":"🇳🇱","Colombia":"🇨🇴","Uruguay":"🇺🇾","México":"🇲🇽","USA":"🇺🇸","Japón":"🇯🇵","Marruecos":"🇲🇦","Bélgica":"🇧🇪","Croacia":"🇭🇷","Corea del Sur":"🇰🇷","Senegal":"🇸🇳","Ecuador":"🇪🇨","Suiza":"🇨🇭","Australia":"🇦🇺","Ghana":"🇬🇭","Irán":"🇮🇷","Suecia":"🇸🇪","Turquía":"🇹🇷","Noruega":"🇳🇴","Austria":"🇦🇹","Canadá":"🇨🇦","Chile":"🇨🇱","Perú":"🇵🇪"};
+  return flags[name]||"🏳";
+}
+
+function f2TeamBox(name,isWinner,disabled){
+  var flag=teamFlag(name);
+  var bg=isWinner?"background:#162d4a;border-color:#b8860b;color:#fff":"background:#0f2040;border:1px solid #1e3a5f;color:#c8d8e8";
+  var pend=(!name||name==="?")?"color:#4a6a8a;font-style:italic":"";
+  return '<div style="display:flex;align-items:center;gap:5px;'+bg+';border-radius:5px;padding:4px 7px;font-size:11px;height:26px;'+pend+'"><span>'+(name&&name!=="?"?flag:"")+'</span><span style="flex:1">'+(name&&name!=="?"?name:"Por definir")+'</span></div>';
+}
+
+function f2ScoreInputs(matchId,f,t1,t2,locked,phase){
+  if(locked) return '<div style="display:flex;align-items:center;gap:6px;margin:4px 0;justify-content:center"><span style="font-size:13px;font-weight:500;color:#b8860b">'+(f.s1!==undefined?f.s1:"-")+'</span><span style="font-size:10px;color:#555">vs</span><span style="font-size:13px;font-weight:500;color:#b8860b">'+(f.s2!==undefined?f.s2:"-")+'</span></div>';
+  var d=(!t1||t1==="?"||!t2||t2==="?")?"disabled":"";
+  return '<div style="display:flex;align-items:center;gap:6px;margin:4px 0;justify-content:center">'
+    +'<input type="number" min="0" max="20" value="'+(f.s1!==undefined?f.s1:"")+'" placeholder="-" style="width:38px;text-align:center;padding:3px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" onchange="onF2Score(\''+phase+'\',\''+matchId+'\',\'s1\',this.value)" '+d+'>'
+    +'<span style="font-size:10px;color:#555">vs</span>'
+    +'<input type="number" min="0" max="20" value="'+(f.s2!==undefined?f.s2:"")+'" placeholder="-" style="width:38px;text-align:center;padding:3px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" onchange="onF2Score(\''+phase+'\',\''+matchId+'\',\'s2\',this.value)" '+d+'>'
+    +'</div>';
+}
+
+function f2AdvRow(matchId,t1,t2,adv,locked,phase){
+  if(!t1||t1==="?"||!t2||t2==="?") return "";
+  if(adv) return '<div style="font-size:10px;color:#16a34a;text-align:center;padding:2px 0;background:#0a1e0a;border-radius:3px;margin-top:2px">'+teamFlag(adv)+' '+adv+' avanza</div>';
+  if(locked) return "";
+  return '<select style="width:100%;font-size:11px;padding:4px;border:1px solid #1e3a5f;border-radius:4px;background:#0f2040;color:#c8d8e8;margin-top:4px" onchange="onF2Adv(\''+phase+'\',\''+matchId+'\',this.value)">'
+    +'<option value="">-- Empate: ¿quién avanza? --</option>'
+    +'<option value="'+t1+'">'+teamFlag(t1)+' '+t1+'</option>'
+    +'<option value="'+t2+'">'+teamFlag(t2)+' '+t2+'</option>'
+    +'</select>';
+}
+
+function f2Card(match,f,adv,t1,t2,locked,phase){
+  var h='<div style="background:#0d1a2a;border:1px solid #1e3a5f;border-radius:8px;padding:10px;margin:4px 2px">';
+  h+='<div style="font-size:10px;color:#b8860b;font-weight:500;margin-bottom:6px">'+match.lbl+'</div>';
+  h+=f2TeamBox(t1,adv===t1,locked);
+  h+=f2ScoreInputs(match.id,f,t1,t2,locked,phase);
+  h+=f2TeamBox(t2,adv===t2,locked);
+  h+=f2AdvRow(match.id,t1,t2,adv,locked,phase);
+  h+='</div>';
+  return h;
+}
+
+// ── BUILD F2 ──────────────────────────────────────────────────
+function buildF2(){
+  var el=document.getElementById("c-f2"); if(!el) return;
+  if(!FASE2_ENABLED){
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:#4a6a8a"><div style="font-size:36px;margin-bottom:12px">🔒</div><div style="font-size:16px;font-weight:500;color:#b8860b">Fase 2 — Próximamente</div><div style="font-size:13px;margin-top:8px">El administrador habilitará esta fase cuando se conozcan las llaves de Octavos</div></div>';
+    return;
+  }
+  var p=getF2P();
+  var lkOct=f2Locked("oct"), lkQtr=f2Locked("qtr"), lkSemi=f2Locked("semi"), lkThird=f2Locked("third"), lkFinal=f2Locked("final");
+
+  var h='<div style="background:#0a1628;border-radius:12px;padding:16px 8px 20px">';
+  h+='<div style="text-align:center;font-size:12px;font-weight:500;color:#daa520;letter-spacing:2px;padding-bottom:14px;text-transform:uppercase">Fase 2 · Polla Mundialista 2026</div>';
+
+  // ── BRACKET ──
+  h+='<div style="overflow-x:auto"><div style="display:grid;grid-template-columns:148px 16px 100px 16px 78px 16px 108px 16px 78px 16px 100px 16px 148px;min-width:820px;align-items:start">';
+
+  // OCT IZQ (O1-O4)
+  h+='<div style="display:flex;flex-direction:column">';
+  h+='<div style="text-align:center;font-size:10px;font-weight:500;color:#b8860b;letter-spacing:1px;padding:0 0 8px;text-transform:uppercase">8vos</div>';
+  h+='<div style="height:6px"></div>';
+  [OCT_F2[0],OCT_F2[1],OCT_F2[2],OCT_F2[3]].forEach(function(o,i){
+    var adv=p.octAdv[o.id]||"";
+    h+='<div style="margin:5px 3px">'+f2TeamBox(o.t1||"?",adv===o.t1&&adv!=="",lkOct)+f2ScoreInputs(o.id,p.oct[o.id]||{},o.t1,o.t2,lkOct,"oct")+f2TeamBox(o.t2||"?",adv===o.t2&&adv!=="",lkOct)+f2AdvRow(o.id,o.t1,o.t2,adv,lkOct,"oct")+'</div>';
+    if(i<3) h+='<div style="height:'+(i===1?28:14)+'px"></div>';
+  });
+  h+='</div>';
+
+  // CONN IZQ 1
+  h+='<div style="padding-top:26px"><svg width="16" height="230" style="overflow:visible"><path d="M0,26 H8 V54 H16" fill="none" stroke="#1e3a5f" stroke-width="1"/><path d="M0,80 H8 V54" fill="none" stroke="#1e3a5f" stroke-width="1"/><path d="M0,148 H8 V176 H16" fill="none" stroke="#1e3a5f" stroke-width="1"/><path d="M0,202 H8 V176" fill="none" stroke="#1e3a5f" stroke-width="1"/></svg></div>';
+
+  // CUARTOS IZQ (Q1,Q2)
+  h+='<div style="padding-top:42px"><div style="text-align:center;font-size:10px;font-weight:500;color:#b8860b;letter-spacing:1px;padding:0 0 8px;text-transform:uppercase">4tos</div>';
+  [QTR_F2[0],QTR_F2[1]].forEach(function(q,i){
+    var tm=getF2Teams(q); var adv=p.qtrAdv[q.id]||"";
+    h+='<div style="margin:5px 3px">'+f2TeamBox(tm.t1,adv===tm.t1&&adv!=="",lkQtr)+f2ScoreInputs(q.id,p.qtr[q.id]||{},tm.t1,tm.t2,lkQtr,"qtr")+f2TeamBox(tm.t2,adv===tm.t2&&adv!=="",lkQtr)+f2AdvRow(q.id,tm.t1,tm.t2,adv,lkQtr,"qtr")+'</div>';
+    if(i===0) h+='<div style="height:44px"></div>';
+  });
+  h+='</div>';
+
+  // CONN IZQ 2
+  h+='<div style="padding-top:84px"><svg width="16" height="170" style="overflow:visible"><path d="M0,28 H8 V84 H16" fill="none" stroke="#b8860b" stroke-width="1"/><path d="M0,140 H8 V84" fill="none" stroke="#b8860b" stroke-width="1"/></svg></div>';
+
+  // SEMI IZQ (S1)
+  var s1tm=getF2Teams(SEMI_F2[0]); var s1adv=p.semiAdv[SEMI_F2[0].id]||"";
+  h+='<div style="padding-top:116px"><div style="text-align:center;font-size:10px;font-weight:500;color:#daa520;letter-spacing:1px;padding:0 0 8px;text-transform:uppercase">Semis</div>';
+  h+=f2TeamBox(s1tm.t1,s1adv===s1tm.t1&&s1adv!=="",lkSemi)+f2ScoreInputs(SEMI_F2[0].id,p.semi[SEMI_F2[0].id]||{},s1tm.t1,s1tm.t2,lkSemi,"semi")+f2TeamBox(s1tm.t2,s1adv===s1tm.t2&&s1adv!=="",lkSemi)+f2AdvRow(SEMI_F2[0].id,s1tm.t1,s1tm.t2,s1adv,lkSemi,"semi");
+  h+='</div>';
+
+  // CONN → FINAL
+  h+='<div style="padding-top:116px"><svg width="16" height="130" style="overflow:visible"><path d="M0,28 H8 V64" fill="none" stroke="#daa520" stroke-width="1.5"/><path d="M16,100 H8 V64" fill="none" stroke="#daa520" stroke-width="1.5"/></svg></div>';
+
+  // FINAL CENTRO
+  var ftm=getF2Teams(FINAL_F2); var fadv=p.finalAdv[FINAL_F2.id]||"";
+  var ttm={t1:getF2Winner(THIRD_F2.l1),t2:getF2Winner(THIRD_F2.l2)}; // losers
+  var tadv=p.thirdAdv[THIRD_F2.id]||"";
+  h+='<div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:56px">';
+  h+='<div style="font-size:9px;color:#b8860b;letter-spacing:1px;text-transform:uppercase;padding-bottom:3px">Final</div>';
+  h+='<div style="background:#162d4a;border:2px solid #b8860b;border-radius:8px;padding:8px 10px;width:100%">';
+  h+=f2TeamBox(ftm.t1,fadv===ftm.t1&&fadv!=="",lkFinal);
+  h+=f2ScoreInputs(FINAL_F2.id,p.final[FINAL_F2.id]||{},ftm.t1,ftm.t2,lkFinal,"final");
+  h+=f2TeamBox(ftm.t2,fadv===ftm.t2&&fadv!=="",lkFinal);
+  h+=f2AdvRow(FINAL_F2.id,ftm.t1,ftm.t2,fadv,lkFinal,"final");
+  h+='</div>';
+  h+='<div style="font-size:24px;text-align:center;line-height:1">🏆</div>';
+  h+='<div style="font-size:10px;color:#daa520;font-weight:500;letter-spacing:2px">2026</div>';
+  // 3° y 4°
+  h+='<div style="background:#0d1a2a;border:1px solid #1e3a5f;border-radius:6px;padding:6px 8px;width:100%;margin-top:4px">';
+  h+='<div style="font-size:9px;color:#666;text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">3° y 4° puesto</div>';
+  h+=f2TeamBox(ttm.t1,tadv===ttm.t1&&tadv!=="",lkThird);
+  h+=f2ScoreInputs(THIRD_F2.id,p.third[THIRD_F2.id]||{},ttm.t1,ttm.t2,lkThird,"third");
+  h+=f2TeamBox(ttm.t2,tadv===ttm.t2&&tadv!=="",lkThird);
+  h+=f2AdvRow(THIRD_F2.id,ttm.t1,ttm.t2,tadv,lkThird,"third");
+  h+='</div>';
+  h+='</div>';
+
+  // CONN FINAL →
+  h+='<div style="padding-top:116px"><svg width="16" height="130" style="overflow:visible"><path d="M16,28 H8 V64" fill="none" stroke="#daa520" stroke-width="1.5"/><path d="M0,100 H8 V64" fill="none" stroke="#daa520" stroke-width="1.5"/></svg></div>';
+
+  // SEMI DER (S2)
+  var s2tm=getF2Teams(SEMI_F2[1]); var s2adv=p.semiAdv[SEMI_F2[1].id]||"";
+  h+='<div style="padding-top:116px"><div style="text-align:center;font-size:10px;font-weight:500;color:#daa520;letter-spacing:1px;padding:0 0 8px;text-transform:uppercase">Semis</div>';
+  h+=f2TeamBox(s2tm.t1,s2adv===s2tm.t1&&s2adv!=="",lkSemi)+f2ScoreInputs(SEMI_F2[1].id,p.semi[SEMI_F2[1].id]||{},s2tm.t1,s2tm.t2,lkSemi,"semi")+f2TeamBox(s2tm.t2,s2adv===s2tm.t2&&s2adv!=="",lkSemi)+f2AdvRow(SEMI_F2[1].id,s2tm.t1,s2tm.t2,s2adv,lkSemi,"semi");
+  h+='</div>';
+
+  // CONN 2 DER
+  h+='<div style="padding-top:84px"><svg width="16" height="170" style="overflow:visible"><path d="M16,28 H8 V84 H0" fill="none" stroke="#b8860b" stroke-width="1"/><path d="M16,140 H8 V84" fill="none" stroke="#b8860b" stroke-width="1"/></svg></div>';
+
+  // CUARTOS DER (Q3,Q4)
+  h+='<div style="padding-top:42px"><div style="text-align:center;font-size:10px;font-weight:500;color:#b8860b;letter-spacing:1px;padding:0 0 8px;text-transform:uppercase">4tos</div>';
+  [QTR_F2[2],QTR_F2[3]].forEach(function(q,i){
+    var tm=getF2Teams(q); var adv=p.qtrAdv[q.id]||"";
+    h+='<div style="margin:5px 3px">'+f2TeamBox(tm.t1,adv===tm.t1&&adv!=="",lkQtr)+f2ScoreInputs(q.id,p.qtr[q.id]||{},tm.t1,tm.t2,lkQtr,"qtr")+f2TeamBox(tm.t2,adv===tm.t2&&adv!=="",lkQtr)+f2AdvRow(q.id,tm.t1,tm.t2,adv,lkQtr,"qtr")+'</div>';
+    if(i===0) h+='<div style="height:44px"></div>';
+  });
+  h+='</div>';
+
+  // CONN 1 DER
+  h+='<div style="padding-top:26px"><svg width="16" height="230" style="overflow:visible"><path d="M16,26 H8 V54 H0" fill="none" stroke="#1e3a5f" stroke-width="1"/><path d="M16,80 H8 V54" fill="none" stroke="#1e3a5f" stroke-width="1"/><path d="M16,148 H8 V176 H0" fill="none" stroke="#1e3a5f" stroke-width="1"/><path d="M16,202 H8 V176" fill="none" stroke="#1e3a5f" stroke-width="1"/></svg></div>';
+
+  // OCT DER (O5-O8)
+  h+='<div style="display:flex;flex-direction:column">';
+  h+='<div style="text-align:center;font-size:10px;font-weight:500;color:#b8860b;letter-spacing:1px;padding:0 0 8px;text-transform:uppercase">8vos</div>';
+  h+='<div style="height:6px"></div>';
+  [OCT_F2[4],OCT_F2[5],OCT_F2[6],OCT_F2[7]].forEach(function(o,i){
+    var adv=p.octAdv[o.id]||"";
+    h+='<div style="margin:5px 3px">'+f2TeamBox(o.t1||"?",adv===o.t1&&adv!=="",lkOct)+f2ScoreInputs(o.id,p.oct[o.id]||{},o.t1,o.t2,lkOct,"oct")+f2TeamBox(o.t2||"?",adv===o.t2&&adv!=="",lkOct)+f2AdvRow(o.id,o.t1,o.t2,adv,lkOct,"oct")+'</div>';
+    if(i<3) h+='<div style="height:'+(i===1?28:14)+'px"></div>';
+  });
+  h+='</div>';
+
+  h+='</div></div>'; // end bracket grid
+
+  // ── RESULT CARDS ──
+  var champ=fadv||"?"; var runner=fadv?(fadv===ftm.t1?ftm.t2:ftm.t1):"?";
+  var third=tadv||"?"; var fourth=tadv?(tadv===ttm.t1?ttm.t2:ttm.t1):"?";
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:14px;padding:0 4px">';
+  function rc(medal,pos,posColor,team,borderColor,bg){
+    var flag=team&&team!=="?"?teamFlag(team):"🏳";
+    return '<div style="background:'+bg+';border-radius:8px;padding:8px;text-align:center;border:1px solid '+borderColor+'">'
+      +'<div style="font-size:20px;margin-bottom:4px">'+medal+'</div>'
+      +'<div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:'+posColor+';margin-bottom:4px">'+pos+'</div>'
+      +'<div style="font-size:18px;margin-bottom:3px">'+flag+'</div>'
+      +'<div style="font-size:12px;font-weight:500;color:#fff">'+(team&&team!=="?"?team:"Por definir")+'</div>'
+      +'</div>';
+  }
+  h+=rc("🥇","Campeon","#b8860b",champ,"#b8860b","#1a2a0a");
+  h+=rc("🥈","Subcampeon","#aaa",runner,"#888","#141e2a");
+  h+=rc("🥉","3er puesto","#cd7f32",third,"#8B4513","#1a1208");
+  h+=rc("🏅","4to puesto","#4a6a8a",fourth,"#2a3a4a","#0d1820");
+  h+='</div>';
+
+  h+='</div>'; // end bracket bg
+  el.innerHTML=h;
+}
+
+// ── F2 SCORE/ADV HANDLERS ─────────────────────────────────────
+function onF2Score(phase,id,side,val){
+  if(!ST.participants[CU].fase2) ST.participants[CU].fase2=getF2P();
+  var p=ST.participants[CU].fase2;
+  if(!p[phase][id]) p[phase][id]={};
+  p[phase][id][side]=val===""?undefined:parseInt(val);
+  // auto-advance
+  var f=p[phase][id];
+  if(f.s1!==undefined&&f.s2!==undefined){
+    var teams=getF2TeamsForPhase(phase,id);
+    var advObj=phase==="oct"?p.octAdv:phase==="qtr"?p.qtrAdv:phase==="semi"?p.semiAdv:phase==="third"?p.thirdAdv:p.finalAdv;
+    autoF2Adv(id,f.s1,f.s2,teams.t1,teams.t2,advObj);
+  }
+  buildF2();
+}
+
+function onF2Adv(phase,id,val){
+  if(!ST.participants[CU].fase2) ST.participants[CU].fase2=getF2P();
+  var p=ST.participants[CU].fase2;
+  var advObj=phase==="oct"?p.octAdv:phase==="qtr"?p.qtrAdv:phase==="semi"?p.semiAdv:phase==="third"?p.thirdAdv:p.finalAdv;
+  advObj[id]=val;
+  buildF2();
+}
+
+function getF2TeamsForPhase(phase,id){
+  if(phase==="oct"){ var o=OCT_F2.find(function(x){return x.id===id;}); return o?{t1:o.t1||"?",t2:o.t2||"?"}:{t1:"?",t2:"?"}; }
+  var match;
+  if(phase==="qtr") match=QTR_F2.find(function(x){return x.id===id;});
+  else if(phase==="semi") match=SEMI_F2.find(function(x){return x.id===id;});
+  else if(phase==="final") match=FINAL_F2;
+  else if(phase==="third") match=THIRD_F2;
+  return match?getF2Teams(match):{t1:"?",t2:"?"};
+}
+
 </script>
 </body>
 </html>
