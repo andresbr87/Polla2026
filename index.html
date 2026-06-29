@@ -841,12 +841,20 @@ function calcPts(pd,rR,rO,rD){
         marcadorExacto=true;
       }
     }
-    // 1pt ganador — si no hubo marcador exacto
+    // 1pt ganador — si no hubo marcador exacto Y al menos un equipo de la llave coincide
     if(!marcadorExacto&&of.s1!==undefined&&of.s2!==undefined&&rf.s1!==undefined&&rf.s2!==undefined){
-      var fcWin=parseInt(of.s1)>parseInt(of.s2)?rf.t1:parseInt(of.s2)>parseInt(of.s1)?rf.t2:"draw";
-      var realWin=parseInt(rf.s1)>parseInt(rf.s2)?rf.t1:parseInt(rf.s2)>parseInt(rf.s1)?rf.t2:(rf.winner||"draw");
-      if(fcWin!=="draw"&&realWin!=="draw"&&fcWin===realWin){
-        pts+=1;det.push({m:lv.id+"g",p:1,r:"Ganador "+lv.lbl});
+      // verificar que al menos uno de los equipos del participante este en la llave real
+      var equiposParticipante=[ct1,ct2];
+      var equiposReales=[rf.t1,rf.t2];
+      var hayCoincidencia=equiposParticipante.some(function(e){return equiposReales.indexOf(e)>=0;});
+      if(hayCoincidencia){
+        // determinar ganador pronosticado usando los equipos del participante
+        var fcGanador=parseInt(of.s1)>parseInt(of.s2)?ct1:parseInt(of.s2)>parseInt(of.s1)?ct2:"draw";
+        // determinar ganador real
+        var realGanador=parseInt(rf.s1)>parseInt(rf.s2)?rf.t1:parseInt(rf.s2)>parseInt(rf.s1)?rf.t2:(rf.winner||"draw");
+        if(fcGanador!=="draw"&&realGanador!=="draw"&&fcGanador===realGanador){
+          pts+=1;det.push({m:lv.id+"g",p:1,r:"Ganador "+lv.lbl});
+        }
       }
     }
     // 4pts equipo avanza a octavos
