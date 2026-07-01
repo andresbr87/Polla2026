@@ -881,6 +881,15 @@ function calcPts(pd,rR,rO,rD){
       }
     });
   });
+  // Build list of ALL teams that really advanced to Octavos (from any llave)
+  var allOctClassified=[];
+  DSS.forEach(function(lv){
+    var realAdv=rD["adv_"+lv.id];
+    if(realAdv&&realAdv.trim()&&allOctClassified.indexOf(realAdv.trim())<0){
+      allOctClassified.push(realAdv.trim());
+    }
+  });
+
   // dieciseisavos
   DSS.forEach(function(lv){
     var of=dssForecasts[lv.id]||{},rf=rD[lv.id]||{};
@@ -912,9 +921,12 @@ function calcPts(pd,rR,rO,rD){
         }
       }
     }
-    // 4pts equipo avanza a octavos
-    var ra2=rD["adv_"+lv.id],pa2=dssAdvances[lv.id];
-    if(ra2&&pa2&&ra2===pa2){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza "+lv.lbl});}
+    // 4pts equipo avanza a octavos — sin importar en qué llave clasificó
+    var pa2=dssAdvances[lv.id];
+    if(pa2&&allOctClassified.indexOf(pa2.trim())>=0){
+      var alreadyOct=det.some(function(d){return d.m===lv.id+"a";});
+      if(!alreadyOct){pts+=4;det.push({m:lv.id+"a",p:4,r:pa2+" avanza a Octavos"});}
+    }
   });
   // best 3rd advance — 4 pts si el equipo pronosticado como mejor 3° clasificó a 16avos
   // sin importar posición (1°, 2° o mejor 3°)
