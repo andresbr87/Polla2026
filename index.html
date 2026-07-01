@@ -154,6 +154,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="tab" onclick="goTab(this,'t-stand')">Tabla de posiciones</div>
     <div class="tab" onclick="goTab(this,'t-trans')">Marcadores</div>
     <div class="tab adm" onclick="goTab(this,'t-res')" style="display:none">Resultados reales</div>
+    <div class="tab adm" onclick="goTab(this,'t-resf2')" style="display:none">Resultados F2</div>
     <div class="tab adm" onclick="goTab(this,'t-gest')" style="display:none">Gestión</div>
   </div>
 
@@ -170,13 +171,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="sub-panel" id="s-f2"><div id="c-f2"></div></div>
     <div class="save-bar">
       <span class="save-msg" id="save-msg"></span>
-      <button class="btn primary" onclick="doSave()">💾 Guardar pronósticos</button>
+      <button class="btn primary" id="save-bar-btn" onclick="doSaveActive()">💾 Guardar pronósticos</button>
     </div>
   </div>
 
   <div class="panel" id="t-stand"><div id="c-stand"></div></div>
   <div class="panel" id="t-trans"><div id="c-trans"></div></div>
   <div class="panel" id="t-res"><div id="c-res"></div></div>
+  <div class="panel" id="t-resf2"><div id="c-resf2"></div></div>
   <div class="panel" id="t-gest"><div id="c-gest"></div></div>
 </div>
 </div>
@@ -224,11 +226,11 @@ var FASE2_DEADLINE=new Date("2026-07-04T14:30:00-05:00"); // 30min antes primer 
 var FASE2_LOCKED={oct:false,qtr:false,semi:false,third:false,final:false};
 // Llaves reales de Octavos F2 — admin las llena cuando se conozcan
 var OCT_F2=[
-  {id:"F2O1",lbl:"Octavo F2 1",t1:"",t2:""},
+  {id:"F2O1",lbl:"Octavo F2 1",t1:"Paraguay",t2:"Francia"},
   {id:"F2O2",lbl:"Octavo F2 2",t1:"Canadá",t2:"Marruecos"},
   {id:"F2O3",lbl:"Octavo F2 3",t1:"",t2:""},
   {id:"F2O4",lbl:"Octavo F2 4",t1:"",t2:""},
-  {id:"F2O5",lbl:"Octavo F2 5",t1:"",t2:""},
+  {id:"F2O5",lbl:"Octavo F2 5",t1:"Brasil",t2:"Noruega"},
   {id:"F2O6",lbl:"Octavo F2 6",t1:"",t2:""},
   {id:"F2O7",lbl:"Octavo F2 7",t1:"",t2:""},
   {id:"F2O8",lbl:"Octavo F2 8",t1:"",t2:""}
@@ -447,6 +449,7 @@ function goTab(el,id){
   document.getElementById(id).classList.add("active");
   if(id==="t-stand"){buildStand();showPopup1();}
   if(id==="t-res")buildRes();
+  if(id==="t-resf2")buildResF2();
   if(id==="t-gest")buildGest();
   if(id==="t-trans")buildTrans();
 }
@@ -814,6 +817,13 @@ function onOctScore(id,side,val){
 function onOctAdv(id,val){
   if(CR==="admin"||locked())return;
   var p=getP();p.octAdvances[id]=val;ST.participants[CU]=p;
+}
+function doSaveActive(){
+  // Check which sub-panel is active and call the right save
+  if(document.getElementById("s-f2")&&document.getElementById("s-f2").classList.contains("active")){
+    saveF2(); return;
+  }
+  doSave();
 }
 function doSave(){
   if(locked()){alert("Plazo vencido el 11 jun 1pm.");return;}
@@ -1472,10 +1482,143 @@ function showPopup2(){
 function closePopup1(){ document.getElementById("popup1").style.display="none"; }
 function closePopup2(){ document.getElementById("popup2").style.display="none"; }
 
+
+// ── BUILD RESULTADOS F2 ───────────────────────────────────────
+function buildResF2(){
+  var el=document.getElementById("c-resf2");if(!el)return;
+  var rF2=ST.realResults.fase2||{};
+
+  function sectionTitle(txt){
+    return '<div style="font-size:14px;font-weight:600;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid #b8860b;color:#daa520">'+txt+'</div>';
+  }
+
+  function matchCard(id,lbl,t1label,t2label,rf,advKey,advOptions){
+    var s1=rf&&rf.s1!==undefined?rf.s1:"";
+    var s2=rf&&rf.s2!==undefined?rf.s2:"";
+    var adv=rF2[advKey]||"";
+    var h='<div style="background:#0f2040;border:1px solid #1e3a5f;border-radius:8px;padding:12px;margin-bottom:8px">';
+    h+='<div style="font-size:12px;font-weight:500;color:#b8860b;margin-bottom:8px">'+lbl+'</div>';
+    h+='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
+    h+='<span style="font-size:12px;color:#c8d8e8;min-width:80px;text-align:right">'+t1label+'</span>';
+    h+='<input type="number" min="0" max="20" value="'+s1+'" placeholder="-" style="width:44px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" onchange="setRealF2(\''+id+'\',\'s1\',this.value)">';
+    h+='<span style="color:#555">vs</span>';
+    h+='<input type="number" min="0" max="20" value="'+s2+'" placeholder="-" style="width:44px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" onchange="setRealF2(\''+id+'\',\'s2\',this.value)">';
+    h+='<span style="font-size:12px;color:#c8d8e8;min-width:80px">'+t2label+'</span>';
+    h+='</div>';
+    // avance dropdown
+    h+='<div style="margin-top:8px"><label style="font-size:10px;color:#4a6a8a;font-weight:500">Equipo que avanza:</label>';
+    h+='<select style="width:100%;font-size:12px;padding:5px;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#c8d8e8;margin-top:3px" onchange="setRealF2Adv(\''+advKey+'\',this.value)">';
+    h+='<option value="">-- Seleccionar --</option>';
+    advOptions.forEach(function(opt){
+      h+='<option value="'+opt+'"'+(adv===opt?" selected":"")+'>'+opt+'</option>';
+    });
+    h+='</select></div>';
+    h+='</div>';
+    return h;
+  }
+
+  function winnerCard(id,lbl,label,opts){
+    var val=rF2[id]||"";
+    var h='<div style="background:#0f2040;border:1px solid #1e3a5f;border-radius:8px;padding:10px;margin-bottom:8px">';
+    h+='<div style="font-size:11px;color:#4a6a8a;margin-bottom:5px">'+lbl+'</div>';
+    h+='<select style="width:100%;font-size:12px;padding:5px;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#c8d8e8" onchange="setRealF2Adv(\''+id+'\',this.value)">';
+    h+='<option value="">-- '+label+' --</option>';
+    opts.forEach(function(o){ h+='<option value="'+o+'"'+(val===o?" selected":"")+'>'+o+'</option>'; });
+    h+='</select></div>';
+    return h;
+  }
+
+  var h='<div class="notice info">Ingresa los resultados reales de Fase 2. Los puntos se recalculan automáticamente.</div>';
+
+  // ── OCTAVOS F2 ──
+  h+=sectionTitle('⚽ Octavos de Final (Fase 2)');
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px">';
+  OCT_F2.forEach(function(o){
+    var rf=rF2["oct_"+o.id]||{};
+    var t1=o.t1||"Equipo 1", t2=o.t2||"Equipo 2";
+    h+=matchCard("oct_"+o.id, o.lbl, t1, t2, rf, "adv_oct_"+o.id, [t1,t2]);
+  });
+  h+='</div>';
+
+  // ── CUARTOS ──
+  h+=sectionTitle('🏟 Cuartos de Final');
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px">';
+  QTR_F2.forEach(function(q){
+    var rf=rF2["qtr_"+q.id]||{};
+    var t1=rF2["adv_oct_"+q.w1]||"W "+q.w1;
+    var t2=rF2["adv_oct_"+q.w2]||"W "+q.w2;
+    h+=matchCard("qtr_"+q.id, q.lbl, t1, t2, rf, "adv_qtr_"+q.id, [t1,t2]);
+  });
+  h+='</div>';
+
+  // ── SEMIFINAL ──
+  h+=sectionTitle('🔥 Semifinal');
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px">';
+  SEMI_F2.forEach(function(s){
+    var rf=rF2["semi_"+s.id]||{};
+    var t1=rF2["adv_qtr_"+s.w1]||"W "+s.w1;
+    var t2=rF2["adv_qtr_"+s.w2]||"W "+s.w2;
+    h+=matchCard("semi_"+s.id, s.lbl, t1, t2, rf, "adv_semi_"+s.id, [t1,t2]);
+    // loser goes to 3rd/4th
+    var loserKey="loser_semi_"+s.id;
+    var loserVal=rF2[loserKey]||"";
+    h+='<div style="background:#0a1628;border:1px solid #1e3a5f;border-radius:6px;padding:8px;margin-top:-4px;margin-bottom:8px">';
+    h+='<label style="font-size:10px;color:#4a6a8a">Va al 3°/4° puesto:</label>';
+    h+='<select style="width:100%;font-size:12px;padding:4px;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#c8d8e8;margin-top:3px" onchange="setRealF2Adv(\''+loserKey+'\',this.value)">';
+    h+='<option value="">-- Seleccionar perdedor --</option>';
+    [t1,t2].forEach(function(t){ h+='<option value="'+t+'"'+(loserVal===t?" selected":"")+'>'+t+'</option>'; });
+    h+='</select></div>';
+  });
+  h+='</div>';
+
+  // ── 3° Y 4° PUESTO ──
+  h+=sectionTitle('🥉 Tercer y Cuarto Puesto');
+  var t3a=rF2["loser_semi_"+SEMI_F2[0].id]||"Perdedor Semi 1";
+  var t3b=rF2["loser_semi_"+SEMI_F2[1].id]||"Perdedor Semi 2";
+  var rfThird=rF2["third"]||{};
+  h+='<div style="max-width:400px">';
+  h+=matchCard("third", "3° y 4° Puesto", t3a, t3b, rfThird, "adv_third", [t3a,t3b]);
+  h+=winnerCard("winner_third","4° Puesto (perdedor)","Seleccionar 4° puesto",[t3a,t3b]);
+  h+='</div>';
+
+  // ── GRAN FINAL ──
+  h+=sectionTitle('🏆 Gran Final');
+  var tf1=rF2["adv_semi_"+SEMI_F2[0].id]||"Finalista 1";
+  var tf2=rF2["adv_semi_"+SEMI_F2[1].id]||"Finalista 2";
+  var rfFinal=rF2["final"]||{};
+  h+='<div style="max-width:400px">';
+  h+=matchCard("final", "Gran Final", tf1, tf2, rfFinal, "winner_final", [tf1,tf2]);
+  h+=winnerCard("winner_runner","Subcampeón","Seleccionar Subcampeón",[tf1,tf2]);
+  h+='</div>';
+
+  h+='<div style="margin-top:20px"><button class="btn primary" onclick="saveResF2()">💾 Guardar resultados F2</button></div>';
+  el.innerHTML=h;
+}
+
+function setRealF2(id,key,val){
+  if(!ST.realResults.fase2) ST.realResults.fase2={};
+  if(!ST.realResults.fase2[id]) ST.realResults.fase2[id]={};
+  ST.realResults.fase2[id][key]=val===""?undefined:parseInt(val);
+}
+
+function setRealF2Adv(key,val){
+  if(!ST.realResults.fase2) ST.realResults.fase2={};
+  ST.realResults.fase2[key]=val;
+}
+
+function saveResF2(){
+  fbSave(function(){ alert("Resultados F2 guardados."); });
+}
+
+
 // ── FASE 2 HELPERS ────────────────────────────────────────────
 function getF2P(n){ n=n||CU; var b=ST.participants[n]||{}; return b.fase2||{oct:{},qtr:{},semi:{},third:{},final:{},octAdv:{},qtrAdv:{},semiAdv:{},thirdAdv:{},finalAdv:{}}; }
 
-function saveF2(){ ST.participants[CU].fase2=getF2P(); fbSave(function(){ var m=document.getElementById("save-msg"); if(m){m.textContent="Guardado F2 ✓";setTimeout(function(){m.textContent="";},3000);} }); }
+function saveF2(){
+  if(new Date()>FASE2_DEADLINE){alert("El plazo de Fase 2 venció el 04/07/2026 a las 10:30am.");return;}
+  if(!ST.participants[CU].fase2) ST.participants[CU].fase2=getF2P();
+  fbSave(function(){ var m=document.getElementById("save-msg"); if(m){m.textContent="Guardado F2 ✓";setTimeout(function(){m.textContent="";},3000);} });
+}
 
 function getF2Winner(matchId){
   var p=getF2P();
