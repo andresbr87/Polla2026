@@ -1306,8 +1306,7 @@ function buildTransBody(){
     });
     h+='</div>';
   } else if(TV.s==="f2"){
-    var p2=getP(TV.p);
-    var f2d=p2.fase2||{oct:{},qtr:{},semi:{},third:{},final:{},octAdv:{},qtrAdv:{},semiAdv:{},thirdAdv:{},finalAdv:{}};
+    var f2d=getF2P(TV.p);
     var octAdv=f2d.octAdv||{},qtrAdv=f2d.qtrAdv||{},semiAdv=f2d.semiAdv||{},finalAdv=f2d.finalAdv||{},thirdAdv=f2d.thirdAdv||{};
 
     function f2row(lbl,t1,t2,adv,sc){
