@@ -229,9 +229,9 @@ var OCT_F2=[
   {id:"F2O1",lbl:"Octavo F2 1",t1:"Paraguay",t2:"Francia"},
   {id:"F2O2",lbl:"Octavo F2 2",t1:"Canadá",t2:"Marruecos"},
   {id:"F2O3",lbl:"Octavo F2 3",t1:"",t2:""},
-  {id:"F2O4",lbl:"Octavo F2 4",t1:"",t2:""},
+  {id:"F2O4",lbl:"Octavo F2 4",t1:"USA",t2:"Bélgica"},
   {id:"F2O5",lbl:"Octavo F2 5",t1:"Brasil",t2:"Noruega"},
-  {id:"F2O6",lbl:"Octavo F2 6",t1:"",t2:""},
+  {id:"F2O6",lbl:"Octavo F2 6",t1:"México",t2:"Inglaterra"},
   {id:"F2O7",lbl:"Octavo F2 7",t1:"",t2:""},
   {id:"F2O8",lbl:"Octavo F2 8",t1:"",t2:""}
 ];
@@ -413,7 +413,10 @@ function enterApp(u,r){
   document.getElementById("ubadge").textContent=dn+(r==="admin"?" (Admin)":"");
   document.getElementById("logoutbtn").style.display="block";
   if(r==="admin")document.querySelectorAll(".adm").forEach(function(el){el.style.display="block";});
-  if(FASE2_ENABLED){var t2=document.getElementById("tab-f2");if(t2)t2.style.display="block";}
+  if(FASE2_ENABLED){
+    var t2=document.getElementById("tab-f2");if(t2)t2.style.display="block";
+    var tb=document.getElementById("tbtn-f2");if(tb)tb.style.display="inline-block";
+  }
   show("screen-main");fbListen();buildGrupos();buildStand();
 }
 function doLogin(){
@@ -747,11 +750,24 @@ function buildOct(){
 // Event delegation for score inputs — avoids inline quote issues
 document.addEventListener("change", function(e){
   var el=e.target;
-  if(!el.classList.contains("score-inp")) return;
-  var g=el.getAttribute("data-g");
-  var mid=el.getAttribute("data-mid");
-  var side=el.getAttribute("data-side");
-  if(g&&mid&&side) onScore(g,mid,side,el.value);
+  // Fase 1 grupos
+  if(el.classList.contains("score-inp")){
+    var g=el.getAttribute("data-g");
+    var mid=el.getAttribute("data-mid");
+    var side=el.getAttribute("data-side");
+    if(g&&mid&&side) onScore(g,mid,side,el.value);
+  }
+  // Resultados F2 score inputs
+  if(el.classList.contains("rf2-score-inp")){
+    var rf2id=el.getAttribute("data-rf2id");
+    var rf2side=el.getAttribute("data-rf2side");
+    if(rf2id&&rf2side) setRealF2(rf2id,rf2side,el.value);
+  }
+  // Resultados F2 advance selects
+  if(el.classList.contains("rf2-adv-sel")){
+    var rf2adv=el.getAttribute("data-rf2adv");
+    if(rf2adv) setRealF2Adv(rf2adv,el.value);
+  }
 });
 
 function onScore(g,mid,side,val){
@@ -1228,6 +1244,7 @@ function buildTrans(){
     +'<button class="tsub-btn'+(TV.s==="grupos"?" active":"")+'" onclick="TV.s=\'grupos\';buildTransBody()">Grupos</button>'
     +'<button class="tsub-btn'+(TV.s==="dss"?" active":"")+'" onclick="TV.s=\'dss\';buildTransBody()">Dieciseisavos</button>'
     +'<button class="tsub-btn'+(TV.s==="oct"?" active":"")+'" onclick="TV.s=\'oct\';buildTransBody()">Octavos</button>'
+    +(FASE2_ENABLED?'<button class="tsub-btn'+(TV.s==="f2"?" active":"")+'" onclick="TV.s=\'f2\';buildTransBody()">Fase 2</button>':"")
     +'</div><div id="trans-body"></div>';
   el.innerHTML=h;buildTransBody();
 }
@@ -1271,7 +1288,7 @@ function buildTransBody(){
         +'</div>';
     });
     h+='</div>';
-  }else{
+  } else if(TV.s==="oct"){
     var bko=calcOctBracket(pd.dssAdvances||{},pd.forecasts||{},pd.fairPlay||{});
     h+='<div class="dss-grid">';
     OCT.forEach(function(o){
@@ -1288,6 +1305,66 @@ function buildTransBody(){
         +'</div>';
     });
     h+='</div>';
+  } else if(TV.s==="f2"){
+    var p2=getP(TV.p);
+    var f2d=p2.fase2||{oct:{},qtr:{},semi:{},third:{},final:{},octAdv:{},qtrAdv:{},semiAdv:{},thirdAdv:{},finalAdv:{}};
+    var octAdv=f2d.octAdv||{},qtrAdv=f2d.qtrAdv||{},semiAdv=f2d.semiAdv||{},finalAdv=f2d.finalAdv||{},thirdAdv=f2d.thirdAdv||{};
+
+    function f2row(lbl,t1,t2,adv,sc){
+      var score=sc?((sc.s1!==undefined?sc.s1:"-")+" - "+(sc.s2!==undefined?sc.s2:"-")):"- -";
+      return '<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px">'
+        +'<span style="flex:1;text-align:right;color:'+(adv===t1?"var(--gl)":"var(--text)")+'">'+t1+'</span>'
+        +'<span style="color:var(--red);font-size:11px;min-width:44px;text-align:center;font-weight:500">'+score+'</span>'
+        +'<span style="flex:1;color:'+(adv===t2?"var(--gl)":"var(--text)")+'">'+t2+'</span>'
+        +(adv?'<span style="font-size:10px;color:#16a34a;white-space:nowrap;margin-left:4px">→ '+adv+'</span>':"")
+        +'</div>';
+    }
+    function f2sec(icon,title,rows){
+      if(!rows) return "";
+      return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px">'
+        +'<div style="font-size:11px;font-weight:600;color:var(--gl);margin-bottom:8px">'+icon+' '+title+'</div>'
+        +rows+'</div>';
+    }
+
+    var octR="";
+    OCT_F2.forEach(function(o){
+      if(!o.t1&&!o.t2) return;
+      octR+=f2row(o.lbl,o.t1||"?",o.t2||"?",octAdv[o.id],f2d.oct[o.id]||{});
+    });
+    h+=f2sec("⚽","Octavos de Final",octR);
+
+    var qtrR="";
+    QTR_F2.forEach(function(q){
+      var t1=octAdv[q.w1]||"?",t2=octAdv[q.w2]||"?";
+      qtrR+=f2row(q.lbl,t1,t2,qtrAdv[q.id],f2d.qtr[q.id]||{});
+    });
+    h+=f2sec("🏟","Cuartos de Final",qtrR);
+
+    var semiR="";
+    SEMI_F2.forEach(function(s){
+      var t1=qtrAdv[s.w1]||"?",t2=qtrAdv[s.w2]||"?";
+      semiR+=f2row(s.lbl,t1,t2,semiAdv[s.id],f2d.semi[s.id]||{});
+    });
+    h+=f2sec("🔥","Semifinal",semiR);
+
+    var th1=semiAdv[SEMI_F2[0].id]||"?",th2=semiAdv[SEMI_F2[1].id]||"?";
+    if(th1!=="?"||th2!=="?"){
+      h+=f2sec("🥉","3° y 4° Puesto",f2row(THIRD_F2.lbl,th1,th2,thirdAdv[THIRD_F2.id],f2d.third[THIRD_F2.id]||{}));
+    }
+
+    var ff1=semiAdv[SEMI_F2[0].id]||"?",ff2=semiAdv[SEMI_F2[1].id]||"?";
+    if(ff1!=="?"||ff2!=="?"){
+      var champ=finalAdv[FINAL_F2.id]||"";
+      var fR=f2row(FINAL_F2.lbl,ff1,ff2,champ,f2d.final[FINAL_F2.id]||{});
+      if(champ){
+        var sub=champ===ff1?ff2:ff1;
+        fR+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">'
+          +'<div style="background:#1a2a0a;border:1px solid #b8860b;border-radius:6px;padding:8px;text-align:center"><div style="font-size:9px;color:#b8860b;letter-spacing:1px">CAMPEON</div><div style="font-size:18px;margin:4px 0">🥇</div><div style="font-size:12px;font-weight:600;color:#daa520">'+champ+'</div></div>'
+          +'<div style="background:#141e2a;border:1px solid #888;border-radius:6px;padding:8px;text-align:center"><div style="font-size:9px;color:#aaa;letter-spacing:1px">SUBCAMPEON</div><div style="font-size:18px;margin:4px 0">🥈</div><div style="font-size:12px;font-weight:500;color:#ccc">'+sub+'</div></div>'
+          +'</div>';
+      }
+      h+=f2sec("🏆","Gran Final",fR);
+    }
   }
   el.innerHTML=h;
 }
@@ -1512,14 +1589,13 @@ function buildResF2(){
     h+='<div style="font-size:12px;font-weight:500;color:#b8860b;margin-bottom:8px">'+lbl+'</div>';
     h+='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">';
     h+='<span style="font-size:12px;color:#c8d8e8;min-width:80px;text-align:right">'+t1label+'</span>';
-    h+='<input type="number" min="0" max="20" value="'+s1+'" placeholder="-" style="width:44px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" onchange="setRealF2(\''+id+'\',\'s1\',this.value)">';
+    h+='<input type="number" min="0" max="20" value="'+s1+'" placeholder="-" data-rf2id="'+id+'" data-rf2side="s1" style="width:44px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" class="rf2-score-inp">';
     h+='<span style="color:#555">vs</span>';
-    h+='<input type="number" min="0" max="20" value="'+s2+'" placeholder="-" style="width:44px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" onchange="setRealF2(\''+id+'\',\'s2\',this.value)">';
+    h+='<input type="number" min="0" max="20" value="'+s2+'" placeholder="-" data-rf2id="'+id+'" data-rf2side="s2" style="width:44px;text-align:center;padding:4px;font-size:13px;font-weight:500;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#daa520" class="rf2-score-inp">';
     h+='<span style="font-size:12px;color:#c8d8e8;min-width:80px">'+t2label+'</span>';
     h+='</div>';
-    // avance dropdown
     h+='<div style="margin-top:8px"><label style="font-size:10px;color:#4a6a8a;font-weight:500">Equipo que avanza:</label>';
-    h+='<select style="width:100%;font-size:12px;padding:5px;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#c8d8e8;margin-top:3px" onchange="setRealF2Adv(\''+advKey+'\',this.value)">';
+    h+='<select data-rf2adv="'+advKey+'" style="width:100%;font-size:12px;padding:5px;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#c8d8e8;margin-top:3px" class="rf2-adv-sel">';
     h+='<option value="">-- Seleccionar --</option>';
     advOptions.forEach(function(opt){
       h+='<option value="'+opt+'"'+(adv===opt?" selected":"")+'>'+opt+'</option>';
@@ -1533,7 +1609,7 @@ function buildResF2(){
     var val=rF2[id]||"";
     var h='<div style="background:#0f2040;border:1px solid #1e3a5f;border-radius:8px;padding:10px;margin-bottom:8px">';
     h+='<div style="font-size:11px;color:#4a6a8a;margin-bottom:5px">'+lbl+'</div>';
-    h+='<select style="width:100%;font-size:12px;padding:5px;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#c8d8e8" onchange="setRealF2Adv(\''+id+'\',this.value)">';
+    h+='<select data-rf2adv="'+id+'" class="rf2-adv-sel" style="width:100%;font-size:12px;padding:5px;border:1px solid #1e3a5f;border-radius:4px;background:#0a1628;color:#c8d8e8">';
     h+='<option value="">-- '+label+' --</option>';
     opts.forEach(function(o){ h+='<option value="'+o+'"'+(val===o?" selected":"")+'>'+o+'</option>'; });
     h+='</select></div>';
@@ -1721,7 +1797,9 @@ function buildF2(){
   [OCT_F2[0],OCT_F2[1],OCT_F2[2],OCT_F2[3]].forEach(function(o,i){
     var adv=p.octAdv[o.id]||"";
     h+='<div style="margin:5px 3px">'+f2TeamBox(o.t1||"?",adv===o.t1&&adv!=="",lkOct)+f2ScoreInputs(o.id,p.oct[o.id]||{},o.t1,o.t2,lkOct,"oct")+f2TeamBox(o.t2||"?",adv===o.t2&&adv!=="",lkOct)+f2AdvRow(o.id,o.t1,o.t2,adv,lkOct,"oct")+'</div>';
-    if(i<3) h+='<div style="height:'+(i===1?28:14)+'px"></div>';
+    if(i===0) h+='<div style="height:14px"></div>';
+    if(i===1) h+='<div style="height:40px"></div>';
+    if(i===2) h+='<div style="height:14px"></div>';
   });
   h+='</div>';
 
@@ -1733,7 +1811,7 @@ function buildF2(){
   [QTR_F2[0],QTR_F2[1]].forEach(function(q,i){
     var tm=getF2Teams(q); var adv=p.qtrAdv[q.id]||"";
     h+='<div style="margin:5px 3px">'+f2TeamBox(tm.t1,adv===tm.t1&&adv!=="",lkQtr)+f2ScoreInputs(q.id,p.qtr[q.id]||{},tm.t1,tm.t2,lkQtr,"qtr")+f2TeamBox(tm.t2,adv===tm.t2&&adv!=="",lkQtr)+f2AdvRow(q.id,tm.t1,tm.t2,adv,lkQtr,"qtr")+'</div>';
-    if(i===0) h+='<div style="height:44px"></div>';
+    if(i===0) h+='<div style="height:68px"></div>';
   });
   h+='</div>';
 
@@ -1790,7 +1868,7 @@ function buildF2(){
   [QTR_F2[2],QTR_F2[3]].forEach(function(q,i){
     var tm=getF2Teams(q); var adv=p.qtrAdv[q.id]||"";
     h+='<div style="margin:5px 3px">'+f2TeamBox(tm.t1,adv===tm.t1&&adv!=="",lkQtr)+f2ScoreInputs(q.id,p.qtr[q.id]||{},tm.t1,tm.t2,lkQtr,"qtr")+f2TeamBox(tm.t2,adv===tm.t2&&adv!=="",lkQtr)+f2AdvRow(q.id,tm.t1,tm.t2,adv,lkQtr,"qtr")+'</div>';
-    if(i===0) h+='<div style="height:44px"></div>';
+    if(i===0) h+='<div style="height:68px"></div>';
   });
   h+='</div>';
 
@@ -1804,7 +1882,9 @@ function buildF2(){
   [OCT_F2[4],OCT_F2[5],OCT_F2[6],OCT_F2[7]].forEach(function(o,i){
     var adv=p.octAdv[o.id]||"";
     h+='<div style="margin:5px 3px">'+f2TeamBox(o.t1||"?",adv===o.t1&&adv!=="",lkOct)+f2ScoreInputs(o.id,p.oct[o.id]||{},o.t1,o.t2,lkOct,"oct")+f2TeamBox(o.t2||"?",adv===o.t2&&adv!=="",lkOct)+f2AdvRow(o.id,o.t1,o.t2,adv,lkOct,"oct")+'</div>';
-    if(i<3) h+='<div style="height:'+(i===1?28:14)+'px"></div>';
+    if(i===0) h+='<div style="height:14px"></div>';
+    if(i===1) h+='<div style="height:40px"></div>';
+    if(i===2) h+='<div style="height:14px"></div>';
   });
   h+='</div>';
 
