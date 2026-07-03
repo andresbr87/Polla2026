@@ -216,7 +216,7 @@ firebase.initializeApp({
 });
 var db=firebase.firestore();
 
-var ADMIN_PASS="polla2026";
+var ADMIN_PASS="P011aC0l2026";
 var DEADLINE=new Date("2026-06-13T23:59:00-05:00");
 var LOCKED_MATCHES=["A1","A6"]; // Partidos ya jugados — agregar IDs aqui
 
@@ -228,7 +228,7 @@ var FASE2_LOCKED={oct:false,qtr:false,semi:false,third:false,final:false};
 var OCT_F2=[
   {id:"F2O1",lbl:"Octavo F2 1",t1:"Paraguay",t2:"Francia"},
   {id:"F2O2",lbl:"Octavo F2 2",t1:"Canadá",t2:"Marruecos"},
-  {id:"F2O3",lbl:"Octavo F2 3",t1:"",t2:""},
+  {id:"F2O3",lbl:"Octavo F2 3",t1:"Portugal",t2:"España"},
   {id:"F2O4",lbl:"Octavo F2 4",t1:"USA",t2:"Bélgica"},
   {id:"F2O5",lbl:"Octavo F2 5",t1:"Brasil",t2:"Noruega"},
   {id:"F2O6",lbl:"Octavo F2 6",t1:"México",t2:"Inglaterra"},
@@ -884,9 +884,9 @@ function calcPts(pd,rR,rO,rD){
       }
     });
     var sorted=calcGrp(g,forecasts,null).sorted;
-    // Give 4pts for ANY of the 3 teams in participant's group that classified to DSS
-    // This covers: participant had them as 1st/2nd/3rd but they classified by ANY route
-    [sorted[0],sorted[1],sorted[2]].forEach(function(t){
+    // Give 4pts only for 1st and 2nd that classified to DSS
+    // 3rd place is handled separately via _3b picks in DSS section
+    [sorted[0],sorted[1]].forEach(function(t){
       if(!t||t==="?") return;
       var tn=t.trim();
       if(allClassified.indexOf(tn)>=0){
