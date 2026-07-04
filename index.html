@@ -1947,11 +1947,24 @@ function onF2Adv(phase,id,val){
 
 function getF2TeamsForPhase(phase,id){
   if(phase==="oct"){ var o=OCT_F2.find(function(x){return x.id===id;}); return o?{t1:o.t1||"?",t2:o.t2||"?"}:{t1:"?",t2:"?"}; }
+  if(phase==="third"){
+    // 3rd/4th teams are losers of semis — need current user's semiAdv
+    var p3=ST.participants[CU]&&ST.participants[CU].fase2?ST.participants[CU].fase2:{};
+    var sa=p3.semiAdv||{};
+    function getSemiLoserLocal(semiId){
+      var s=SEMI_F2.find(function(x){return x.id===semiId;});
+      if(!s) return "?";
+      var tm=getF2Teams(s);
+      var winner=sa[semiId]||"";
+      if(!winner||winner==="?") return "?";
+      return winner===tm.t1?tm.t2:tm.t1;
+    }
+    return {t1:getSemiLoserLocal(THIRD_F2.l1),t2:getSemiLoserLocal(THIRD_F2.l2)};
+  }
   var match;
   if(phase==="qtr") match=QTR_F2.find(function(x){return x.id===id;});
   else if(phase==="semi") match=SEMI_F2.find(function(x){return x.id===id;});
   else if(phase==="final") match=FINAL_F2;
-  else if(phase==="third") match=THIRD_F2;
   return match?getF2Teams(match):{t1:"?",t2:"?"};
 }
 
