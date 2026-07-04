@@ -329,27 +329,39 @@ function setBadge(s,m){
 }
 function fbSave(cb){
   setBadge("loading","Guardando...");
-  db.collection("polla2026").doc("state").get()
-    .then(function(snap){
+  var ref=db.collection("polla2026").doc("state");
+  if(CR==="admin"){
+    // Admin uses get+set for full update
+    ref.get().then(function(snap){
       var latest=snap.exists?snap.data():{};
       var merged={
-        realResults:ST.realResults||latest.realResults||{},
-        octResults:ST.octResults||latest.octResults||{},
-        dssResults:ST.dssResults||latest.dssResults||{},
-        participants:Object.assign({},latest.participants||{})
+        realResults:ST.realResults||{},
+        octResults:ST.octResults||{},
+        dssResults:ST.dssResults||{},
+        participants:Object.assign({},latest.participants||{},ST.participants||{})
       };
-      if(CR==="admin"){
-        merged.realResults=ST.realResults||{};
-        merged.octResults=ST.octResults||{};
-        merged.dssResults=ST.dssResults||{};
-        merged.participants=Object.assign({},latest.participants||{},ST.participants||{});
-      } else if(CU){
-        merged.participants[CU]=ST.participants[CU];
-      }
-      return db.collection("polla2026").doc("state").set(merged);
+      return ref.set(merged);
     })
     .then(function(){setBadge("ok","Guardado ✓");if(cb)cb();})
     .catch(function(e){setBadge("err","Error al guardar");console.error(e);});
+  } else if(CU){
+    // Regular user — use Firestore transaction to safely update only their own data
+    db.runTransaction(function(tx){
+      return tx.get(ref).then(function(snap){
+        var latest=snap.exists?snap.data():{};
+        var participants=Object.assign({},latest.participants||{});
+        participants[CU]=ST.participants[CU]; // only update current user
+        tx.set(ref,{
+          realResults:latest.realResults||{},
+          octResults:latest.octResults||{},
+          dssResults:latest.dssResults||{},
+          participants:participants
+        });
+      });
+    })
+    .then(function(){setBadge("ok","Guardado ✓");if(cb)cb();})
+    .catch(function(e){setBadge("err","Error al guardar");console.error(e);});
+  }
 }
 function fbListen(){
   if(unsub)unsub();
