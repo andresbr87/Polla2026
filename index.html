@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Polla Mundialista 2026 </title>
+<title>Polla Mundialista 2026</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -223,7 +223,7 @@ var LOCKED_MATCHES=["A1","A6"]; // Partidos ya jugados — agregar IDs aqui
 // ── FASE 2 CONFIG ─────────────────────────────────────────────
 var APP_VERSION="2.1.0"; // incrementar con cada fix importante
 var FASE2_ENABLED=true; // admin activa con true
-var FASE2_DEADLINE=new Date("2026-07-04T11:30:00-05:00"); // 30min antes primer octavo
+var FASE2_DEADLINE=new Date("2026-07-04T14:30:00-05:00"); // 30min antes primer octavo
 var FASE2_LOCKED={oct:false,qtr:false,semi:false,third:false,final:false};
 // Llaves reales de Octavos F2 — admin las llena cuando se conozcan
 var OCT_F2=[
@@ -368,7 +368,7 @@ function fbListen(){
         if(!remote[n]&&n!==CU) delete ST.participants[n];
       });
       if(isActive("t-stand"))buildStand();
-      if(isActive("t-trans"))buildTrans();
+      if(isActive("t-trans")){buildTrans();buildTransBody();}
       if(isActive("t-gest"))buildGest();
     }
   },function(){setBadge("err","Sin conexión");});
@@ -1364,7 +1364,16 @@ function buildTransBody(){
     });
     h+=f2sec("🔥","Semifinal",semiR);
 
-    var th1=semiAdv[SEMI_F2[0].id]||"?",th2=semiAdv[SEMI_F2[1].id]||"?";
+    // 3°/4° uses LOSERS of semis
+    function transGetLoser(semiId){
+      var s=SEMI_F2.find(function(x){return x.id===semiId;});
+      if(!s) return "?";
+      var t1=qtrAdv[s.w1]||"?",t2=qtrAdv[s.w2]||"?";
+      var winner=semiAdv[semiId]||"";
+      if(!winner||winner==="?") return "?";
+      return winner===t1?t2:t1;
+    }
+    var th1=transGetLoser(SEMI_F2[0].id),th2=transGetLoser(SEMI_F2[1].id);
     if(th1!=="?"||th2!=="?"){
       h+=f2sec("🥉","3° y 4° Puesto",f2row(THIRD_F2.lbl,th1,th2,thirdAdv[THIRD_F2.id],f2d.third[THIRD_F2.id]||{}));
     }
