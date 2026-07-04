@@ -221,6 +221,7 @@ var DEADLINE=new Date("2026-06-13T23:59:00-05:00");
 var LOCKED_MATCHES=["A1","A6"]; // Partidos ya jugados — agregar IDs aqui
 
 // ── FASE 2 CONFIG ─────────────────────────────────────────────
+var APP_VERSION="2.1.0"; // incrementar con cada fix importante
 var FASE2_ENABLED=true; // admin activa con true
 var FASE2_DEADLINE=new Date("2026-07-04T14:30:00-05:00"); // 30min antes primer octavo
 var FASE2_LOCKED={oct:false,qtr:false,semi:false,third:false,final:false};
@@ -309,6 +310,15 @@ var OCT=[
 
 var CU=null,CR=null;
 var ST={participants:{},realResults:{},octResults:{},dssResults:{}};
+
+// Check version on page load — reload if updated
+(function(){
+  var saved=sessionStorage.getItem("polla_version");
+  if(saved&&saved!==APP_VERSION){
+    sessionStorage.setItem("polla_version",APP_VERSION);
+    location.reload(true);
+  }
+})();
 var unsub=null;
 
 // ── FIREBASE ─────────────────────────────────────────────────
@@ -409,6 +419,14 @@ db.collection("polla2026").doc("state").get()
 function showErr(m){var el=document.getElementById("login-err");el.textContent=m;el.style.display="block";}
 function enterApp(u,r){
   CU=u;CR=r;saveSession(u,r);
+  // Version check — force reload if app updated
+  var savedV=sessionStorage.getItem("polla_version");
+  if(savedV&&savedV!==APP_VERSION){
+    sessionStorage.setItem("polla_version",APP_VERSION);
+    location.reload(true);
+    return;
+  }
+  sessionStorage.setItem("polla_version",APP_VERSION);
   var dn=r==="admin"?"admin":((ST.participants[u]&&ST.participants[u].displayName)||u);
   document.getElementById("ubadge").textContent=dn+(r==="admin"?" (Admin)":"");
   document.getElementById("logoutbtn").style.display="block";
