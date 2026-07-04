@@ -1726,7 +1726,16 @@ function saveResF2(){
 
 
 // ── FASE 2 HELPERS ────────────────────────────────────────────
-function getF2P(n){ n=n||CU; var b=ST.participants[n]||{}; return b.fase2||{oct:{},qtr:{},semi:{},third:{},final:{},octAdv:{},qtrAdv:{},semiAdv:{},thirdAdv:{},finalAdv:{}}; }
+function getF2P(n){
+  // When reading for trans view, use exact n — don't fallback to CU
+  var key=n||CU;
+  var b=ST.participants[key]||{};
+  var f=b.fase2||{};
+  return {
+    oct:f.oct||{},qtr:f.qtr||{},semi:f.semi||{},third:f.third||{},final:f.final||{},
+    octAdv:f.octAdv||{},qtrAdv:f.qtrAdv||{},semiAdv:f.semiAdv||{},thirdAdv:f.thirdAdv||{},finalAdv:f.finalAdv||{}
+  };
+}
 
 function saveF2(){
   if(new Date()>FASE2_DEADLINE){alert("El plazo de Fase 2 venció el 04/07/2026 a las 10:30am.");return;}
