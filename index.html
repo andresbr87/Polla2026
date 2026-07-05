@@ -223,7 +223,7 @@ var LOCKED_MATCHES=["A1","A6"]; // Partidos ya jugados — agregar IDs aqui
 // ── FASE 2 CONFIG ─────────────────────────────────────────────
 var APP_VERSION="2.1.0"; // incrementar con cada fix importante
 var FASE2_ENABLED=true; // admin activa con true
-var FASE2_DEADLINE=new Date("2026-07-04T11:30:00-05:00"); // 30min antes primer octavo
+var FASE2_DEADLINE=new Date("2026-07-04T11:30:00-05:00"); // 11:30am hora Colombia
 var FASE2_LOCKED={oct:false,qtr:false,semi:false,third:false,final:false};
 // Llaves reales de Octavos F2 — admin las llena cuando se conozcan
 var OCT_F2=[
@@ -1037,18 +1037,33 @@ function calcPts(pd,rR,rO,rD){
   var f2octAdv=f2.octAdv||{},f2qtrAdv=f2.qtrAdv||{},f2semiAdv=f2.semiAdv||{},f2thirdAdv=f2.thirdAdv||{},f2finalAdv=f2.finalAdv||{};
   var rF2=ST.realResults.fase2||{};
 
+  // helper: get real teams for F2 match from OCT_F2/QTR_F2 etc
+  function getRealF2Teams(matchId){
+    var o=OCT_F2.find(function(x){return x.id===matchId;});
+    if(o) return {t1:o.t1,t2:o.t2};
+    var q=QTR_F2.find(function(x){return x.id===matchId;});
+    if(q) return {t1:rF2["adv_oct_"+q.w1]||"",t2:rF2["adv_oct_"+q.w2]||""};
+    var s=SEMI_F2.find(function(x){return x.id===matchId;});
+    if(s) return {t1:rF2["adv_qtr_"+s.w1]||"",t2:rF2["adv_qtr_"+s.w2]||""};
+    if(matchId===FINAL_F2.id) return {t1:rF2["adv_semi_"+SEMI_F2[0].id]||"",t2:rF2["adv_semi_"+SEMI_F2[1].id]||""};
+    if(matchId===THIRD_F2.id) return {t1:rF2["loser_semi_"+SEMI_F2[0].id]||"",t2:rF2["loser_semi_"+SEMI_F2[1].id]||""};
+    return {t1:"",t2:""};
+  }
+
   // helper: check score and winner for F2 match
   function f2Score(matchId,forecast,real,advFc,advReal,lbl,pts_marcador,pts_ganador,pts_adv){
-    if(!real||!real.t1||!real.t2) return;
+    if(!real||real.s1===undefined||real.s2===undefined) return;
+    var teams=getRealF2Teams(matchId);
+    var t1=teams.t1,t2=teams.t2;
     var fc=forecast||{};
     // marcador exacto
-    if(fc.s1!==undefined&&fc.s2!==undefined&&real.s1!==undefined&&real.s2!==undefined){
+    if(fc.s1!==undefined&&fc.s2!==undefined){
       if(parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
         pts+=pts_marcador;det.push({m:matchId+"s",p:pts_marcador,r:"Marcador exacto "+lbl});
       } else {
         // ganador
-        var pw=parseInt(fc.s1)>parseInt(fc.s2)?real.t1:parseInt(fc.s2)>parseInt(fc.s1)?real.t2:"pen";
-        var rw=parseInt(real.s1)>parseInt(real.s2)?real.t1:parseInt(real.s2)>parseInt(real.s1)?real.t2:(real.winner||"");
+        var pw=parseInt(fc.s1)>parseInt(fc.s2)?t1:parseInt(fc.s2)>parseInt(fc.s1)?t2:"pen";
+        var rw=parseInt(real.s1)>parseInt(real.s2)?t1:parseInt(real.s2)>parseInt(real.s1)?t2:(advReal||"");
         if(pw!=="pen"&&rw&&pw===rw){pts+=pts_ganador;det.push({m:matchId+"g",p:pts_ganador,r:"Ganador "+lbl});}
       }
     }
