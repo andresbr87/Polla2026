@@ -1198,16 +1198,18 @@ function calcPts(pd,rR,rO,rD){
   var ptsGrupos=0,ptsDss=0,ptsOct=0,ptsCuartos=0,ptsSemi=0,ptsTercero=0,ptsFinal=0;
   det.forEach(function(d){
     var m=d.m;
-    if(m.startsWith("adv_")&&m.length===5) ptsGrupos+=d.p;
-    else if(m.startsWith("b3_")) ptsGrupos+=d.p;
-    else if(/^[A-L]\d/.test(m)) ptsGrupos+=d.p;
-    else if(m.startsWith("R")) ptsDss+=d.p;
-    else if(m.startsWith("O")) ptsOct+=d.p;
-    else if(m.startsWith("F2O")) ptsOct+=d.p;
+    // Fase 2 — check first to avoid falling into wrong bucket
+    if(m.startsWith("F2O")) ptsOct+=d.p;
     else if(m.startsWith("F2Q")||m.startsWith("F2q")) ptsCuartos+=d.p;
     else if(m.startsWith("F2S")||m.startsWith("F2s")) ptsSemi+=d.p;
     else if(m.startsWith("third")) ptsTercero+=d.p;
     else if(m.startsWith("final")) ptsFinal+=d.p;
+    // Fase 1
+    else if(m.startsWith("adv_")&&m.length===5) ptsGrupos+=d.p;
+    else if(m.startsWith("b3_")) ptsGrupos+=d.p;
+    else if(/^[A-L]\d/.test(m)) ptsGrupos+=d.p;
+    else if(m.startsWith("R")) ptsDss+=d.p;
+    else if(m.startsWith("O")) ptsOct+=d.p;
     else ptsGrupos+=d.p;
   });
   return{pts:pts,det:det,breakdown:{grupos:ptsGrupos,dss:ptsDss,oct:ptsOct,cuartos:ptsCuartos,semi:ptsSemi,tercero:ptsTercero,final:ptsFinal}};
