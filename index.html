@@ -368,7 +368,12 @@ function fbListen(){
   unsub=db.collection("polla2026").doc("state").onSnapshot(function(snap){
     if(snap.exists){
       var r=snap.data();
-      ST.realResults=r.realResults||{};
+      var newReal=r.realResults||{};
+      // Preserve fase2 if already in memory and not in snapshot (timing issue)
+      if(ST.realResults&&ST.realResults.fase2&&!newReal.fase2){
+        newReal.fase2=ST.realResults.fase2;
+      }
+      ST.realResults=newReal;
       ST.octResults=r.octResults||{};
       ST.dssResults=r.dssResults||{};
       var remote=r.participants||{};
@@ -616,7 +621,8 @@ function getP(n){
     dssAdvances:base.dssAdvances||{},
     octForecasts:base.octForecasts||{},
     octAdvances:base.octAdvances||{},
-    fairPlay:base.fairPlay||{}
+    fairPlay:base.fairPlay||{},
+    fase2:base.fase2||{}
   };
 }
 
@@ -1077,15 +1083,36 @@ function calcPts(pd,rR,rO,rD){
     f2Score(o.id,f2oct[o.id],real,f2octAdv[o.id],rF2["adv_oct_"+o.id],o.lbl,3,1,4);
   });
 
-  // Cuartos: llave 5pts, marcador 3pts, ganador 1pt, avance semi 4pts
+  // Cuartos: llave 5pts, marcador 3pts (solo si llave ok), ganador 1pt, avance semi 4pts
   QTR_F2.forEach(function(q){
     var real=rF2["qtr_"+q.id];
-    if(!real||!real.t1||!real.t2) return;
-    // llave exacta
+    if(!real||real.s1===undefined||real.s2===undefined) return;
+    var teams=getRealF2Teams(q.id);
+    var rt1=teams.t1,rt2=teams.t2;
+    // llave exacta — compare participant's oct advances vs real teams
     var pt1=f2octAdv[q.w1]||"?",pt2=f2octAdv[q.w2]||"?";
-    var llaveOk=(pt1===real.t1&&pt2===real.t2)||(pt1===real.t2&&pt2===real.t1);
+    var llaveOk=(pt1===rt1&&pt2===rt2)||(pt1===rt2&&pt2===rt1);
     if(llaveOk){pts+=5;det.push({m:q.id+"l",p:5,r:"Llave exacta "+q.lbl});}
-    f2Score(q.id,f2qtr[q.id],real,f2qtrAdv[q.id],rF2["adv_qtr_"+q.id],q.lbl,3,1,4);
+    // marcador exacto SOLO si llave ok
+    var fc=f2qtr[q.id]||{};
+    var marcadorExacto=false;
+    if(llaveOk&&fc.s1!==undefined&&fc.s2!==undefined){
+      if(parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
+        pts+=3;det.push({m:q.id+"s",p:3,r:"Marcador exacto "+q.lbl});
+        marcadorExacto=true;
+      }
+    }
+    // ganador 1pt — sin importar llave
+    if(!marcadorExacto&&fc.s1!==undefined&&fc.s2!==undefined){
+      var pw=parseInt(fc.s1)>parseInt(fc.s2)?pt1:parseInt(fc.s2)>parseInt(fc.s1)?pt2:"pen";
+      var rw=parseInt(real.s1)>parseInt(real.s2)?rt1:parseInt(real.s2)>parseInt(real.s1)?rt2:(rF2["adv_qtr_"+q.id]||"");
+      // check at least one team matches
+      var hayEquipo=(pt1===rt1||pt1===rt2||pt2===rt1||pt2===rt2);
+      if(hayEquipo&&pw!=="pen"&&rw&&pw===rw){pts+=1;det.push({m:q.id+"g",p:1,r:"Ganador "+q.lbl});}
+    }
+    // avance a semi 4pts
+    var advReal=rF2["adv_qtr_"+q.id],advFc=f2qtrAdv[q.id];
+    if(advReal&&advFc&&advReal===advFc){pts+=4;det.push({m:q.id+"a",p:4,r:advFc+" avanza "+q.lbl});}
   });
 
   // Semifinal: llave 10pts, marcador 3pts, ganador 1pt, adv 3/4 4pts, adv final 5pts
