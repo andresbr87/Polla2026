@@ -1083,113 +1083,120 @@ function calcPts(pd,rR,rO,rD){
     f2Score(o.id,f2oct[o.id],real,f2octAdv[o.id],rF2["adv_oct_"+o.id],o.lbl,3,1,4);
   });
 
-  // Cuartos: llave 5pts, marcador 3pts (solo si llave ok), ganador 1pt, avance semi 4pts
+  // Cuartos: llave 5pts (inmediato), marcador 3pts (solo si llave ok + resultado), ganador 1pt, avance semi 4pts
   QTR_F2.forEach(function(q){
-    var real=rF2["qtr_"+q.id];
-    if(!real||real.s1===undefined||real.s2===undefined) return;
     var teams=getRealF2Teams(q.id);
     var rt1=teams.t1,rt2=teams.t2;
-    // llave exacta — compare participant's oct advances vs real teams
     var pt1=f2octAdv[q.w1]||"?",pt2=f2octAdv[q.w2]||"?";
-    var llaveOk=(pt1===rt1&&pt2===rt2)||(pt1===rt2&&pt2===rt1);
+    // llave exacta — dar puntos apenas coincidan equipos SIN esperar resultado
+    var llaveOk=rt1&&rt2&&pt1!=="?"&&pt2!=="?"&&((pt1===rt1&&pt2===rt2)||(pt1===rt2&&pt2===rt1));
     if(llaveOk){pts+=5;det.push({m:q.id+"l",p:5,r:"Llave exacta "+q.lbl});}
-    // marcador exacto SOLO si llave ok
+    // marcador y ganador — esperan resultado real
+    var real=rF2["qtr_"+q.id];
     var fc=f2qtr[q.id]||{};
     var marcadorExacto=false;
-    if(llaveOk&&fc.s1!==undefined&&fc.s2!==undefined){
-      if(parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
+    if(real&&real.s1!==undefined&&real.s2!==undefined&&fc.s1!==undefined&&fc.s2!==undefined){
+      if(llaveOk&&parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
         pts+=3;det.push({m:q.id+"s",p:3,r:"Marcador exacto "+q.lbl});
         marcadorExacto=true;
       }
+      if(!marcadorExacto){
+        var pw=parseInt(fc.s1)>parseInt(fc.s2)?pt1:parseInt(fc.s2)>parseInt(fc.s1)?pt2:"pen";
+        var rw=parseInt(real.s1)>parseInt(real.s2)?rt1:parseInt(real.s2)>parseInt(real.s1)?rt2:(rF2["adv_qtr_"+q.id]||"");
+        var hayEquipo=(pt1===rt1||pt1===rt2||pt2===rt1||pt2===rt2);
+        if(hayEquipo&&pw!=="pen"&&rw&&pw===rw){pts+=1;det.push({m:q.id+"g",p:1,r:"Ganador "+q.lbl});}
+      }
     }
-    // ganador 1pt — sin importar llave
-    if(!marcadorExacto&&fc.s1!==undefined&&fc.s2!==undefined){
-      var pw=parseInt(fc.s1)>parseInt(fc.s2)?pt1:parseInt(fc.s2)>parseInt(fc.s1)?pt2:"pen";
-      var rw=parseInt(real.s1)>parseInt(real.s2)?rt1:parseInt(real.s2)>parseInt(real.s1)?rt2:(rF2["adv_qtr_"+q.id]||"");
-      // check at least one team matches
-      var hayEquipo=(pt1===rt1||pt1===rt2||pt2===rt1||pt2===rt2);
-      if(hayEquipo&&pw!=="pen"&&rw&&pw===rw){pts+=1;det.push({m:q.id+"g",p:1,r:"Ganador "+q.lbl});}
-    }
-    // avance a semi 4pts
+    // avance a semi 4pts — espera resultado
     var advReal=rF2["adv_qtr_"+q.id],advFc=f2qtrAdv[q.id];
     if(advReal&&advFc&&advReal===advFc){pts+=4;det.push({m:q.id+"a",p:4,r:advFc+" avanza "+q.lbl});}
   });
 
-  // Semifinal: llave 10pts, marcador 3pts, ganador 1pt, adv 3/4 4pts, adv final 5pts
+  // Semifinal: llave 10pts (inmediato), marcador 3pts, ganador 1pt, adv 3/4 4pts, adv final 5pts
   SEMI_F2.forEach(function(s){
-    var real=rF2["semi_"+s.id];
-    if(!real||!real.t1||!real.t2) return;
+    var teams=getRealF2Teams(s.id);
+    var rt1=teams.t1,rt2=teams.t2;
     var pt1=f2qtrAdv[s.w1]||"?",pt2=f2qtrAdv[s.w2]||"?";
-    var llaveOk=(pt1===real.t1&&pt2===real.t2)||(pt1===real.t2&&pt2===real.t1);
+    // llave exacta — inmediato
+    var llaveOk=rt1&&rt2&&pt1!=="?"&&pt2!=="?"&&((pt1===rt1&&pt2===rt2)||(pt1===rt2&&pt2===rt1));
     if(llaveOk){pts+=10;det.push({m:s.id+"l",p:10,r:"Llave exacta "+s.lbl});}
-    // marcador y ganador
-    var fc=f2semi[s.id]||{};
-    if(fc.s1!==undefined&&fc.s2!==undefined&&real.s1!==undefined&&real.s2!==undefined){
-      if(parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
-        pts+=3;det.push({m:s.id+"s",p:3,r:"Marcador exacto "+s.lbl});
-      } else {
-        var pw=parseInt(fc.s1)>parseInt(fc.s2)?real.t1:parseInt(fc.s2)>parseInt(fc.s1)?real.t2:"pen";
-        var rw=real.winner||"";
-        if(pw!=="pen"&&rw&&pw===rw){pts+=1;det.push({m:s.id+"g",p:1,r:"Ganador "+s.lbl});}
+    var real=rF2["semi_"+s.id];
+    var marcadorExacto=false;
+    if(real&&real.s1!==undefined&&real.s2!==undefined){
+      var fc=f2semi[s.id]||{};
+      if(fc.s1!==undefined&&fc.s2!==undefined){
+        if(parseInt(fc.s1)===parseInt(real.s1)&&parseInt(fc.s2)===parseInt(real.s2)){
+          pts+=3;det.push({m:s.id+"s",p:3,r:"Marcador exacto "+s.lbl});
+          marcadorExacto=true;
+        } else {
+          var pw=parseInt(fc.s1)>parseInt(fc.s2)?pt1:parseInt(fc.s2)>parseInt(fc.s1)?pt2:"pen";
+          var rw=rF2["adv_semi_"+s.id]||"";
+          if(pw!=="pen"&&rw&&pw===rw){pts+=1;det.push({m:s.id+"g",p:1,r:"Ganador "+s.lbl});}
+        }
       }
     }
     // avance a 3/4 (perdedor) — 4pts
     var realLoser=rF2["loser_semi_"+s.id];
     var fcAdv=f2semiAdv[s.id]||"";
-    var fcLoser=fcAdv?(fcAdv===real.t1?real.t2:real.t1):"";
-    if(realLoser&&fcLoser&&realLoser===fcLoser){pts+=4;det.push({m:s.id+"3",p:4,r:fcLoser+" al 3°/4° "+s.lbl});}
+    var fcLoser=fcAdv?(fcAdv===rt1?rt2:rt1):"";
+    if(realLoser&&fcLoser&&realLoser===fcLoser){pts+=4;det.push({m:s.id+"3",p:4,r:fcLoser+" al 3/4 "+s.lbl});}
     // avance a final (ganador) — 5pts
     var realWinner=rF2["adv_semi_"+s.id];
     if(realWinner&&fcAdv&&realWinner===fcAdv){pts+=5;det.push({m:s.id+"f",p:5,r:fcAdv+" a la Final "+s.lbl});}
-  });
+    });
 
-  // 3° y 4° puesto: llave 10pts, marcador 3pts, ganador 1pt, 3er 7pts, 4to 6pts
+  // 3° y 4° puesto: llave 10pts (inmediato), marcador 3pts, ganador 1pt, 3er 7pts, 4to 6pts
+  var thirdTeams=getRealF2Teams(THIRD_F2.id);
+  var trt1=thirdTeams.t1,trt2=thirdTeams.t2;
+  var tpt1=f2semiAdv[SEMI_F2[0].id]||"?",tpt2=f2semiAdv[SEMI_F2[1].id]||"?";
+  // losers of semi = teams for 3rd/4th
+  // participant's 3rd teams are those they predicted to lose semi
+  var tpLoser1=tpt1&&tpt1!=="?"?(tpt1===f2qtrAdv[SEMI_F2[0].w1]?f2qtrAdv[SEMI_F2[0].w2]:f2qtrAdv[SEMI_F2[0].w1]):"?";
+  var tpLoser2=tpt2&&tpt2!=="?"?(tpt2===f2qtrAdv[SEMI_F2[1].w1]?f2qtrAdv[SEMI_F2[1].w2]:f2qtrAdv[SEMI_F2[1].w1]):"?";
+  var llaveOk3=trt1&&trt2&&tpLoser1!=="?"&&tpLoser2!=="?"&&((tpLoser1===trt1&&tpLoser2===trt2)||(tpLoser1===trt2&&tpLoser2===trt1));
+  if(llaveOk3){pts+=10;det.push({m:"third_l",p:10,r:"Llave exacta 3/4 puesto"});}
   var realThird=rF2["third"];
-  if(realThird&&realThird.t1&&realThird.t2){
-    var tpt1=f2semiAdv[SEMI_F2[0].id]||"?",tpt2=f2semiAdv[SEMI_F2[1].id]||"?";
-    // los que van al 3/4 son los perdedores de semi
-    var expT1=tpt1?(tpt1===realThird.t1||tpt1===realThird.t2?"":"?"):"?";
-    var llaveOk3=(expT1!=="?");
-    if(llaveOk3){pts+=10;det.push({m:"third_l",p:10,r:"Llave exacta 3°/4° puesto"});}
+  if(realThird&&realThird.s1!==undefined&&realThird.s2!==undefined){
     var fc3=f2third[THIRD_F2.id]||{};
-    if(fc3.s1!==undefined&&fc3.s2!==undefined&&realThird.s1!==undefined&&realThird.s2!==undefined){
+    if(fc3.s1!==undefined&&fc3.s2!==undefined){
       if(parseInt(fc3.s1)===parseInt(realThird.s1)&&parseInt(fc3.s2)===parseInt(realThird.s2)){
-        pts+=3;det.push({m:"third_s",p:3,r:"Marcador exacto 3°/4° puesto"});
+        pts+=3;det.push({m:"third_s",p:3,r:"Marcador exacto 3/4 puesto"});
       } else {
-        var pw3=parseInt(fc3.s1)>parseInt(fc3.s2)?realThird.t1:parseInt(fc3.s2)>parseInt(fc3.s1)?realThird.t2:"pen";
-        var rw3=realThird.winner||"";
-        if(pw3!=="pen"&&rw3&&pw3===rw3){pts+=1;det.push({m:"third_g",p:1,r:"Ganador 3°/4° puesto"});}
+        var pw3=parseInt(fc3.s1)>parseInt(fc3.s2)?tpLoser1:parseInt(fc3.s2)>parseInt(fc3.s1)?tpLoser2:"pen";
+        var rw3=rF2["adv_third"]||"";
+        if(pw3!=="pen"&&rw3&&pw3===rw3){pts+=1;det.push({m:"third_g",p:1,r:"Ganador 3/4 puesto"});}
       }
     }
-    // 3er puesto 7pts, 4to 6pts
-    var real3rd=realThird.winner||"";
-    var real4th=real3rd?(real3rd===realThird.t1?realThird.t2:realThird.t1):"";
+    var real3rd=rF2["adv_third"]||"";
+    var real4th=real3rd?(real3rd===trt1?trt2:trt1):"";
     var fc3adv=f2thirdAdv[THIRD_F2.id]||"";
-    var fc4th=fc3adv?(fc3adv===realThird.t1?realThird.t2:realThird.t1):"";
+    var fc4th=fc3adv?(fc3adv===trt1?trt2:trt1):"";
     if(real3rd&&fc3adv&&real3rd===fc3adv){pts+=7;det.push({m:"third_3",p:7,r:fc3adv+" 3er puesto"});}
     if(real4th&&fc4th&&real4th===fc4th){pts+=6;det.push({m:"third_4",p:6,r:fc4th+" 4to puesto"});}
   }
 
-  // Gran Final: llave 12pts, marcador 3pts, ganador 1pt, campeon 12pts, sub 8pts
+  // Gran Final: llave 12pts (inmediato), marcador 3pts, ganador 1pt, campeon 12pts, sub 8pts
+  var finalTeams=getRealF2Teams(FINAL_F2.id);
+  var frt1=finalTeams.t1,frt2=finalTeams.t2;
+  var fpt1=f2semiAdv[SEMI_F2[0].id]||"?",fpt2=f2semiAdv[SEMI_F2[1].id]||"?";
+  var llaveOkF=frt1&&frt2&&fpt1!=="?"&&fpt2!=="?"&&((fpt1===frt1&&fpt2===frt2)||(fpt1===frt2&&fpt2===frt1));
+  if(llaveOkF){pts+=12;det.push({m:"final_l",p:12,r:"Llave exacta Gran Final"});}
   var realFinal=rF2["final"];
-  if(realFinal&&realFinal.t1&&realFinal.t2){
-    var fpt1=f2semiAdv[SEMI_F2[0].id]||"?",fpt2=f2semiAdv[SEMI_F2[1].id]||"?";
-    var llaveOkF=(fpt1===realFinal.t1&&fpt2===realFinal.t2)||(fpt1===realFinal.t2&&fpt2===realFinal.t1);
-    if(llaveOkF){pts+=12;det.push({m:"final_l",p:12,r:"Llave exacta Gran Final"});}
+  if(realFinal&&realFinal.s1!==undefined&&realFinal.s2!==undefined){
     var fcF=f2final[FINAL_F2.id]||{};
-    if(fcF.s1!==undefined&&fcF.s2!==undefined&&realFinal.s1!==undefined&&realFinal.s2!==undefined){
+    if(fcF.s1!==undefined&&fcF.s2!==undefined){
       if(parseInt(fcF.s1)===parseInt(realFinal.s1)&&parseInt(fcF.s2)===parseInt(realFinal.s2)){
         pts+=3;det.push({m:"final_s",p:3,r:"Marcador exacto Gran Final"});
       } else {
-        var pwF=parseInt(fcF.s1)>parseInt(fcF.s2)?realFinal.t1:parseInt(fcF.s2)>parseInt(fcF.s1)?realFinal.t2:"pen";
-        var rwF=realFinal.winner||"";
+        var pwF=parseInt(fcF.s1)>parseInt(fcF.s2)?fpt1:parseInt(fcF.s2)>parseInt(fcF.s1)?fpt2:"pen";
+        var rwF=rF2["winner_final"]||"";
         if(pwF!=="pen"&&rwF&&pwF===rwF){pts+=1;det.push({m:"final_g",p:1,r:"Ganador Gran Final"});}
       }
     }
-    var realChamp=realFinal.winner||"";
-    var realSub=realChamp?(realChamp===realFinal.t1?realFinal.t2:realFinal.t1):"";
+    var realChamp=rF2["winner_final"]||"";
+    var realSub=realChamp?(realChamp===frt1?frt2:frt1):"";
     var fcFadv=f2finalAdv[FINAL_F2.id]||"";
-    var fcSub=fcFadv?(fcFadv===realFinal.t1?realFinal.t2:realFinal.t1):"";
+    var fcSub=fcFadv?(fcFadv===frt1?frt2:frt1):"";
     if(realChamp&&fcFadv&&realChamp===fcFadv){pts+=12;det.push({m:"final_c",p:12,r:fcFadv+" Campeon Mundial"});}
     if(realSub&&fcSub&&realSub===fcSub){pts+=8;det.push({m:"final_r",p:8,r:fcSub+" Subcampeon"});}
   }
