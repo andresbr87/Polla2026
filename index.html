@@ -1931,10 +1931,11 @@ function buildF2(){
   function getSemiLoser(semiId){
     var s=SEMI_F2.find(function(x){return x.id===semiId;});
     if(!s) return "?";
-    var teams=getF2Teams(s);
+    // Use participant's own qtrAdv to get semi teams — avoid getF2Winner which uses CU
+    var t1=p.qtrAdv[s.w1]||"?", t2=p.qtrAdv[s.w2]||"?";
     var winner=p.semiAdv[semiId]||"";
     if(!winner||winner==="?") return "?";
-    return winner===teams.t1?teams.t2:teams.t1;
+    return winner===t1?t2:t1;
   }
   var ttm={t1:getSemiLoser(THIRD_F2.l1),t2:getSemiLoser(THIRD_F2.l2)};
   var tadv=p.thirdAdv[THIRD_F2.id]||"";
