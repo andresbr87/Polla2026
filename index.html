@@ -1138,7 +1138,7 @@ function calcPts(pd,rR,rO,rD){
     // avance a 3/4 (perdedor) — 4pts
     var realLoser=rF2["loser_semi_"+s.id];
     var fcAdv=f2semiAdv[s.id]||"";
-    var fcLoser=fcAdv?(fcAdv===rt1?rt2:rt1):"";
+    var fcLoser=fcAdv?(fcAdv===pt1?pt2:(fcAdv===pt2?pt1:"")):"";
     if(realLoser&&fcLoser&&realLoser===fcLoser){pts+=4;det.push({m:s.id+"3",p:4,r:fcLoser+" al 3/4 "+s.lbl});}
     // avance a final (ganador) — 5pts
     var realWinner=rF2["adv_semi_"+s.id];
