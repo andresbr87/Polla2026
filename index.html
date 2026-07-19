@@ -1170,7 +1170,7 @@ function calcPts(pd,rR,rO,rD){
     var real3rd=rF2["adv_third"]||"";
     var real4th=real3rd?(real3rd===trt1?trt2:trt1):"";
     var fc3adv=f2thirdAdv[THIRD_F2.id]||"";
-    var fc4th=fc3adv?(fc3adv===trt1?trt2:trt1):"";
+    var fc4th=fc3adv?(fc3adv===tpLoser1?tpLoser2:(fc3adv===tpLoser2?tpLoser1:"")):"";
     if(real3rd&&fc3adv&&real3rd===fc3adv){pts+=7;det.push({m:"third_3",p:7,r:fc3adv+" 3er puesto"});}
     if(real4th&&fc4th&&real4th===fc4th){pts+=6;det.push({m:"third_4",p:6,r:fc4th+" 4to puesto"});}
   }
@@ -1196,7 +1196,7 @@ function calcPts(pd,rR,rO,rD){
     var realChamp=rF2["winner_final"]||"";
     var realSub=realChamp?(realChamp===frt1?frt2:frt1):"";
     var fcFadv=f2finalAdv[FINAL_F2.id]||"";
-    var fcSub=fcFadv?(fcFadv===frt1?frt2:frt1):"";
+    var fcSub=fcFadv?(fcFadv===fpt1?fpt2:(fcFadv===fpt2?fpt1:"")):"";
     if(realChamp&&fcFadv&&realChamp===fcFadv){pts+=12;det.push({m:"final_c",p:12,r:fcFadv+" Campeon Mundial"});}
     if(realSub&&fcSub&&realSub===fcSub){pts+=8;det.push({m:"final_r",p:8,r:fcSub+" Subcampeon"});}
   }
